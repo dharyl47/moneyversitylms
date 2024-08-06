@@ -16,7 +16,7 @@ const Sidebar = () => {
                 <li><a href="#" className="block p-2 rounded hover:bg-secondary text-secondary-foreground">Calculator</a></li>
                 <li><a href="#" className="block p-2 rounded hover:bg-secondary text-secondary-foreground">Reports</a></li>
                 <li>
-            <Link href="/lms" className="block p-2 rounded hover:bg-gray-200">
+            <Link href="#" className="block p-2 rounded hover:bg-gray-200">
               LMS
             </Link>
           </li>
