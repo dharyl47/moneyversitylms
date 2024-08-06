@@ -156,7 +156,7 @@ const Navbar = () => {
   <span className="font-semibold text-gray-900 dark:text-white">
     Bonnie Green
   </span>
-  : &quot;Hey, what's up? All set for the presentation?&quot;
+  : &quot;Hey, what&apos;s up? All set for the presentation?&quot;
 </div>
                     <div className="text-xs text-blue-600 dark:text-blue-500">
                       a few moments ago
@@ -192,7 +192,7 @@ const Navbar = () => {
                       <span className="font-semibold text-gray-900 dark:text-white">
                         Jese Leos
                       </span>
-                      : "Can I ask you something?"
+                      : &quot;Can I ask you something?&quot;
                     </div>
                     <div className="text-xs text-blue-600 dark:text-blue-500">
                       a few moments ago
@@ -222,18 +222,7 @@ const Navbar = () => {
                       </svg>
                     </div>
                   </div>
-                  <div className="w-full pl-3">
-                    <div className="text-gray-500 text-sm mb-1.5 dark:text-gray-400">
-                      New message from{' '}
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        Leslie Livingston
-                      </span>
-                      : "I have finished the tasks assigned to me."
-                    </div>
-                    <div className="text-xs text-blue-600 dark:text-blue-500">
-                      a few moments ago
-                    </div>
-                  </div>
+                  
                 </a>
                 <a
                   href="#"
@@ -264,7 +253,7 @@ const Navbar = () => {
                       <span className="font-semibold text-gray-900 dark:text-white">
                         Robert Brown
                       </span>
-                      : "I have rescheduled our meeting to tomorrow."
+                      : &quot;I have rescheduled our meeting to tomorrow.&quot;
                     </div>
                     <div className="text-xs text-blue-600 dark:text-blue-500">
                       a few moments ago
