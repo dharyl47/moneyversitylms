@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 const Navbar = () => {
   return (
@@ -40,7 +41,7 @@ const Navbar = () => {
               </svg>
             </button>
             <a href="/" className="flex ml-2 md:mr-24">
-              {/* <img src="/images/logo.svg" className="h-8 mr-3" alt="FlowBite Logo" /> */}
+            
               <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Estate Planning AI</span>
             </a>
             <form action="#" method="GET" className="hidden lg:block lg:pl-3.5">
@@ -131,11 +132,13 @@ const Navbar = () => {
                   className="flex px-4 py-3 border-b hover:bg-gray-100 dark:hover:bg-gray-600 dark:border-gray-600"
                 >
                   <div className="flex-shrink-0">
-                    <img
-                      className="rounded-full w-11 h-11"
-                      src="/images/users/bonnie-green.png"
-                      alt="Jese image"
-                    />
+                  <Image
+  className="rounded-full w-11 h-11"
+  src="/images/users/bonnie-green.png"
+  alt="Jese image"
+  width={44} // Adjust width according to the original size
+  height={44} // Adjust height according to the original size
+/>
                     <div className="absolute flex items-center justify-center w-5 h-5 ml-6 -mt-5 border border-white rounded-full bg-primary-700 dark:border-gray-700">
                       <svg
                         className="w-3 h-3 text-white"
@@ -148,13 +151,13 @@ const Navbar = () => {
                     </div>
                   </div>
                   <div className="w-full pl-3">
-                    <div className="text-gray-500 text-sm mb-1.5 dark:text-gray-400">
-                      New message from{' '}
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        Bonnie Green
-                      </span>
-                      : "Hey, what's up? All set for the presentation?"
-                    </div>
+                  <div className="text-gray-500 text-sm mb-1.5 dark:text-gray-400">
+  New message from{' '}
+  <span className="font-semibold text-gray-900 dark:text-white">
+    Bonnie Green
+  </span>
+  : &quot;Hey, what's up? All set for the presentation?&quot;
+</div>
                     <div className="text-xs text-blue-600 dark:text-blue-500">
                       a few moments ago
                     </div>
@@ -165,11 +168,13 @@ const Navbar = () => {
                   className="flex px-4 py-3 border-b hover:bg-gray-100 dark:hover:bg-gray-600 dark:border-gray-600"
                 >
                   <div className="flex-shrink-0">
-                    <img
-                      className="rounded-full w-11 h-11"
-                      src="/images/users/jese-leos.png"
-                      alt="Joseph image"
-                    />
+                  <Image
+  className="rounded-full w-11 h-11"
+  src="/images/users/jese-leos.png"
+  alt="Joseph image"
+  width={44} // Adjust width according to the original size
+  height={44} // Adjust height according to the original size
+/>
                     <div className="absolute flex items-center justify-center w-5 h-5 ml-6 -mt-5 border border-white rounded-full bg-primary-700 dark:border-gray-700">
                       <svg
                         className="w-3 h-3 text-white"
@@ -199,11 +204,13 @@ const Navbar = () => {
                   className="flex px-4 py-3 border-b hover:bg-gray-100 dark:hover:bg-gray-600 dark:border-gray-600"
                 >
                   <div className="flex-shrink-0">
-                    <img
-                      className="rounded-full w-11 h-11"
-                      src="/images/users/bonnie-green.png"
-                      alt="Leslie image"
-                    />
+                  <Image
+  className="rounded-full w-11 h-11"
+  src="/images/users/bonnie-green.png"
+  alt="Leslie image"
+  width={44} // Adjust width according to the original size
+  height={44} // Adjust height according to the original size
+/>
                     <div className="absolute flex items-center justify-center w-5 h-5 ml-6 -mt-5 border border-white rounded-full bg-primary-700 dark:border-gray-700">
                       <svg
                         className="w-3 h-3 text-white"
@@ -233,11 +240,13 @@ const Navbar = () => {
                   className="flex px-4 py-3 border-b hover:bg-gray-100 dark:hover:bg-gray-600 dark:border-gray-600"
                 >
                   <div className="flex-shrink-0">
-                    <img
-                      className="rounded-full w-11 h-11"
-                      src="/images/users/robert-brown.png"
-                      alt="Robert image"
-                    />
+                  <Image
+  className="rounded-full w-11 h-11"
+  src="/images/users/robert-brown.png"
+  alt="Robert image"
+  width={44} // Adjust width according to the original size
+  height={44} // Adjust height according to the original size
+/>
                     <div className="absolute flex items-center justify-center w-5 h-5 ml-6 -mt-5 border border-white rounded-full bg-primary-700 dark:border-gray-700">
                       <svg
                         className="w-3 h-3 text-white"
@@ -272,7 +281,7 @@ const Navbar = () => {
               data-dropdown-toggle="dropdown"
             >
               <span className="sr-only">Open user menu</span>
-              <img className="w-8 h-8 rounded-full" src="/images/users/neil-sims.png" alt="user photo" />
+              <Image src="/images/users/neil-sims.png" alt="user photo" width={32} height={32} className="w-8 h-8 rounded-full" />
             </button>
             <div
               className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:divide-gray-600 dark:bg-gray-700"
