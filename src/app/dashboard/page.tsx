@@ -1,11 +1,9 @@
-import Navbar from '@/app/components/Navbar';
-import Sidebar from '@/app/components/Sidebar';
+import Layout from "@/app/components/Layout";
 
 export default function dashboard() {
   return (
     <main>
-      <Navbar />
-      <Sidebar />
+        <Layout>Home</Layout>
     </main>
   );
 }
