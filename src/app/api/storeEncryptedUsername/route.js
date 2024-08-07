@@ -7,7 +7,7 @@ export async function POST(request) {
   try {
     await connectMongoDB(); // Ensure MongoDB is connected
 
-    const usePassword = 'testadmin'; // Your plaintext password
+    const usePassword = 'test'; // Your plaintext password
     const secretKey = 'MLKN87y8VSH&Y*SF'; // Your secret key
     const encryptedPassword = CryptoJS.AES.encrypt(usePassword, secretKey).toString();
 
@@ -17,7 +17,7 @@ export async function POST(request) {
 
     // Find the user by username and update their password
     const result = await User.updateOne(
-      { username: 'admin' }, // Use the username to find the user
+      { username: 'test@test.com' }, // Use the username to find the user
       { $set: { password: encryptedPassword } }
     );
 
