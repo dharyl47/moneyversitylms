@@ -18,8 +18,31 @@ const ImageUpload = () => {
   };
 
   // Handle Save button click
-  const handleSave = () => {
+  const handleSave = async () => {
     setShowWarning(true);
+  };
+
+  // Save the image URL
+  const confirmSave = async () => {
+    try {
+      const response = await fetch('/api/engagingContent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ images: imageUrl }),
+      });
+
+      if (response.ok) {
+        alert('Image URL saved successfully!');
+      } else {
+        console.error('Failed to save image URL');
+      }
+    } catch (error) {
+      console.error('Error saving image URL:', error);
+    } finally {
+      closeWarning();
+    }
   };
 
   // Close the warning popup
@@ -80,10 +103,7 @@ const ImageUpload = () => {
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  closeWarning();
-                  alert('Image saved!');
-                }}
+                onClick={confirmSave}
                 className="px-4 py-2 bg-green-500 text-white font-semibold rounded-md shadow-lg hover:bg-green-600 transition-colors"
               >
                 Confirm

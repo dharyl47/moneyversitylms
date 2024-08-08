@@ -19,8 +19,30 @@ const EmbedVideo = () => {
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setShowWarning(true);
+    };
+
+    const confirmSave = async () => {
+        try {
+            const response = await fetch('/api/engagingContent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ video: videoUrl }),
+            });
+
+            if (response.ok) {
+                alert('Video URL saved successfully!');
+            } else {
+                console.error('Failed to save video URL');
+            }
+        } catch (error) {
+            console.error('Error saving video URL:', error);
+        } finally {
+            closeWarning();
+        }
     };
 
     const closeWarning = () => {
@@ -45,7 +67,7 @@ const EmbedVideo = () => {
                         type="submit"
                         className="px-6 py-2 bg-green-500 text-white font-semibold rounded-md shadow-lg hover:bg-green-600 transition-colors"
                     >
-                        Embed Video
+                        Preview Video
                     </button>
                     <button
                         type="button"
@@ -82,10 +104,7 @@ const EmbedVideo = () => {
                                 Cancel
                             </button>
                             <button
-                                onClick={() => {
-                                    closeWarning();
-                                    alert('Video URL saved!');
-                                }}
+                                onClick={confirmSave}
                                 className="px-4 py-2 bg-green-500 text-white font-semibold rounded-md shadow-lg hover:bg-green-600 transition-colors"
                             >
                                 Confirm
