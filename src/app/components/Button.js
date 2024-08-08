@@ -5,7 +5,7 @@ const Button = ({ onClick, text = 'Click Me', type = 'button', className = '', d
     <button
       type={type}
       onClick={onClick}
-      className={`bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={`bg-[#4CAF50] text-[#FAFBF7] py-2 px-4 rounded-md hover:bg-[#45A049] focus:outline-none focus:ring-2 focus:ring-[#45A049] ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       disabled={disabled}
     >
       {text}

@@ -16,6 +16,12 @@
   }
 }
 
+.backdrop-blur-md {
+  backdrop-filter: blur(10px);
+}
+
+
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(

@@ -33,7 +33,7 @@ export default function LMS() {
 
         if (result.success) {
           setData(result.data);
-          console.log(data)
+          console.log(data);
         } else {
           console.error('Failed to fetch data:', result.error);
         }
@@ -72,27 +72,37 @@ export default function LMS() {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   };
-  
+
   return (
-    <main>
+    <main className="bg-gray-900 min-h-screen text-white">
       <Layout>
-        <div className="p-4">
-          <h1 className="text-xl mb-4">Prompt</h1>
+        <div className="max-w-7xl mx-auto p-6 bg-gray-800 shadow-md rounded-lg">
+          <h1 className="text-2xl font-semibold mb-6">Add New Prompt</h1>
           <TextArea
             value={text}
             onChange={handleChange}
             placeholder="Type something..."
             rows={6}
+           
           />
-        </div>
-        
-        <div className="p-6 flex justify-end">
-          <Button onClick={handleClick} text="Submit" />
+          <div className="mt-4 flex justify-end">
+            <Button
+              onClick={handleClick}
+              text="Submit"
+              className="px-6 py-2 bg-green-500 text-gray-100 font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
         </div>
 
-        <div className="p-6">
-          <h1 className="text-2xl font-bold mb-4">Table</h1>
-          <Table columns={columns} data={data} />
+        <div className="max-w-7xl mx-auto mt-8 p-6 bg-gray-800 shadow-md rounded-lg">
+          <h1 className="text-2xl font-semibold mb-4">Learning Materials</h1>
+          <div className="overflow-x-auto">
+            <Table
+              columns={columns}
+              data={data}
+           
+            />
+          </div>
         </div>
       </Layout>
     </main>

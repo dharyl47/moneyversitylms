@@ -1,24 +1,71 @@
+"use client"
+import { useState } from 'react';
 import Link from 'next/link';
-// import styles from './Sidebar.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faComments, faCalculator, faFileAlt, faBook, faNewspaper, faBars, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = () => {
-  
+  const [isCollapsed, setIsCollapsed] = useState(true); // Default to collapsed
+
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground mt-16">
-    <div className="flex flex-1">
-        <nav className="w-64 bg-card p-4 bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-            <ul className="space-y-2">
-                <li><a href="/dashboard" className="block p-2 rounded hover:bg-secondary text-secondary-foreground">Home</a></li>
-                <li><a href="#" className="block p-2 rounded hover:bg-secondary text-secondary-foreground">Chat Data</a></li>
-                <li><a href="#" className="block p-2 rounded hover:bg-secondary text-secondary-foreground">Calculator</a></li>
-                <li><a href="#" className="block p-2 rounded hover:bg-secondary text-secondary-foreground">Reports</a></li>
-                <li><a href="/lms" className="block p-2 rounded hover:bg-secondary text-secondary-foreground">LMS</a></li>
-                <li><a href="/engagingcontent" className="block p-2 rounded hover:bg-secondary text-secondary-foreground">Engaging Content</a></li>
-            </ul>
+    <div className={`flex h-screen ${isCollapsed ? 'w-16' : 'w-64'} bg-[#202020] text-white mt-16 transition-all duration-300`}>
+      <div className="flex flex-col h-full items-center">
+       
+        <nav className="flex-1 flex flex-col justify-center items-center">
+          <ul className="space-y-2">
+            <li>
+              <Link href="/dashboard" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                <FontAwesomeIcon icon={faHome} className="mr-2" />
+                {!isCollapsed && 'Home'}
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                <FontAwesomeIcon icon={faComments} className="mr-2" />
+                {!isCollapsed && 'Chat Data'}
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                <FontAwesomeIcon icon={faCalculator} className="mr-2" />
+                {!isCollapsed && 'Calculator'}
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                <FontAwesomeIcon icon={faFileAlt} className="mr-2" />
+                {!isCollapsed && 'Reports'}
+              </Link>
+            </li>
+            <li>
+              <Link href="/lms" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                <FontAwesomeIcon icon={faBook} className="mr-2" />
+                {!isCollapsed && 'LMS'}
+              </Link>
+            </li>
+            <li>
+              <Link href="/engagingcontent" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                <FontAwesomeIcon icon={faNewspaper} className="mr-2" />
+                {!isCollapsed && 'Engaging Content'}
+              </Link>
+            </li>
+          </ul>
+          
         </nav>
+        <button
+          className="p-2 text-gray-400 hover:text-white focus:outline-none mb-28"
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={isCollapsed ? faBars : faChevronLeft} />
+        </button>
+        
+      </div>
+      
     </div>
-</div>
   );
 };
 
