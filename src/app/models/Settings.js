@@ -2,8 +2,9 @@ import mongoose from 'mongoose';
 
 const settingsSchema = new mongoose.Schema({
     engagingID: { type: String },
+    engagingPrompt: { type: String},
     engagingVideo: { type: String },
-    engagingImage: { type: String  },
+    engagingImage: mongoose.Schema.Types.Mixed,
 
 });
 

@@ -1,48 +1,134 @@
+"use client";
+import { useState, useEffect } from 'react';
 import Layout from "@/app/components/Layout";
-import ImageUpload from '@/app/components/ImageUpload';
-import EmbedVideo from '@/app/components/EmbedVideo';
+import ContentUpload from '@/app/components/ContentUpload'; // Import the unified component
+import DataTable from '@/app/components/DataTable'; // Import the DataTable component
 
 export default function EngagingContent() {
-    return (
-        <main className="bg-gray-900 min-h-screen text-white">
-            <Layout>
-                <div className="max-w-7xl mx-auto p-6">
-                    <div className="mb-8 flex flex-col md:flex-row gap-6">
-                        <div className="w-full md:w-1/2">
-                            <h2 className="text-2xl font-semibold mb-4">Upload Image</h2>
-                            <ImageUpload />
-                        </div>
-                        <div className="w-full md:w-1/2">
-                            <h2 className="text-2xl font-semibold mb-4">Image Preview</h2>
-                            <div className="bg-gray-800 p-4 rounded-lg shadow-md h-72 flex items-center justify-center">
-                                <img
-                                    src="https://i.ibb.co/MDvDj7Y/your-image.jpg"
-                                    alt="Default Preview"
-                                    className="max-w-full max-h-full object-contain rounded-lg"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mb-8 flex flex-col md:flex-row gap-6">
-                        <div className="w-full md:w-1/2">
-                            <h2 className="text-2xl font-semibold mb-4">Upload Video</h2>
-                            <EmbedVideo />
-                        </div>
-                        <div className="w-full md:w-1/2">
-                            <h2 className="text-2xl font-semibold mb-4">Video Preview</h2>
-                            <div className="bg-gray-800 p-4 rounded-lg shadow-md h-72">
-                                <iframe
-                                    src="https://www.youtube.com/embed/cMoaGEpffds"
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                    className="w-full h-full rounded-lg"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </Layout>
-        </main>
-    );
+  const [settings, setSettings] = useState([]);
+  const [editingItem, setEditingItem] = useState(null);
+
+  useEffect(() => {
+    // Fetch settings data from API
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/settings');
+        const result = await response.json();
+        setSettings(result);
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  const handleEdit = async (id, updatedItem) => {
+    try {
+      const response = await fetch(`/api/settings/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedItem),
+      });
+
+      if (response.ok) {
+        const updatedData = await response.json();
+        setSettings(settings.map(item => (item._id === id ? updatedData : item)));
+      } else {
+        console.error('Failed to update item');
+      }
+    } catch (error) {
+      console.error('Error updating item:', error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/settings/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setSettings(settings.filter(item => item._id !== id));
+      } else {
+        console.error('Failed to delete item');
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+
+  const handleSave = () => {
+    // Optionally, you can refresh the data or perform other actions after save
+    console.log('Content has been saved.');
+    // For example, refresh the settings data
+    fetchSettings();
+  };
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings');
+      const result = await response.json();
+      setSettings(result);
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
+
+  return (
+    <main className="bg-gray-900 min-h-screen text-white">
+      <Layout>
+        <div className="max-w-7xl mx-auto p-6">
+          {/* Unified Upload Component */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">Upload Content</h2>
+            <ContentUpload onSave={handleSave} />
+          </div>
+
+          {/* DataTable Component for managing settings */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">Manage Engaging Content</h2>
+            <div className="bg-gray-800 p-4 rounded-lg shadow-md">
+              <DataTable
+                data={settings}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </div>
+          </div>
+
+          {/* Editing Form (Optional) */}
+          {editingItem && (
+            <div className="bg-gray-800 p-6 rounded-lg shadow-md mt-8">
+              <h3 className="text-xl font-semibold mb-4">Edit Item</h3>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleEdit(editingItem._id, editingItem);
+                }}
+                className="flex flex-col gap-4"
+              >
+                <label>
+                  <span className="text-gray-300">Name</span>
+                  <input
+                    type="text"
+                    value={editingItem.name}
+                    onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
+                    className="block w-full p-2 bg-gray-700 border border-gray-600 rounded-md"
+                  />
+                </label>
+                {/* Add other fields as needed */}
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-blue-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-blue-600 transition-colors"
+                >
+                  Save Changes
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+      </Layout>
+    </main>
+  );
 }

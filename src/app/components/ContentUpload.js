@@ -1,9 +1,10 @@
 "use client";
 import { useState } from 'react';
-import connectMongoDB from '../lib/mongo'; // Adjust path as needed
 
-const ImageUpload = () => {
+const ContentUpload = ({ onSave }) => {
   const [imageFile, setImageFile] = useState(null);
+  const [engagingPrompt, setEngagingPrompt] = useState('');
+  const [engagingVideo, setEngagingVideo] = useState('');
   const [preview, setPreview] = useState(null);
   const [showWarning, setShowWarning] = useState(false);
 
@@ -18,29 +19,37 @@ const ImageUpload = () => {
   };
 
   const confirmSave = async () => {
-    if (!imageFile) {
-      alert('Please select an image file first.');
+    if (!engagingPrompt && !engagingVideo && !imageFile) {
+      alert('Please provide content to save.');
       return;
     }
 
     const formData = new FormData();
-    formData.append('image', imageFile);
+    formData.append('engagingPrompt', engagingPrompt);
+    formData.append('engagingVideo', engagingVideo);
+
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
 
     try {
-      const response = await fetch('/api/engagingContent', {
+      const response = await fetch('/api/settings', {
         method: 'POST',
         body: formData,
       });
 
       if (response.ok) {
-        alert('Image uploaded successfully!');
+        alert('Content saved successfully!');
         setImageFile(null);
         setPreview(null);
+        setEngagingPrompt('');
+        setEngagingVideo('');
+        onSave(); // Trigger any additional save actions
       } else {
-        console.error('Failed to upload image');
+        console.error('Failed to save content');
       }
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error saving content:', error);
     } finally {
       closeWarning();
     }
@@ -52,8 +61,7 @@ const ImageUpload = () => {
 
   return (
     <div className="bg-gray-800 p-6 rounded-lg shadow-md relative">
-      
-      {/* Image Upload Form */}
+      {/* Content Upload Form */}
       <form className="flex flex-col mb-6">
         <label className="block mb-4">
           <span className="text-gray-300 text-sm">Upload Image</span>
@@ -61,6 +69,24 @@ const ImageUpload = () => {
             type="file"
             accept="image/*"
             onChange={handleFileChange}
+            className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </label>
+        <label className="block mb-4">
+          <span className="text-gray-300 text-sm">Engaging Prompt</span>
+          <input
+            type="text"
+            value={engagingPrompt}
+            onChange={(e) => setEngagingPrompt(e.target.value)}
+            className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </label>
+        <label className="block mb-4">
+          <span className="text-gray-300 text-sm">Engaging Video URL</span>
+          <input
+            type="text"
+            value={engagingVideo}
+            onChange={(e) => setEngagingVideo(e.target.value)}
             className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </label>
@@ -92,7 +118,7 @@ const ImageUpload = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm mx-auto">
             <h4 className="text-xl font-semibold text-white mb-4">Warning</h4>
-            <p className="text-gray-300 mb-4">Are you sure you want to save this image?</p>
+            <p className="text-gray-300 mb-4">Are you sure you want to save this content?</p>
             <div className="flex justify-end gap-4">
               <button
                 onClick={closeWarning}
@@ -114,4 +140,4 @@ const ImageUpload = () => {
   );
 };
 
-export default ImageUpload;
+export default ContentUpload;
