@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Readable } from 'stream';
-import Settings from '../../models/Settings';
-import connectMongoDB from '../../lib/mongo';
+import Settings from '../../../models/Settings';
+import connectMongoDB from '../../../lib/mongo';
 
 export const POST = async (req) => {
   const { client, bucket } = await connectMongoDB();
