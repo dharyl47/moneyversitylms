@@ -2,7 +2,7 @@ import Layout from "@/app/components/Layout";
 
 export default function Privacy() {
   return (
-    
+    <main className="bg-gray-900 min-h-screen text-white">
       <Layout>
         <div className="p-6 max-w-6xl mx-auto">
           <h1 className="text-5xl font-bold mb-4 text-center">Privacy Policy</h1>
@@ -21,6 +21,6 @@ export default function Privacy() {
           </p>
         </div>
       </Layout>
-    
+      </main>
   );
 }
