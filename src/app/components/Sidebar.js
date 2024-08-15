@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faComments, faCalculator, faFileAlt, faBook, faNewspaper, faBars, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faComments, faCalculator, faFileAlt, faBook, faNewspaper, faBars, faChevronLeft, faFileCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(true); // Default to collapsed
@@ -51,6 +51,12 @@ const Sidebar = () => {
               <Link href="/engagingcontent" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                 <FontAwesomeIcon icon={faNewspaper} className="mr-2" />
                 {!isCollapsed && 'Engaging Content'}
+              </Link>
+            </li>
+            <li>
+              <Link href="/privacy-policy" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                <FontAwesomeIcon icon={faFileCircleQuestion} className="mr-2" />
+                {!isCollapsed && 'Privacy Policy'}
               </Link>
             </li>
           </ul>
