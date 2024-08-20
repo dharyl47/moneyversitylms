@@ -12,8 +12,8 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`flex h-screen ${isCollapsed ? 'w-16' : 'w-64'} bg-[#202020] text-white mt-16 transition-all duration-300`}>
-      <div className="flex flex-col h-full items-center">
+    <div className={`flex ${isCollapsed ? 'w-16' : 'w-64'} bg-[#202020] text-white mt-16 transition-all duration-300`}>
+      <div className="flex flex-col items-center">
        
         <nav className="flex-1 flex flex-col justify-center items-center">
           <ul className="space-y-2">
