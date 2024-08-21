@@ -24,19 +24,19 @@ export default function SettingsPage() {
     const fetchSettings = async () => {
       try {
         const response = await fetch('/api/chatSettings');
-        const data = await response.json();
+        const result = await response.json();
 
-        if (data.success) {
-          setSavedFriendlyTone(data.settings.friendlyTone);
-          setSavedMainPrompt(data.settings.mainPrompt);
-          setSavedLlamaModel(data.settings.llamaModel);
+        if (result.success) {
+          setSavedFriendlyTone(result.data.friendlyTone);
+          setSavedMainPrompt(result.data.mainPrompt);
+          setSavedLlamaModel(result.data.llamaModel);
 
           // Set state values to display in the text areas/input
-          setFriendlyTone(data.settings.friendlyTone);
-          setMainPrompt(data.settings.mainPrompt);
-          setLlamaModel(data.settings.llamaModel);
+          setFriendlyTone(result.data.friendlyTone);
+          setMainPrompt(result.data.mainPrompt);
+          setLlamaModel(result.data.llamaModel);
         } else {
-          console.error('Failed to fetch settings:', data.error);
+          console.error('Failed to fetch settings:', result.error);
         }
       } catch (error) {
         console.error('Error fetching settings:', error);
