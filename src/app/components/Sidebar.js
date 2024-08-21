@@ -12,13 +12,8 @@ const Sidebar = () => {
   };
 
   return (
-<<<<<<< HEAD
     <div className={`flex ${isCollapsed ? 'w-16' : 'w-64'} bg-[#202020] text-white transition-all duration-300`}>
       <div className="flex flex-col items-center h-full overflow-y-auto">
-=======
-    <div className="flex h-screen">
-      <div className={`flex flex-col justify-center ${isCollapsed ? 'w-16' : 'w-64'} bg-[#202020] text-white transition-all duration-300`}>
->>>>>>> origin/main
         <nav className="flex-1 flex flex-col justify-center items-center">
           <ul className="space-y-2">
             <li>
