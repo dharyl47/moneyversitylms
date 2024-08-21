@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,8 +12,13 @@ const Sidebar = () => {
   };
 
   return (
+<<<<<<< HEAD
     <div className={`flex ${isCollapsed ? 'w-16' : 'w-64'} bg-[#202020] text-white transition-all duration-300`}>
       <div className="flex flex-col items-center h-full overflow-y-auto">
+=======
+    <div className="flex h-screen">
+      <div className={`flex flex-col justify-center ${isCollapsed ? 'w-16' : 'w-64'} bg-[#202020] text-white transition-all duration-300`}>
+>>>>>>> origin/main
         <nav className="flex-1 flex flex-col justify-center items-center">
           <ul className="space-y-2">
             <li>
@@ -23,7 +28,7 @@ const Sidebar = () => {
               </Link>
             </li>
             <li>
-              <Link href="#" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+              <Link href="/chatData" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                 <FontAwesomeIcon icon={faComments} className="mr-2" />
                 {!isCollapsed && 'Chat Data'}
               </Link>
