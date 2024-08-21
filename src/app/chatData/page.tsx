@@ -1,6 +1,6 @@
 "use client";
 import Layout from "@/app/components/Layout";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextArea from '../components/TextArea';
 import Button from '../components/Button';
 
@@ -10,14 +10,41 @@ export default function SettingsPage() {
   const [llamaModel, setLlamaModel] = useState('');
 
   // State for saved values
-  const [savedFriendlyTone, setSavedFriendlyTone] = useState('Default Friendly Tone');
-  const [savedMainPrompt, setSavedMainPrompt] = useState('Default Main Prompt');
-  const [savedLlamaModel, setSavedLlamaModel] = useState('Default Llama Model');
+  const [savedFriendlyTone, setSavedFriendlyTone] = useState('');
+  const [savedMainPrompt, setSavedMainPrompt] = useState('');
+  const [savedLlamaModel, setSavedLlamaModel] = useState('');
 
   // State for showing confirmation modals
   const [showFriendlyToneConfirm, setShowFriendlyToneConfirm] = useState(false);
   const [showMainPromptConfirm, setShowMainPromptConfirm] = useState(false);
   const [showLlamaModelConfirm, setShowLlamaModelConfirm] = useState(false);
+
+  useEffect(() => {
+    // Fetch initial settings from the database
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/chatSettings');
+        const data = await response.json();
+
+        if (data.success) {
+          setSavedFriendlyTone(data.settings.friendlyTone);
+          setSavedMainPrompt(data.settings.mainPrompt);
+          setSavedLlamaModel(data.settings.llamaModel);
+
+          // Set state values to display in the text areas/input
+          setFriendlyTone(data.settings.friendlyTone);
+          setMainPrompt(data.settings.mainPrompt);
+          setLlamaModel(data.settings.llamaModel);
+        } else {
+          console.error('Failed to fetch settings:', data.error);
+        }
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+      }
+    };
+
+    fetchSettings();
+  }, []);
 
   const handleFriendlyToneSave = async () => {
     try {
@@ -202,7 +229,7 @@ export default function SettingsPage() {
             <Button
               onClick={() => setShowLlamaModelConfirm(true)}
               text="Save Llama Model"
-              className="px-6 py-2 bg-purple-500 text-gray-100 font-semibold rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="px-6 py-2 bg-red-500 text-gray-100 font-semibold rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
             />
           </div>
           <p className="mt-4">Current Saved Llama Model: <span className="font-semibold">{savedLlamaModel}</span></p>
