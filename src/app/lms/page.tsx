@@ -76,7 +76,8 @@ export default function LMS() {
   return (
     <main className="bg-gray-900 min-h-screen text-white">
       <Layout>
-        <div className="max-w-7xl mx-auto p-6 bg-gray-800 shadow-md rounded-lg">
+        <div className="h-screen">
+        <div className="max-w-7xl mx-auto p-6 bg-gray-800 shadow-md rounded-lg ">
           <h1 className="text-2xl font-semibold mb-6">Add New Prompt</h1>
           <TextArea
             value={text}
@@ -103,6 +104,7 @@ export default function LMS() {
            
             />
           </div>
+        </div>
         </div>
       </Layout>
     </main>

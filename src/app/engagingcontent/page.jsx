@@ -76,7 +76,7 @@ export default function EngagingContent() {
   };
 
   return (
-    <main className="bg-gray-900 min-h-screen text-white">
+    <main className="bg-gray-900 text-white">
       <Layout>
         <div className="max-w-7xl mx-auto p-6">
           {/* Unified Upload Component */}

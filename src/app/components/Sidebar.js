@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faComments, faCalculator, faFileAlt, faBook, faNewspaper, faBars, faChevronLeft, faFileCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faComments, faCalculator, faFileAlt, faBook, faNewspaper, faBars, faChevronLeft, faFileCircleQuestion, faUserGear } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(true); // Default to collapsed
@@ -12,9 +12,8 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`flex ${isCollapsed ? 'w-16' : 'w-64'} bg-[#202020] text-white mt-16 transition-all duration-300`}>
-      <div className="flex flex-col items-center">
-       
+    <div className={`flex ${isCollapsed ? 'w-16' : 'w-64'} bg-[#202020] text-white transition-all duration-300`}>
+      <div className="flex flex-col items-center h-full overflow-y-auto">
         <nav className="flex-1 flex flex-col justify-center items-center">
           <ul className="space-y-2">
             <li>
@@ -54,13 +53,18 @@ const Sidebar = () => {
               </Link>
             </li>
             <li>
+              <Link href="/user-control" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                <FontAwesomeIcon icon={faUserGear} className="mr-2" />
+                {!isCollapsed && 'User Control'}
+              </Link>
+            </li>
+            <li>
               <Link href="/privacy-policy" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                 <FontAwesomeIcon icon={faFileCircleQuestion} className="mr-2" />
                 {!isCollapsed && 'Privacy Policy'}
               </Link>
             </li>
           </ul>
-          
         </nav>
         <button
           className="p-2 text-gray-400 hover:text-white focus:outline-none mb-28"
@@ -68,9 +72,7 @@ const Sidebar = () => {
         >
           <FontAwesomeIcon icon={isCollapsed ? faBars : faChevronLeft} />
         </button>
-        
       </div>
-      
     </div>
   );
 };

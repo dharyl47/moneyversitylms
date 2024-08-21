@@ -4,7 +4,7 @@ export default function Privacy() {
   return (
     <main className="bg-gray-900 min-h-screen text-white">
       <Layout>
-        <div className="p-6 max-w-6xl mx-auto">
+        <div className="p-6 max-w-6xl mx-auto h-screen">
           <h1 className="text-5xl font-bold mb-4 text-center">Privacy Policy</h1>
           <p className="text-base leading-relaxed">
             The companies in the Old Mutual Group represented on this website (&ldquo;Old Mutual Moneyversity&rdquo;) and its employees respect your privacy and the confidentiality of your personal information. Personal information that you supply to us via this website and via e­mail (&ldquo;your personal information&rdquo;) is only used and processed for the purpose: For which we request the information, as stated in the relevant e-mail; and/or to the extent necessary to enable Old Mutual to meet its obligations to you; and to comply with our legal obligations.
