@@ -18,15 +18,13 @@ const ContentUpload = ({ onSave }) => {
     setShowWarning(true);
   };
 
-  const confirmSave = async () => {
-    if (!engagingPrompt && !engagingVideo && !imageFile) {
-      alert('Please provide content to save.');
-      return;
-    }
-
+   const confirmSave = async () => {
     const formData = new FormData();
     formData.append('engagingPrompt', engagingPrompt);
-    formData.append('engagingVideo', engagingVideo);
+
+    if (engagingVideo) {
+      formData.append('engagingVideo', engagingVideo);
+    }
 
     if (imageFile) {
       formData.append('image', imageFile);
@@ -72,15 +70,16 @@ const ContentUpload = ({ onSave }) => {
             className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </label>
-        <label className="block mb-4">
-          <span className="text-gray-300 text-sm">Engaging Prompt</span>
-          <input
-            type="text"
-            value={engagingPrompt}
-            onChange={(e) => setEngagingPrompt(e.target.value)}
-            className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </label>
+     <label className="block mb-4">
+  <span className="text-gray-300 text-sm">Engaging Prompt</span>
+  <textarea
+    value={engagingPrompt}
+    onChange={(e) => setEngagingPrompt(e.target.value)}
+    className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+    rows="4"  // Adjust the number of rows to make it bigger
+  />
+</label>
+
         <label className="block mb-4">
           <span className="text-gray-300 text-sm">Engaging Video URL</span>
           <input
