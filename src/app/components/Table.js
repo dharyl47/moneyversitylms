@@ -14,6 +14,7 @@ const Table = ({ columns, data }) => {
                 {column.Header}
               </th>
             ))}
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody className="bg-gray-700 divide-y divide-gray-600">
@@ -27,8 +28,23 @@ const Table = ({ columns, data }) => {
                   {row[column.accessor]}
                 </td>
               ))}
+               <td className="px-6 py-4 text-sm font-medium text-gray-100 truncate max-w-xs">
+                <button
+                  onClick={() => onEdit(item.id)}
+                  className="text-blue-500 hover:underline mr-4"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => onDelete(item.id)}
+                  className="text-red-500 hover:underline"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
+
         </tbody>
       </table>
     </div>
