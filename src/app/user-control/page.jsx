@@ -20,7 +20,7 @@ export default function UserControl() {
   return (
     <main className="bg-[#111827] min-h-screen text-white overflow-hidden">
       <Layout>
-        <div className="p-6 h-screen">
+        <div className="container mx-auto p-6 h-screen">
           <h1 className="text-3xl font-bold mb-4">User Control</h1>
           <DataTableV2 data={data} onDelete={handleDelete} />
         </div>

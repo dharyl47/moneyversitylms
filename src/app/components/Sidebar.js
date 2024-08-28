@@ -12,7 +12,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`flex ${isCollapsed ? 'w-16' : 'w-64'} bg-[#202020] text-white transition-all duration-300`}>
+    <div className={`sidebar ${isCollapsed ? 'w-16' : 'w-48'} h-full bg-gray-800 fixed text-white transition-all duration-300`}>
       <div className="flex flex-col items-center h-full overflow-y-auto">
         <nav className="flex-1 flex flex-col justify-center items-center">
           <ul className="space-y-2">
