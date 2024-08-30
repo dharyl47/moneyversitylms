@@ -9,7 +9,7 @@ export default function Dashboard() {
           <p>Welcome to your dashboard!</p>
           {/* Add additional content and styling here */}
         </div>
-      </Layout>
+      </Layout> 
     </main>
   );
 }
