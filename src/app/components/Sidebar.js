@@ -55,7 +55,7 @@ const Sidebar = () => {
             <li>
               <Link href="/user-control" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                 <FontAwesomeIcon icon={faUserGear} className="mr-2" />
-                {!isCollapsed && 'User Control'}
+                {!isCollapsed && 'User Profile'}
               </Link>
             </li>
             <li>
