@@ -22,8 +22,7 @@ const Login = () => {
     const data = await response.json();
 
     if (response.ok) {
-      alert('Login successful');
-      router.push('/dashboard'); // Redirect to /dashboard
+      router.push('/dashboard');
     } else {
       alert(data.message);
     }
