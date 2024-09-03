@@ -5,6 +5,10 @@ const userProfileSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+   deletionRequest: {
+    type: String,
+    required: true,
+  },
   propertyRegime: {
     type: String,
     required: true,

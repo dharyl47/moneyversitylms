@@ -69,7 +69,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
               <td className="py-2 px-4 text-center">{item.dateOfBirth}</td>
               <td className="py-2 px-4 text-center">{item.propertyRegime}</td>
               <td className="py-2 px-4 text-center">{item.maritalStatus}</td>
-              <td className="py-2 px-4 text-center">No</td>
+              <td className="py-2 px-4 text-center">{item.deletionRequest && item.deletionRequest || "No"}</td>
               <td className="py-2 px-4 text-center">
                 <button
                   onClick={() => handleOpenModal(item)}
