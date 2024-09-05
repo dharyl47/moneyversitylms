@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 
-const DataTable = ({ data, onEdit, onDelete }) => {
+const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for data
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -73,8 +73,8 @@ const DataTable = ({ data, onEdit, onDelete }) => {
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const currentItems = Array.isArray(data) ? data.slice(indexOfFirstItem, indexOfLastItem) : [];
+  const totalPages = Array.isArray(data) ? Math.ceil(data.length / itemsPerPage) : 0;
 
   // Handle image URL (example: if images are stored on a server)
   const getImageUrl = (filename) => `/api/uploads/${encodeURIComponent(filename)}`;
@@ -104,19 +104,19 @@ const DataTable = ({ data, onEdit, onDelete }) => {
                 )}
               </td>
              <td className="py-2 px-4 text-left">
-  {item.engagingVideo && (
-    <div className="relative w-32 h-24">
-      <iframe
-        src={item.engagingVideo}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="absolute inset-0 w-full h-full rounded-lg shadow-lg"
-        title="Video Preview"
-      />
-    </div>
-  )}
-</td>
+                {item.engagingVideo && (
+                  <div className="relative w-32 h-24">
+                    <iframe
+                      src={item.engagingVideo}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="absolute inset-0 w-full h-full rounded-lg shadow-lg"
+                      title="Video Preview"
+                    />
+                  </div>
+                )}
+              </td>
               <td className="py-2 px-4 text-left">
                 <button
                   onClick={() => handleEdit(item)}

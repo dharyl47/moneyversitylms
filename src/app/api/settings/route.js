@@ -33,4 +33,12 @@ export async function POST(request) {
     console.error('Failed to save content:', error);
     return NextResponse.json({ error: 'Failed to save content' }, { status: 500 });
   }
+
+  
 }
+export const GET = async () => {
+  const { client, bucket } = await connectMongoDB();
+
+  const posts = await Settings.find({});
+  return NextResponse.json({ success: true, data: posts });
+};

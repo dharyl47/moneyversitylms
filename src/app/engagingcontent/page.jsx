@@ -14,7 +14,12 @@ export default function EngagingContent() {
       try {
         const response = await fetch('/api/settings');
         const result = await response.json();
-        setSettings(result);
+
+        if (result.success) {
+          setSettings(result.data);
+        } else {
+          console.error('Failed to fetch data:', result.error);
+        }
       } catch (error) {
         console.error('Error fetching settings:', error);
       }
@@ -32,8 +37,9 @@ export default function EngagingContent() {
       });
 
       if (response.ok) {
-        const updatedData = await response.json();
-        setSettings(settings.map(item => (item._id === id ? updatedData : item)));
+        // Fetch updated settings data
+        await fetchSettings();
+        setEditingItem(null); // Optionally clear the editing state
       } else {
         console.error('Failed to update item');
       }
@@ -49,7 +55,8 @@ export default function EngagingContent() {
       });
 
       if (response.ok) {
-        setSettings(settings.filter(item => item._id !== id));
+        // Fetch updated settings data
+        await fetchSettings();
       } else {
         console.error('Failed to delete item');
       }
@@ -69,7 +76,7 @@ export default function EngagingContent() {
     try {
       const response = await fetch('/api/settings');
       const result = await response.json();
-      setSettings(result);
+      setSettings(result.data); // Ensure you access the correct property
     } catch (error) {
       console.error('Error fetching settings:', error);
     }
