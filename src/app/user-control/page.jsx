@@ -2,9 +2,11 @@
 import Layout from "@/app/components/Layout";
 import React, { useState, useEffect } from 'react';
 import DataTableV2 from '@/app/components/DataTableV2';
+import LoadingSpinner from '@/app/components/LoadingSpinner'; // Import the spinner
 
 export default function UserControl() {
   const [profile, setProfile] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // New loading state
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -18,7 +20,9 @@ export default function UserControl() {
           setProfile([]);
         }
       } catch (error) {
-        setProfile([]); 
+        setProfile([]);
+      } finally {
+        setIsLoading(false); // Stop loading after fetch
       }
     };
 
@@ -52,7 +56,12 @@ export default function UserControl() {
       <Layout>
         <div className="container mx-auto p-6 h-screen">
           <h1 className="text-3xl font-bold mb-4">User Profiles</h1>
-          {Array.isArray(profile) ? (
+          
+          {isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <LoadingSpinner /> {/* Display loading spinner while data is fetching */}
+            </div>
+          ) : Array.isArray(profile) && profile.length > 0 ? (
             <DataTableV2 data={profile} onDelete={handleDelete} />
           ) : (
             <p>No profiles available.</p>

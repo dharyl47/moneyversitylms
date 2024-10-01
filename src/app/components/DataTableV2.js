@@ -11,7 +11,8 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
   const itemsPerPage = 5;
 
   const handleOpenModal = (item) => {
-    setSelectedItem(item);
+    console.log("itemData", item)
+    setSelectedItem(item); // Set the item data
     setIsModalOpen(true);
   };
 
@@ -94,39 +95,15 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
           <button
             key={i + 1}
             onClick={() => handlePageChange(i + 1)}
-            className={`px-3 py-1 mx-1 ${
-              currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'
-            } rounded`}
+            className={`px-3 py-1 mx-1 ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
           >
             {i + 1}
           </button>
         ))}
       </div>
 
-      <ProfileModal isOpen={isModalOpen} onClose={handleCloseModal}>
-        {selectedItem && (
-          <div className='text-black'>
-            <h2 className="text-lg font-bold">Name: {selectedItem.name}</h2>
-            <p>Email: {selectedItem.emailAddress}</p>
-            <p>Date of Birth: {selectedItem.dateOfBirth}</p>
-            <p>Property Regime: {selectedItem.propertyRegime}</p>
-            <p>Marital Status: {selectedItem.maritalStatus}</p>
-            <p>Dependents</p>
-            <p className='ml-5'>Dependents Children: {selectedItem.dependants?.children ? 'Yes' : 'No'}</p>
-            <p className='ml-5'>Dependents Other: {selectedItem.dependants?.other ? 'Yes' : 'No'}</p>
-            <p className='ml-5'>Dependents Spouse: {selectedItem.dependants?.spouse ? 'Yes' : 'No'}</p>
-            <p className='ml-5'>Dependents Over: {selectedItem.dependentsOver}</p>
-            <p className='ml-5'>Dependents Under: {selectedItem.dependentsUnder}</p>
-            <p>Assets</p>
-            <p className='ml-5'>Bank Account: {selectedItem.asset?.bankAccounts ? 'Yes' : 'No'}</p>
-            <p className='ml-5'>Business Interest: {selectedItem.asset?.businessInterests ? 'Yes' : 'No'}</p>
-            <p className='ml-5'>Investment Accounts: {selectedItem.asset?.investmentAccounts ? 'Yes' : 'No'}</p>
-            <p className='ml-5'>Other Asset: {selectedItem.asset?.otherAsset ? 'Yes' : 'No'}</p>
-            <p className='ml-5'>Other Real Estate: {selectedItem.asset?.otherRealEstate ? 'Yes' : 'No'}</p>
-            <p className='ml-5'>Personal Property: {selectedItem.asset?.personalProperty ? 'Yes' : 'No'}</p>
-          </div>
-        )}
-      </ProfileModal>
+      {/* Pass selectedItem to ProfileModal instead of using children */}
+      <ProfileModal isOpen={isModalOpen} onClose={handleCloseModal} selectedItem={selectedItem} />
 
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
