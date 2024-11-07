@@ -3,33 +3,16 @@ import connectMongoDB from '../../lib/mongo';
 import UserProfile from '../../models/UserProfile';
 
 export async function GET() {
-    try {
-      await connectMongoDB(); // Ensure MongoDB is connected
-  
-      const userProfiles  = await UserProfile.find({});
-      return NextResponse.json({ success: true, data: userProfiles });
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
-    }
-  }
-
-export async function DELETE(request) {
   try {
-    await connectMongoDB(); // Ensure MongoDB is connected
+    await connectMongoDB();
 
-    const { id } = await request.json(); // Get the id from the request body
+    const userProfiles = await UserProfile.find({});
 
-    const deletedUserProfile = await UserProfile.findByIdAndDelete(id);
-
-    if (!deletedUserProfile) {
-      return NextResponse.json({ success: false, error: 'Learning Material not found' }, { status: 404 });
-    }
-
-    return NextResponse.json({ success: true, data: deletedUserProfile });
+    const response = NextResponse.json({ success: true, data: userProfiles });
+    response.headers.set('Cache-Control', 'public, max-age=180, stale-while-revalidate=300'); // Cache for 3 minutes, revalidate for 5 minutes
+    return response;
   } catch (error) {
-    console.error('Error deleting data:', error);
+    console.error('Error fetching data:', error);
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }
-  
