@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthLayout>{children}</AuthLayout> {/* Wrap in AuthLayout */}
+        {children} {/* Wrap in AuthLayout */}
       </body>
     </html>
   );

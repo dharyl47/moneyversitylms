@@ -1,25 +1,22 @@
-// src/middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+// src/app/components/AuthLayout.tsx
+"use client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export function AuthLayout(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Bypass auth for public API routes like `/api/uploads`
-  if (pathname.startsWith('/api/uploads')) {
-    return NextResponse.next();
-  }
-
-  // Check for authentication for other routes
-  const isAuthenticated = localStorage.getItem("isAuthenticated");
-
-  if (!isAuthenticated) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  return NextResponse.next();
+interface AuthLayoutProps {
+  children: React.ReactNode;
 }
 
-export const config = {
-  matcher: ['/((?!api/uploads).*)'], // Only apply middleware to routes except `/api/uploads`
-};
+export default function AuthLayout({ children }: AuthLayoutProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem("isAuthenticated");
+
+    if (!isAuthenticated) {
+      router.push("/"); // Redirect to login page if not authenticated
+    }
+  }, [router]);
+
+  return <>{children}</>;
+}
