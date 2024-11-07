@@ -1,14 +1,33 @@
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faComments, faCalculator, faFileAlt, faBook, faNewspaper, faBars, faChevronLeft, faFileCircleQuestion, faUserGear,  faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import {
+  faHome,
+  faComments,
+  faCalculator,
+  faFileAlt,
+  faBook,
+  faNewspaper,
+  faBars,
+  faChevronLeft,
+  faFileCircleQuestion,
+  faUserGear,
+  faRightFromBracket
+} from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(true); // Default to collapsed
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const router = useRouter();
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated"); // Remove auth status
+    router.push("/"); // Redirect to login page
   };
 
   return (
@@ -22,24 +41,6 @@ const Sidebar = () => {
                 {!isCollapsed && 'Home'}
               </Link>
             </li>
-            {/* <li>
-              <Link href="/chatData" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
-                <FontAwesomeIcon icon={faComments} className="mr-2" />
-                {!isCollapsed && 'Chat Data'}
-              </Link>
-            </li>
-            <li>
-              <Link href="#" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
-                <FontAwesomeIcon icon={faCalculator} className="mr-2" />
-                {!isCollapsed && 'Calculator'}
-              </Link>
-            </li> */}
-            {/* <li>
-              <Link href="#" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
-                <FontAwesomeIcon icon={faFileAlt} className="mr-2" />
-                {!isCollapsed && 'Reports'}
-              </Link>
-            </li> */}
             <li>
               <Link href="/lms" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                 <FontAwesomeIcon icon={faBook} className="mr-2" />
@@ -65,10 +66,13 @@ const Sidebar = () => {
               </Link>
             </li>
             <li>
-              <Link href="/" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+              <button
+                onClick={handleLogout}
+                className={`flex items-center p-2 rounded hover:bg-gray-700 w-full ${isCollapsed ? 'justify-center' : ''}`}
+              >
                 <FontAwesomeIcon icon={faRightFromBracket} className="mr-2" />
                 {!isCollapsed && 'Logout'}
-              </Link>
+              </button>
             </li>
           </ul>
         </nav>
