@@ -22,7 +22,7 @@ const Sidebar = () => {
                 {!isCollapsed && 'Home'}
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="/chatData" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                 <FontAwesomeIcon icon={faComments} className="mr-2" />
                 {!isCollapsed && 'Chat Data'}
@@ -33,13 +33,13 @@ const Sidebar = () => {
                 <FontAwesomeIcon icon={faCalculator} className="mr-2" />
                 {!isCollapsed && 'Calculator'}
               </Link>
-            </li>
-            <li>
+            </li> */}
+            {/* <li>
               <Link href="#" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                 <FontAwesomeIcon icon={faFileAlt} className="mr-2" />
                 {!isCollapsed && 'Reports'}
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link href="/lms" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                 <FontAwesomeIcon icon={faBook} className="mr-2" />
