@@ -1,12 +1,13 @@
+// src/app/components/Login.tsx
 "use client";
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,7 +23,8 @@ const Login = () => {
     const data = await response.json();
 
     if (response.ok) {
-      router.push('/dashboard');
+      localStorage.setItem("isAuthenticated", "true"); // Set auth status
+      router.push('/dashboard'); // Redirect to dashboard
     } else {
       alert(data.message);
     }
