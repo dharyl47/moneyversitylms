@@ -1,6 +1,8 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import useAuth from "@/app/lib/useAuth"; // Import the custom hook
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,6 +16,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useAuth(); // Apply the authentication check here
+
   return (
     <html lang="en">
       <body className={inter.className}>{children}</body>
