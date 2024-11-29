@@ -3,6 +3,7 @@ import Layout from "@/app/components/Layout";
 import React, { useState, useEffect } from 'react';
 import DataTableV2 from '@/app/components/DataTableV2';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
+import Papa from "papaparse";
 
 export default function UserControl() {
   const [profile, setProfile] = useState([]);
@@ -10,6 +11,36 @@ export default function UserControl() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedStage, setSelectedStage] = useState("Show All");
   const [searchText, setSearchText] = useState("");
+
+  const exportToCSV = () => {
+  if (filteredProfiles.length === 0) {
+    alert("No profiles to export.");
+    return;
+  }
+
+  const csvData = filteredProfiles.map((profile) => ({
+    Name: profile.name,
+    DateCreated: profile.dateCreated,
+    PropertyRegime: profile.propertyRegime,
+    Email: profile.emailAddress,
+    "Completed Stages": Object.keys(profile).filter(
+      (key) => hasMeaningfulData(profile[key])
+    ).join(", "),
+  }));
+
+  const csv = Papa.unparse(csvData);
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", "user_profiles.csv");
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -136,63 +167,58 @@ export default function UserControl() {
   };
 
   return (
-    <main className="bg-[#111827] min-h-screen text-white overflow-hidden">
-      <Layout>
-        <div className="container mx-auto pl-16 h-screen">
-          <h1 className="text-3xl font-bold mb-4">User Profiles</h1>
-
-          {/* Search input and dropdown for filtering */}
-          <div className="mb-4 flex space-x-4">
-            <div>
-              <label htmlFor="nameSearch" className="mr-2">Search by Name:</label>
-              <input
-                id="nameSearch"
-                type="text"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                placeholder="Enter name..."
-                className="px-3 py-2 rounded-md bg-gray-700 text-gray-200"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="stageFilter" className="mr-2">Filter by Conversation Stage:</label>
-              <select
-                id="stageFilter"
-                value={selectedStage}
-                onChange={(e) => setSelectedStage(e.target.value)}
-                className="px-3 py-2 rounded-md bg-gray-700 text-gray-200"
-              >
-                <option value="Show All">Show All</option>
-                <option value="Completed Flow">Completed Flow</option>
-                <option value="Assets">Assets</option>
-                <option value="Liabilities">Liabilities</option>
-                <option value="Policies">Policies</option>
-                <option value="Estate Duty">Estate Duty</option>
-                <option value="Executor Fees">Executor Fees</option>
-                <option value="Liquidity Position">Liquidity Position</option>
-                <option value="Maintenance Claims">Maintenance Claims</option>
-                <option value="Maintenance Surviving Spouse">Maintenance Surviving Spouse</option>
-                <option value="Provisions Dependents">Provisions Dependents</option>
-                <option value="Trusts">Trusts</option>
-                <option value="Investment Trusts">Investment Trusts</option>
-              </select>
-            </div>
-          </div>
-          
-          {isLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <LoadingSpinner />
-            </div>
-          ) : Array.isArray(filteredProfiles) && filteredProfiles.length > 0 ? (
-            <div className="overflow-x-auto">
-              <DataTableV2 data={filteredProfiles} onDelete={handleDelete} />
-            </div>
-          ) : (
-            <p>No profiles available for the selected criteria.</p>
-          )}
+    <main className="bg-[#111827] min-h-screen text-white ">
+  <Layout>
+    {/* Main Container */}
+    <div className="flex flex-col h-screen pl-16">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 bg-[#111827] px-4 py-2 flex justify-between items-center">
+        <h1 className="text-3xl font-bold">User Profiles</h1>
+        <div className="flex space-x-4">
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="Enter name..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="px-3 py-2 rounded-md bg-gray-700 text-gray-200"
+          />
+          {/* Filter Dropdown */}
+          <select
+            value={selectedStage}
+            onChange={(e) => setSelectedStage(e.target.value)}
+            className="px-3 py-2 rounded-md bg-gray-700 text-gray-200"
+          >
+            <option value="Show All">Show All</option>
+            <option value="Completed Flow">Completed Flow</option>
+            {/* Other options */}
+          </select>
+          {/* Export to CSV Button */}
+          <button
+            onClick={exportToCSV}
+            className="px-3 py-2 bg-green-600 rounded-md text-white hover:bg-green-500"
+          >
+            Export to CSV
+          </button>
         </div>
-      </Layout>
-    </main>
+      </div>
+
+      {/* Scrollable Table */}
+      <div className="flex-1 overflow-y-auto">
+        {isLoading ? (
+          <div className="flex justify-center items-center h-full">
+            <LoadingSpinner />
+          </div>
+        ) : filteredProfiles.length > 0 ? (
+          <DataTableV2 data={filteredProfiles} onDelete={handleDelete} pageSize={100} />
+        ) : (
+          <p>No profiles available for the selected criteria.</p>
+        )}
+      </div>
+    </div>
+  </Layout>
+</main>
+
+
   );
 }

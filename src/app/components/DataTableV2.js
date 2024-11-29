@@ -1,22 +1,8 @@
 import React, { useState } from 'react';
 import ProfileModal from '@/app/components/ProfileModal';
 import ConfirmationModal from '@/app/components/ConfirmationModal';
-
-const assistanceMessages = {
-  disabilityInsuranceAssist: "Policies: Disability insurance provides financial security if you’re unable to work due to illness or injury, ensuring income to cover living expenses and maintain your standard of living.",
-  keyPersonInsuranceAssist: "Policies: Key person insurance supports your business if a critical employee passes away or becomes disabled, covering the cost of finding a replacement and mitigating financial losses.",
-  nominatedFuneralCoverAssist: "Policies: Nominating a beneficiary on your funeral cover policy ensures the benefit is paid directly to the intended recipient without delays, providing peace of mind to loved ones.",
-  estateBequeathTrustStructureAssist: "Estate Duty: There are strategies to address third-party liability in your estate plan, including specific provisions in your will and setting up trusts.",
-  shortfallHeirAssist: "Liquidity Position: Assistance is needed in assessing the financial impact on each heir, balancing fairness in inheritance responsibilities.",
-  shortfallHeirContributionAssist: "Liquidity Position: Assistance is required in evaluating each heir's financial situation and willingness to contribute towards estate expenses.",
-  shortfallCreditorsAssist: "Liquidity Position: Assistance needed to explore options for covering estate expenses without liquidating assets prematurely.",
-  alternativeFinancingAssist: "Liquidity Position: Alternative financing options are available to manage estate planning needs effectively.",
-  borrowingFundsForShortfallAssist: "Liquidity Position: Borrowing funds for estate shortfall requires an understanding of potential risks and costs.",
-  alternativeFinancingOptionsAssist: "Liquidity Position: Various alternative financing options are available to ensure estate planning flexibility.",
-  maintenanceObligationAssist: "Maintenance Claims: Assistance is needed to explore maintenance obligations more comprehensively for estate planning.",
-};
-
-
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const DataTableV2 = ({ data, onEdit, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,6 +11,297 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+
+
+
+
+const questions = {
+  // Objectives of Estate Planning
+  estatePlanFlexibility: "How important is it for your estate plan to be flexible and adapt to changes in your environment?",
+  businessProtectionImportance: "How important is it for your estate plan to protect your business interests?",
+  financialSafeguardStrategies: "What strategies would you like in place for safeguarding financial resources for retirement?",
+  insolvencyProtectionConcern: "Are you concerned about protecting assets from potential insolvency issues?",
+  dependentsMaintenanceImportance: "How important is it to have provisions in place for your dependants' maintenance?",
+  taxMinimizationPriority: "How high a priority is it for you to minimize taxes?",
+  estatePlanReviewConfidence: "How confident are you in reviewing and updating your estate plan regularly?",
+
+  // Assets
+  realEstateProperties: "Do you own any real estate properties, such as houses, apartments, or land?",
+  farmProperties: "Do you own a farm? Please provide details about the farm.",
+  vehicleProperties: "How many vehicles do you own, and what are their makes, models, and estimated values?",
+  valuablePossessions: "Do you own any valuable possessions such as artwork, jewelry, or collectibles?",
+  householdEffects: "What is the estimated value of your household effects (e.g., furniture, appliances)?",
+  intellectualPropertyRights: "Do you own any intellectual property rights, such as patents, trademarks, or copyrights?",
+  assetsInTrust: "Are there assets held in trust? If yes, please specify the nature of the trust and assets.",
+  investmentPortfolio: "Please provide details about your investment portfolio.",
+  bankBalances: "Do you have cash savings or deposits in bank accounts?",
+  businessAssets: "Do you have any business interests or ownership stakes in companies?",
+  otherAssets: "Are there any other significant assets you would like to include in your estate plan?",
+
+  // Liabilities
+  outstandingMortgageLoans: "Do you have any outstanding mortgage loans? Please specify details.",
+  personalLoans: "Are there any personal loans you owe?",
+  creditCardDebt: "Do you have any credit card debt? Please specify details.",
+  vehicleLoans: "Are there loans for vehicles you own?",
+  otherOutstandingDebts: "Are there any other outstanding debts?",
+  strategyLiabilities: "Do you have a strategy for managing and reducing your liabilities over time?",
+  foreseeableFuture: "Are there any expected changes in your liabilities?",
+
+  // Policies
+  lifeInsurancePolicies: "Do you currently have any life insurance policies in place?",
+  healthInsurancePolicies: "Are you covered by health insurance policies?",
+  propertyInsurance: "Are your properties adequately insured?",
+  vehicleInsurance: "Are your vehicles insured?",
+  disabilityInsurance: "Do you currently have disability insurance?",
+  disabilityInsuranceType: "Which type of disability insurance do you have or consider?",
+  disabilityInsuranceAwareness: "Are you aware of any limitations on your disability insurance coverage?",
+  contingentLiabilityInsurance: "Do you have contingent liability insurance for unexpected liabilities?",
+  buySellInsurance: "Have you considered buy and sell insurance to protect your business partners and family?",
+  keyPersonInsurance: "Do you have key person insurance in place for business continuity?",
+  otherInsurance: "Do you have any other types of insurance not mentioned?",
+  funeralCoverInfo: "Have you considered obtaining funeral cover for liquidity after passing?",
+
+  // Estate Duty
+  estateBequeathToSpouse: "Do you bequeath your estate to your spouse?",
+  bequeathToSpouseCondition: "Are there any conditions or limitations on bequests to your spouse?",
+  bequeathToSpousePercentage: "Specify the percentage or assets you'd like to leave to your spouse.",
+  estateDistributed: "How would you like your estate to be distributed among beneficiaries?",
+  estateBequeathResidue: "What happens to the residue of your estate?",
+  estateBequeathToTrust: "Do you bequeath any portion of your estate to a trust?",
+  estateBequeathProperty: "Is there a specific property bequeathed to a trust?",
+  estateBequeathWhom: "To whom are farm implements, tools, or vehicles bequeathed?",
+  estateBequeathDifference: "How should asset differences be managed upon massing?",
+
+  // Executor Fees
+  noExecutorFeesPolicy: "Are executor's fees payable on proceeds from policies with beneficiary nomination?",
+
+  // Liquidity Position
+  liquiditySources: "Are you aware of any sources of liquidity in your estate?",
+  shortfallHeirContribution: "If there's a shortfall, are you open to heirs contributing cash?",
+  borrowingFundsForShortfall: "Have you considered borrowing funds for shortfalls?",
+  lifeAssuranceCashShortfall: "Have you considered life assurance for addressing cash shortfalls?",
+
+  // Maintenance Claims
+  maintenanceClaimsAwareness: "Are you aware of any existing maintenance obligations?",
+  maintenanceCostOfEducation: "Have you considered the cost of education in your maintenance planning?",
+  maintenanceInsurancePolicy: "Have you considered life insurance for maintenance obligations?",
+
+  // Maintenance of Surviving Spouse
+  provisionsForSurvivingSpouse: "Are you considering provisions for maintenance of the surviving spouse?",
+  reviewExistingProvisionsInfo: "Would you like to review existing provisions for alignment with goals?",
+  incomeMaintenanceTax: "What monthly income would be required for spouse maintenance?",
+
+  // Provisions for Dependents
+  dependentsIncomeNeeds: "Do your dependents require income for maintenance?",
+  shortfallHouseholdIncome: "Have you assessed capital for generating income for dependents?",
+  additionalLifeInsuranceDependents: "Have you considered additional life insurance for income needs?",
+
+  // Trusts
+  familiarWithTrust: "Are you familiar with trusts?",
+  consideredSettingUpTrust: "Have you considered setting up a trust?",
+  reasonTrustRelevant: "Are any asset protection reasons relevant to your estate planning?",
+  trustAdvantages: "Have you considered the advantages of transferring assets to a trust?",
+
+  // Investment Trusts
+  settingUpInvestmentTrust: "Are you interested in setting up an investment trust?",
+  investmentTrustFlexibility: "Does investment trust flexibility align with your goals?",
+};
+
+
+const handleDownloadPDF = (item) => {
+  const doc = new jsPDF({
+    unit: "pt",
+    format: "a4",
+    lineHeight: 1.5,
+  });
+
+  const marginLeft = 40;
+  const pageWidth = doc.internal.pageSize.getWidth() - marginLeft * 2;
+  let yPosition = 50;
+  doc.setFontSize(12);
+  doc.text(`Profile of ${item.name}`, marginLeft, yPosition);
+  yPosition += 30;
+
+  // Helper function to format nested data, converting booleans for "uploadDocumentAtEndOfChat"
+  const formatNestedObject = (data) => {
+    if (typeof data === 'object' && data !== null) {
+      return Object.entries(data)
+        .map(([key, value]) => {
+          if (key === 'uploadDocumentAtEndOfChat') {
+            // Convert boolean to "Yes" or "No"
+            return `Uploaded Document: ${value === true ? 'Yes' : 'No'}`;
+          }
+          return typeof value === 'object' ? formatNestedObject(value) : value;
+        })
+        .filter(value => value) // Remove empty values
+        .join(', ');
+    }
+    return data === true ? 'Yes' : data === false ? 'No' : data || 'N/A';
+  };
+
+  // Function to add questions and answers to the PDF with proper formatting
+  const addSectionToPDF = (title, dataKey, questionKeys) => {
+    doc.setFontSize(14);
+    doc.text(title, marginLeft, yPosition);
+    yPosition += 20;
+    doc.setFontSize(12);
+
+    questionKeys.forEach((key) => {
+      const question = questions[key];
+      const answer = formatNestedObject(item[dataKey]?.[key]);
+
+      const questionText = `• ${question}`;
+      const answerText = answer ? `Answer: ${answer}` : 'Answer: N/A';
+
+      // Split text into lines if it exceeds page width
+      const questionLines = doc.splitTextToSize(questionText, pageWidth);
+      const answerLines = doc.splitTextToSize(answerText, pageWidth - 20);
+
+      // Add page break if content overflows
+      if (yPosition + (questionLines.length + answerLines.length) * 12 > doc.internal.pageSize.getHeight() - 40) {
+        doc.addPage();
+        yPosition = 50;
+      }
+
+      // Render question and answer
+      doc.text(questionLines, marginLeft + 10, yPosition);
+      yPosition += questionLines.length * 12;
+      doc.text(answerLines, marginLeft + 20, yPosition);
+      yPosition += answerLines.length * 12 + 10;
+    });
+
+    yPosition += 20; // Space after each section
+  };
+
+  // General profile data at the top
+  const fields = [
+    { label: 'Email', value: item.emailAddress },
+    { label: 'Date of Birth', value: item.dateOfBirth },
+    { label: 'Property Regime', value: item.propertyRegime },
+    { label: 'Marital Status', value: item.maritalStatus },
+    { label: 'Deletion Request', value: item.deletionRequest || 'No' },
+  ];
+
+  fields.forEach((field) => {
+    const text = `${field.label}: ${field.value || 'N/A'}`;
+    const lines = doc.splitTextToSize(text, pageWidth);
+    doc.text(lines, marginLeft, yPosition);
+    yPosition += lines.length * 12;
+  });
+
+  yPosition += 20; // Space after general profile info
+
+  // Sections
+  addSectionToPDF("Objectives of Estate Planning", "ObjectivesOfEstatePlanning", [
+    "estatePlanFlexibility",
+    "businessProtectionImportance",
+    "financialSafeguardStrategies",
+    "insolvencyProtectionConcern",
+    "dependentsMaintenanceImportance",
+    "taxMinimizationPriority",
+    "estatePlanReviewConfidence",
+  ]);
+
+  addSectionToPDF("Assets", "Assets", [
+    "realEstateProperties",
+    "farmProperties",
+    "vehicleProperties",
+    "valuablePossessions",
+    "householdEffects",
+    "intellectualPropertyRights",
+    "assetsInTrust",
+    "investmentPortfolio",
+    "bankBalances",
+    "businessAssets",
+    "otherAssets",
+  ]);
+
+  addSectionToPDF("Liabilities", "Liabilities", [
+    "outstandingMortgageLoans",
+    "personalLoans",
+    "creditCardDebt",
+    "vehicleLoans",
+    "otherOutstandingDebts",
+    "strategyLiabilities",
+    "foreseeableFuture",
+  ]);
+
+  addSectionToPDF("Policies", "Policies", [
+    "lifeInsurancePolicies",
+    "healthInsurancePolicies",
+    "propertyInsurance",
+    "vehicleInsurance",
+    "disabilityInsurance",
+    "disabilityInsuranceType",
+    "disabilityInsuranceAwareness",
+    "contingentLiabilityInsurance",
+    "buySellInsurance",
+    "keyPersonInsurance",
+    "otherInsurance",
+    "funeralCoverInfo",
+  ]);
+
+  addSectionToPDF("Estate Duty", "EstateDuty", [
+    "estateBequeathToSpouse",
+    "bequeathToSpouseCondition",
+    "bequeathToSpousePercentage",
+    "estateDistributed",
+    "estateBequeathResidue",
+    "estateBequeathToTrust",
+    "estateBequeathProperty",
+    "estateBequeathWhom",
+    "estateBequeathDifference",
+  ]);
+
+  addSectionToPDF("Executor Fees", "ExecutorFees", ["noExecutorFeesPolicy"]);
+
+  addSectionToPDF("Liquidity Position", "LiquidityPosition", [
+    "liquiditySources",
+    "shortfallHeirContribution",
+    "borrowingFundsForShortfall",
+    "lifeAssuranceCashShortfall",
+  ]);
+
+  addSectionToPDF("Maintenance Claims", "MaintenanceClaims", [
+    "maintenanceClaimsAwareness",
+    "maintenanceCostOfEducation",
+    "maintenanceInsurancePolicy",
+  ]);
+
+  addSectionToPDF("Maintenance of Surviving Spouse", "MaintenanceSurvivingSpouse", [
+    "provisionsForSurvivingSpouse",
+    "reviewExistingProvisionsInfo",
+    "incomeMaintenanceTax",
+  ]);
+
+  addSectionToPDF("Provisions for Dependents", "ProvisionsDependents", [
+    "dependentsIncomeNeeds",
+    "shortfallHouseholdIncome",
+    "additionalLifeInsuranceDependents",
+  ]);
+
+  addSectionToPDF("Trusts", "Trusts", [
+    "familiarWithTrust",
+    "consideredSettingUpTrust",
+    "reasonTrustRelevant",
+    "trustAdvantages",
+  ]);
+
+  addSectionToPDF("Investment Trusts", "InvestmentTrusts", [
+    "settingUpInvestmentTrust",
+    "investmentTrustFlexibility",
+  ]);
+
+  // Save the PDF
+  doc.save(`Profile_${item.name}.pdf`);
+};
+
+
+
+
+
+
 
   const handleOpenModal = (item) => {
     setSelectedItem(item);
@@ -54,6 +331,8 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
     setItemToDelete(null);
   };
 
+  
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
@@ -81,41 +360,6 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
     }
   };
 
- // Render assistance icon with tooltip
-const renderAssistanceIcon = (item) => {
-  const assistanceFields = [];
-
-  const checkAssistanceFields = (obj, parentKey = '') => {
-    if (!obj || typeof obj !== 'object') return;
-
-    Object.keys(obj).forEach((key) => {
-      const fullKey = parentKey ? `${parentKey}.${key}` : key;
-      if (key.endsWith('Assist') && (obj[key]?.answer === 'Yes' || obj[key]?.answer === true)) {
-        assistanceFields.push({
-          key: fullKey,
-          message: assistanceMessages[key] || "Assistance is required.",
-        });
-      }
-      if (typeof obj[key] === 'object') {
-        checkAssistanceFields(obj[key], fullKey);
-      }
-    });
-  };
-
-  checkAssistanceFields(item);
-
-  return assistanceFields.map((field) => (
-    <div key={field.key} className="inline-block relative mx-1">
-      <span className="text-red-500 cursor-pointer hover:text-red-700" title={field.message}>
-        ⚠️
-      </span>
-      <div className="absolute bottom-full mb-2 text-sm bg-gray-800 text-white rounded-lg p-4 shadow-lg opacity-0 hover:opacity-100 transition-opacity duration-300 z-10 max-w-xl w-[320px] whitespace-normal">
-        {field.message}
-      </div>
-    </div>
-  ));
-};
-
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-gray-700 text-gray-200">
@@ -133,7 +377,7 @@ const renderAssistanceIcon = (item) => {
         <tbody>
           {currentItems.map((item) => (
             <tr key={item._id}>
-              <td className="py-2 px-4 text-center">{item.name} {renderAssistanceIcon(item)}</td>
+              <td className="py-2 px-4 text-center">{item.name}</td>
               <td className="py-2 px-4 text-center">{item.emailAddress}</td>
               <td className="py-2 px-4 text-center">{item.dateOfBirth}</td>
               <td className="py-2 px-4 text-center">{item.propertyRegime}</td>
@@ -148,9 +392,15 @@ const renderAssistanceIcon = (item) => {
                 </button>
                 <button
                   onClick={() => handleDeleteClick(item)}
-                  className="text-red-500 hover:underline"
+                  className="text-red-500 hover:underline mr-2"
                 >
                   Delete
+                </button>
+                <button
+                  onClick={() => handleDownloadPDF(item)}
+                  className="text-green-500 hover:underline"
+                >
+                  Download PDF
                 </button>
               </td>
             </tr>

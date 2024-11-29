@@ -67,31 +67,78 @@ export default function Dashboard() {
     });
   };
 
-  const calculateStatistics = (profiles: Profile[]) => {
-    const completedFlowCount = profiles.filter((profile) =>
-      hasMeaningfulData(profile.Assets) &&
-      hasMeaningfulData(profile.Liabilities) &&
-      hasMeaningfulData(profile.Policies) &&
-      hasMeaningfulData(profile.EstateDuty) &&
-      hasMeaningfulData(profile.ExecutorFees) &&
-      hasMeaningfulData(profile.LiquidityPosition) &&
-      hasMeaningfulData(profile.MaintenanceClaims) &&
-      hasMeaningfulData(profile.MaintenanceSurvivingSpouse) &&
-      hasMeaningfulData(profile.ProvisionsDependents) &&
-      hasMeaningfulData(profile.Trusts) &&
-      hasMeaningfulData(profile.InvestmentTrusts)
-    ).length;
+const calculateStatistics = (profiles: Profile[]) => {
+  const completedFlowCount = profiles.filter((profile) =>
+    hasMeaningfulData(profile.Assets) &&
+    hasMeaningfulData(profile.Liabilities) &&
+    hasMeaningfulData(profile.Policies) &&
+    hasMeaningfulData(profile.EstateDuty) &&
+    hasMeaningfulData(profile.ExecutorFees) &&
+    hasMeaningfulData(profile.LiquidityPosition) &&
+    hasMeaningfulData(profile.MaintenanceClaims) &&
+    hasMeaningfulData(profile.MaintenanceSurvivingSpouse) &&
+    hasMeaningfulData(profile.ProvisionsDependents) &&
+    hasMeaningfulData(profile.Trusts) &&
+    hasMeaningfulData(profile.InvestmentTrusts)
+  ).length;
 
     const stages = [
-      "Assets", "Liabilities", "Policies", "Estate Duty",
-      "Executor Fees", "Liquidity Position", "Maintenance Claims",
-      "Maintenance Surviving Spouse", "Provisions Dependents", "Trusts", "Investment Trusts"
-    ];
-    
-    const usersByStage = stages.map((stage) => ({
-      stage,
-      count: profiles.filter((profile) => hasMeaningfulData((profile as any)[stage])).length
-    }));
+    "Personal Information",
+    "Step-by-step Guidance",
+    "Objectives of Estate Planning",
+    "Assets",
+    "Liabilities",
+    "Policies",
+    "Investment Portfolios",
+    "Estate Duty",
+    "Current Will",
+    "Maintenance Claims",
+    "Maintenance of Surviving Spouse",
+    "Provisions for Dependents",
+    "Trusts",
+    "The Investment Trust",
+  ];
+
+  const mapSchemaToStage: Record<string, string[]> = {
+  "Personal Information": ["name", "dateOfBirth", "emailAddress"],
+  "Step-by-step Guidance": ["ownBusiness", "ownFarm", "ownInvestmentPortfolio"],
+  "Objectives of Estate Planning": ["ObjectivesOfEstatePlanning"],
+  "Assets": ["Assets"],
+  "Liabilities": ["Liabilities"],
+  "Policies": ["Policies"],
+  "Investment Portfolios": ["Assets.investmentPortfolio"],
+  "Estate Duty": ["EstateDuty"],
+  "Current Will": ["will", "willStatus"],
+  "Maintenance Claims": ["MaintenanceClaims"],
+  "Maintenance of Surviving Spouse": ["MaintenanceSurvivingSpouse"],
+  "Provisions for Dependents": ["ProvisionsDependents"],
+  "Trusts": ["Trusts"],
+  "The Investment Trust": ["InvestmentTrusts"],
+};
+
+
+ const usersByStage = stages.map((stage) => {
+  const schemaKeys = mapSchemaToStage[stage];
+
+  return {
+    stage,
+    count: profiles.filter((profile) => {
+      return schemaKeys.some((key: string) => {
+        const keys = key.split(".");
+        let value: any = profile;
+
+        // Navigate nested objects
+        for (const subKey of keys) {
+          value = value?.[subKey as keyof typeof value];
+          if (!value) break;
+        }
+
+        return hasMeaningfulData(value);
+      });
+    }).length,
+  };
+});
+
 
     const propertyRegimeCount = profiles.reduce((acc: { [key: string]: number }, profile) => {
       acc[profile.propertyRegime] = (acc[profile.propertyRegime] || 0) + 1;
