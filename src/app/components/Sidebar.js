@@ -1,29 +1,20 @@
 "use client";
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
-  faComments,
-  faCalculator,
-  faFileAlt,
   faBook,
   faNewspaper,
+  faUserGear,
+  faFileCircleQuestion,
+  faRightFromBracket,
   faBars,
   faChevronLeft,
-  faFileCircleQuestion,
-  faUserGear,
-  faRightFromBracket
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
-const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+const Sidebar = ({ isCollapsed, toggleSidebar }) => {
   const router = useRouter();
-
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated"); // Remove auth status
@@ -31,47 +22,78 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`sidebar ${isCollapsed ? 'w-16' : 'w-48'} h-full bg-gray-800 fixed text-white transition-all duration-300`}>
+    <div
+      className={`h-full bg-gray-800 fixed text-white transition-all duration-300 ${
+        isCollapsed ? "w-16" : "w-48"
+      }`}
+    >
       <div className="flex flex-col items-center h-full overflow-y-auto">
-        <nav className="flex-1 flex flex-col justify-center items-center">
-          <ul className="space-y-2">
+        <nav className="flex-1 flex flex-col mt-16"> {/* Add spacing for Navbar */}
+          <ul className="space-y-2 p-2">
             <li>
-              <Link href="/dashboard" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+              <Link
+                href="/dashboard"
+                className={`flex items-center p-2 rounded hover:bg-gray-700 ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+              >
                 <FontAwesomeIcon icon={faHome} className="mr-2" />
-                {!isCollapsed && 'Home'}
+                {!isCollapsed && "Home"}
               </Link>
             </li>
             <li>
-              <Link href="/lms" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+              <Link
+                href="/lms"
+                className={`flex items-center p-2 rounded hover:bg-gray-700 ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+              >
                 <FontAwesomeIcon icon={faBook} className="mr-2" />
-                {!isCollapsed && 'LMS'}
+                {!isCollapsed && "LMS"}
               </Link>
             </li>
             <li>
-              <Link href="/engagingcontent" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+              <Link
+                href="/engagingcontent"
+                className={`flex items-center p-2 rounded hover:bg-gray-700 ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+              >
                 <FontAwesomeIcon icon={faNewspaper} className="mr-2" />
-                {!isCollapsed && 'Engaging Content'}
+                {!isCollapsed && "Engaging Content"}
               </Link>
             </li>
             <li>
-              <Link href="/user-control" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+              <Link
+                href="/user-control"
+                className={`flex items-center p-2 rounded hover:bg-gray-700 ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+              >
                 <FontAwesomeIcon icon={faUserGear} className="mr-2" />
-                {!isCollapsed && 'User Profile'}
+                {!isCollapsed && "User Profile"}
               </Link>
             </li>
             <li>
-              <Link href="/privacy-policy" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+              <Link
+                href="/privacy-policy"
+                className={`flex items-center p-2 rounded hover:bg-gray-700 ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+              >
                 <FontAwesomeIcon icon={faFileCircleQuestion} className="mr-2" />
-                {!isCollapsed && 'Privacy Policy'}
+                {!isCollapsed && "Privacy Policy"}
               </Link>
             </li>
             <li>
               <button
                 onClick={handleLogout}
-                className={`flex items-center p-2 rounded hover:bg-gray-700 w-full ${isCollapsed ? 'justify-center' : ''}`}
+                className={`flex items-center p-2 rounded hover:bg-gray-700 w-full ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
               >
                 <FontAwesomeIcon icon={faRightFromBracket} className="mr-2" />
-                {!isCollapsed && 'Logout'}
+                {!isCollapsed && "Logout"}
               </button>
             </li>
           </ul>
