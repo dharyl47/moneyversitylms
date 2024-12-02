@@ -8,6 +8,7 @@ export default function SettingsPage() {
   const [friendlyTone, setFriendlyTone] = useState('');
   const [mainPrompt, setMainPrompt] = useState('');
   const [llamaModel, setLlamaModel] = useState('');
+  
 
   // State for saved values
   const [savedFriendlyTone, setSavedFriendlyTone] = useState('');

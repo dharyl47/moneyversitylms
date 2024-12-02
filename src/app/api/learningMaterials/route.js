@@ -4,7 +4,7 @@ import LearningMaterial from '../../models/LearningMaterial';
 
 export async function GET() {
   try {
-    await connectMongoDB(); // Ensure MongoDB is connected
+    await connectMongoDB();
 
     const learningMaterials = await LearningMaterial.find({});
     return NextResponse.json({ success: true, data: learningMaterials });
@@ -14,13 +14,14 @@ export async function GET() {
   }
 }
 
+
 export async function POST(request) {
   try {
-    await connectMongoDB(); // Ensure MongoDB is connected
+    await connectMongoDB();
 
-    const { prompt, addedBy } = await request.json(); // Get the prompt and addedBy from the request body
+    const { question, answer, addedBy } = await request.json();
 
-    const newLearningMaterial = new LearningMaterial({ prompt, addedBy, createdAt: new Date() });
+    const newLearningMaterial = new LearningMaterial({ question, answer, addedBy, createdAt: new Date() });
     await newLearningMaterial.save();
 
     return NextResponse.json({ success: true, data: newLearningMaterial }, { status: 201 });
@@ -30,16 +31,17 @@ export async function POST(request) {
   }
 }
 
+
 export async function PUT(request) {
   try {
-    await connectMongoDB(); // Ensure MongoDB is connected
+    await connectMongoDB();
 
-    const { id, prompt, addedBy } = await request.json(); // Get the id, prompt, and addedBy from the request body
+    const { id, question, answer, addedBy } = await request.json();
 
     const updatedLearningMaterial = await LearningMaterial.findByIdAndUpdate(
       id,
-      { prompt, addedBy },
-      { new: true } // Return the updated document
+      { question, answer, addedBy },
+      { new: true }
     );
 
     if (!updatedLearningMaterial) {
@@ -52,6 +54,7 @@ export async function PUT(request) {
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
 
 export async function DELETE(request) {
   try {
