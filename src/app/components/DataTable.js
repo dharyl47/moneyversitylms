@@ -131,20 +131,48 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
                   </div>
                 )}
               </td>
-              <td className="py-2 px-4 text-left">
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="px-4 py-2 bg-blue-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-blue-600 transition-colors"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(item)}
-                  className="px-4 py-2 bg-red-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-red-600 transition-colors ml-2"
-                >
-                  Delete
-                </button>
-              </td>
+              <td className="py-2 px-4 text-left flex gap-2">
+  <button
+    onClick={() => handleEdit(item)}
+    className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md shadow-lg hover:bg-blue-600 transition-colors focus:outline-none focus:ring focus:ring-blue-300"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M11 17l-5-5m0 0l5-5m-5 5h12"
+      />
+    </svg>
+    Edit
+  </button>
+  <button
+    onClick={() => handleDelete(item)}
+    className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white font-semibold rounded-md shadow-lg hover:bg-red-600 transition-colors focus:outline-none focus:ring focus:ring-red-300"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+    Delete
+  </button>
+</td>
             </tr>
           ))}
         </tbody>
