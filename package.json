@@ -24,6 +24,7 @@
     "multer-gridfs-storage": "^5.0.2",
     "next": "14.2.5",
     "papaparse": "^5.4.1",
+    "pdf-lib": "^1.17.1",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
@@ -31,7 +32,7 @@
     "streamifier": "^0.1.1"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.17.9",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",

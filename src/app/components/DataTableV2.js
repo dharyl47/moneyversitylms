@@ -109,196 +109,227 @@ const questions = {
 };
 
 
-const handleDownloadPDF = (item) => {
-  const doc = new jsPDF({
-    unit: "pt",
-    format: "a4",
-    lineHeight: 1.5,
-  });
+// const handleDownloadPDF = (item) => {
+//   const doc = new jsPDF({
+//     unit: "pt",
+//     format: "a4",
+//     lineHeight: 1.5,
+//   });
 
-  const marginLeft = 40;
-  const pageWidth = doc.internal.pageSize.getWidth() - marginLeft * 2;
-  let yPosition = 50;
-  doc.setFontSize(12);
-  doc.text(`Profile of ${item.name}`, marginLeft, yPosition);
-  yPosition += 30;
+//   const marginLeft = 40;
+//   const pageWidth = doc.internal.pageSize.getWidth() - marginLeft * 2;
+//   let yPosition = 50;
+//   doc.setFontSize(12);
+//   doc.text(`Profile of ${item.name}`, marginLeft, yPosition);
+//   yPosition += 30;
 
-  // Helper function to format nested data, converting booleans for "uploadDocumentAtEndOfChat"
-  const formatNestedObject = (data) => {
-    if (typeof data === 'object' && data !== null) {
-      return Object.entries(data)
-        .map(([key, value]) => {
-          if (key === 'uploadDocumentAtEndOfChat') {
-            // Convert boolean to "Yes" or "No"
-            return `Uploaded Document: ${value === true ? 'Yes' : 'No'}`;
-          }
-          return typeof value === 'object' ? formatNestedObject(value) : value;
-        })
-        .filter(value => value) // Remove empty values
-        .join(', ');
-    }
-    return data === true ? 'Yes' : data === false ? 'No' : data || 'N/A';
-  };
+//   // Helper function to format nested data, converting booleans for "uploadDocumentAtEndOfChat"
+//   const formatNestedObject = (data) => {
+//     if (typeof data === 'object' && data !== null) {
+//       return Object.entries(data)
+//         .map(([key, value]) => {
+//           if (key === 'uploadDocumentAtEndOfChat') {
+//             // Convert boolean to "Yes" or "No"
+//             return `Uploaded Document: ${value === true ? 'Yes' : 'No'}`;
+//           }
+//           return typeof value === 'object' ? formatNestedObject(value) : value;
+//         })
+//         .filter(value => value) // Remove empty values
+//         .join(', ');
+//     }
+//     return data === true ? 'Yes' : data === false ? 'No' : data || 'N/A';
+//   };
 
-  // Function to add questions and answers to the PDF with proper formatting
-  const addSectionToPDF = (title, dataKey, questionKeys) => {
-    doc.setFontSize(14);
-    doc.text(title, marginLeft, yPosition);
-    yPosition += 20;
-    doc.setFontSize(12);
+//   // Function to add questions and answers to the PDF with proper formatting
+//   const addSectionToPDF = (title, dataKey, questionKeys) => {
+//     doc.setFontSize(14);
+//     doc.text(title, marginLeft, yPosition);
+//     yPosition += 20;
+//     doc.setFontSize(12);
 
-    questionKeys.forEach((key) => {
-      const question = questions[key];
-      const answer = formatNestedObject(item[dataKey]?.[key]);
+//     questionKeys.forEach((key) => {
+//       const question = questions[key];
+//       const answer = formatNestedObject(item[dataKey]?.[key]);
 
-      const questionText = `• ${question}`;
-      const answerText = answer ? `Answer: ${answer}` : 'Answer: N/A';
+//       const questionText = `• ${question}`;
+//       const answerText = answer ? `Answer: ${answer}` : 'Answer: N/A';
 
-      // Split text into lines if it exceeds page width
-      const questionLines = doc.splitTextToSize(questionText, pageWidth);
-      const answerLines = doc.splitTextToSize(answerText, pageWidth - 20);
+//       // Split text into lines if it exceeds page width
+//       const questionLines = doc.splitTextToSize(questionText, pageWidth);
+//       const answerLines = doc.splitTextToSize(answerText, pageWidth - 20);
 
-      // Add page break if content overflows
-      if (yPosition + (questionLines.length + answerLines.length) * 12 > doc.internal.pageSize.getHeight() - 40) {
-        doc.addPage();
-        yPosition = 50;
-      }
+//       // Add page break if content overflows
+//       if (yPosition + (questionLines.length + answerLines.length) * 12 > doc.internal.pageSize.getHeight() - 40) {
+//         doc.addPage();
+//         yPosition = 50;
+//       }
 
-      // Render question and answer
-      doc.text(questionLines, marginLeft + 10, yPosition);
-      yPosition += questionLines.length * 12;
-      doc.text(answerLines, marginLeft + 20, yPosition);
-      yPosition += answerLines.length * 12 + 10;
+//       // Render question and answer
+//       doc.text(questionLines, marginLeft + 10, yPosition);
+//       yPosition += questionLines.length * 12;
+//       doc.text(answerLines, marginLeft + 20, yPosition);
+//       yPosition += answerLines.length * 12 + 10;
+//     });
+
+//     yPosition += 20; // Space after each section
+//   };
+
+//   // General profile data at the top
+//   const fields = [
+//     { label: 'Email', value: item.emailAddress },
+//     { label: 'Date of Birth', value: item.dateOfBirth },
+//     { label: 'Property Regime', value: item.propertyRegime },
+//     { label: 'Marital Status', value: item.maritalStatus },
+//     { label: 'Deletion Request', value: item.deletionRequest || 'No' },
+//   ];
+
+//   fields.forEach((field) => {
+//     const text = `${field.label}: ${field.value || 'N/A'}`;
+//     const lines = doc.splitTextToSize(text, pageWidth);
+//     doc.text(lines, marginLeft, yPosition);
+//     yPosition += lines.length * 12;
+//   });
+
+//   yPosition += 20; // Space after general profile info
+
+//   // Sections
+//   addSectionToPDF("Objectives of Estate Planning", "ObjectivesOfEstatePlanning", [
+//     "estatePlanFlexibility",
+//     "businessProtectionImportance",
+//     "financialSafeguardStrategies",
+//     "insolvencyProtectionConcern",
+//     "dependentsMaintenanceImportance",
+//     "taxMinimizationPriority",
+//     "estatePlanReviewConfidence",
+//   ]);
+
+//   addSectionToPDF("Assets", "Assets", [
+//     "realEstateProperties",
+//     "farmProperties",
+//     "vehicleProperties",
+//     "valuablePossessions",
+//     "householdEffects",
+//     "intellectualPropertyRights",
+//     "assetsInTrust",
+//     "investmentPortfolio",
+//     "bankBalances",
+//     "businessAssets",
+//     "otherAssets",
+//   ]);
+
+//   addSectionToPDF("Liabilities", "Liabilities", [
+//     "outstandingMortgageLoans",
+//     "personalLoans",
+//     "creditCardDebt",
+//     "vehicleLoans",
+//     "otherOutstandingDebts",
+//     "strategyLiabilities",
+//     "foreseeableFuture",
+//   ]);
+
+//   addSectionToPDF("Policies", "Policies", [
+//     "lifeInsurancePolicies",
+//     "healthInsurancePolicies",
+//     "propertyInsurance",
+//     "vehicleInsurance",
+//     "disabilityInsurance",
+//     "disabilityInsuranceType",
+//     "disabilityInsuranceAwareness",
+//     "contingentLiabilityInsurance",
+//     "buySellInsurance",
+//     "keyPersonInsurance",
+//     "otherInsurance",
+//     "funeralCoverInfo",
+//   ]);
+
+//   addSectionToPDF("Estate Duty", "EstateDuty", [
+//     "estateBequeathToSpouse",
+//     "bequeathToSpouseCondition",
+//     "bequeathToSpousePercentage",
+//     "estateDistributed",
+//     "estateBequeathResidue",
+//     "estateBequeathToTrust",
+//     "estateBequeathProperty",
+//     "estateBequeathWhom",
+//     "estateBequeathDifference",
+//   ]);
+
+//   addSectionToPDF("Executor Fees", "ExecutorFees", ["noExecutorFeesPolicy"]);
+
+//   addSectionToPDF("Liquidity Position", "LiquidityPosition", [
+//     "liquiditySources",
+//     "shortfallHeirContribution",
+//     "borrowingFundsForShortfall",
+//     "lifeAssuranceCashShortfall",
+//   ]);
+
+//   addSectionToPDF("Maintenance Claims", "MaintenanceClaims", [
+//     "maintenanceClaimsAwareness",
+//     "maintenanceCostOfEducation",
+//     "maintenanceInsurancePolicy",
+//   ]);
+
+//   addSectionToPDF("Maintenance of Surviving Spouse", "MaintenanceSurvivingSpouse", [
+//     "provisionsForSurvivingSpouse",
+//     "reviewExistingProvisionsInfo",
+//     "incomeMaintenanceTax",
+//   ]);
+
+//   addSectionToPDF("Provisions for Dependents", "ProvisionsDependents", [
+//     "dependentsIncomeNeeds",
+//     "shortfallHouseholdIncome",
+//     "additionalLifeInsuranceDependents",
+//   ]);
+
+//   addSectionToPDF("Trusts", "Trusts", [
+//     "familiarWithTrust",
+//     "consideredSettingUpTrust",
+//     "reasonTrustRelevant",
+//     "trustAdvantages",
+//   ]);
+
+//   addSectionToPDF("Investment Trusts", "InvestmentTrusts", [
+//     "settingUpInvestmentTrust",
+//     "investmentTrustFlexibility",
+//   ]);
+
+//   // Save the PDF
+//   doc.save(`Profile_${item.name}.pdf`);
+// };
+
+
+const handleDownloadPDF = async (item) => {
+  try {
+    // Call the backend API to generate the PDF
+    const response = await fetch("/api/generatePdf", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(item), // Pass the selected item data to the backend
     });
 
-    yPosition += 20; // Space after each section
-  };
+    if (!response.ok) {
+      throw new Error("Failed to generate PDF");
+    }
 
-  // General profile data at the top
-  const fields = [
-    { label: 'Email', value: item.emailAddress },
-    { label: 'Date of Birth', value: item.dateOfBirth },
-    { label: 'Property Regime', value: item.propertyRegime },
-    { label: 'Marital Status', value: item.maritalStatus },
-    { label: 'Deletion Request', value: item.deletionRequest || 'No' },
-  ];
+    // Convert the response to a Blob
+    const pdfBlob = await response.blob();
 
-  fields.forEach((field) => {
-    const text = `${field.label}: ${field.value || 'N/A'}`;
-    const lines = doc.splitTextToSize(text, pageWidth);
-    doc.text(lines, marginLeft, yPosition);
-    yPosition += lines.length * 12;
-  });
+    // Create a download link for the PDF
+    const downloadUrl = URL.createObjectURL(pdfBlob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.setAttribute("download", `${item.name}_Estate_Planning_Report.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
 
-  yPosition += 20; // Space after general profile info
-
-  // Sections
-  addSectionToPDF("Objectives of Estate Planning", "ObjectivesOfEstatePlanning", [
-    "estatePlanFlexibility",
-    "businessProtectionImportance",
-    "financialSafeguardStrategies",
-    "insolvencyProtectionConcern",
-    "dependentsMaintenanceImportance",
-    "taxMinimizationPriority",
-    "estatePlanReviewConfidence",
-  ]);
-
-  addSectionToPDF("Assets", "Assets", [
-    "realEstateProperties",
-    "farmProperties",
-    "vehicleProperties",
-    "valuablePossessions",
-    "householdEffects",
-    "intellectualPropertyRights",
-    "assetsInTrust",
-    "investmentPortfolio",
-    "bankBalances",
-    "businessAssets",
-    "otherAssets",
-  ]);
-
-  addSectionToPDF("Liabilities", "Liabilities", [
-    "outstandingMortgageLoans",
-    "personalLoans",
-    "creditCardDebt",
-    "vehicleLoans",
-    "otherOutstandingDebts",
-    "strategyLiabilities",
-    "foreseeableFuture",
-  ]);
-
-  addSectionToPDF("Policies", "Policies", [
-    "lifeInsurancePolicies",
-    "healthInsurancePolicies",
-    "propertyInsurance",
-    "vehicleInsurance",
-    "disabilityInsurance",
-    "disabilityInsuranceType",
-    "disabilityInsuranceAwareness",
-    "contingentLiabilityInsurance",
-    "buySellInsurance",
-    "keyPersonInsurance",
-    "otherInsurance",
-    "funeralCoverInfo",
-  ]);
-
-  addSectionToPDF("Estate Duty", "EstateDuty", [
-    "estateBequeathToSpouse",
-    "bequeathToSpouseCondition",
-    "bequeathToSpousePercentage",
-    "estateDistributed",
-    "estateBequeathResidue",
-    "estateBequeathToTrust",
-    "estateBequeathProperty",
-    "estateBequeathWhom",
-    "estateBequeathDifference",
-  ]);
-
-  addSectionToPDF("Executor Fees", "ExecutorFees", ["noExecutorFeesPolicy"]);
-
-  addSectionToPDF("Liquidity Position", "LiquidityPosition", [
-    "liquiditySources",
-    "shortfallHeirContribution",
-    "borrowingFundsForShortfall",
-    "lifeAssuranceCashShortfall",
-  ]);
-
-  addSectionToPDF("Maintenance Claims", "MaintenanceClaims", [
-    "maintenanceClaimsAwareness",
-    "maintenanceCostOfEducation",
-    "maintenanceInsurancePolicy",
-  ]);
-
-  addSectionToPDF("Maintenance of Surviving Spouse", "MaintenanceSurvivingSpouse", [
-    "provisionsForSurvivingSpouse",
-    "reviewExistingProvisionsInfo",
-    "incomeMaintenanceTax",
-  ]);
-
-  addSectionToPDF("Provisions for Dependents", "ProvisionsDependents", [
-    "dependentsIncomeNeeds",
-    "shortfallHouseholdIncome",
-    "additionalLifeInsuranceDependents",
-  ]);
-
-  addSectionToPDF("Trusts", "Trusts", [
-    "familiarWithTrust",
-    "consideredSettingUpTrust",
-    "reasonTrustRelevant",
-    "trustAdvantages",
-  ]);
-
-  addSectionToPDF("Investment Trusts", "InvestmentTrusts", [
-    "settingUpInvestmentTrust",
-    "investmentTrustFlexibility",
-  ]);
-
-  // Save the PDF
-  doc.save(`Profile_${item.name}.pdf`);
+    console.log("PDF downloaded successfully!");
+  } catch (error) {
+    console.error("Error downloading PDF:", error);
+  }
 };
-
-
-
 
 
 
