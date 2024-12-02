@@ -29,24 +29,40 @@ export default function EngagingContent() {
   }, []);
 
   const handleEdit = async (id, updatedItem) => {
-    try {
-      const response = await fetch(`/api/settings/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedItem),
-      });
+  try {
+    // Debug updatedItem to ensure it's properly passed
+    console.log('Updated Item:', updatedItem);
 
-      if (response.ok) {
-        // Fetch updated settings data
-        await fetchSettings();
-        setEditingItem(null); // Optionally clear the editing state
-      } else {
-        console.error('Failed to update item');
-      }
-    } catch (error) {
-      console.error('Error updating item:', error);
+    if (!updatedItem || !updatedItem.engagingPrompt) {
+      throw new Error('Updated item is undefined or missing required fields.');
     }
-  };
+
+    const formData = new FormData();
+    formData.append('engagingPrompt', updatedItem.engagingPrompt);
+    formData.append('engagingVideo', updatedItem.engagingVideo || '');
+
+    if (updatedItem.engagingImageFile) {
+      formData.append('engagingImage', updatedItem.engagingImageFile);
+    }
+
+    const response = await fetch(`/api/settings/${id}`, {
+      method: 'PUT',
+      body: formData,
+    });
+
+    if (response.ok) {
+      await fetchSettings();
+      setEditingItem(null);
+    } else {
+      console.error('Failed to update item');
+    }
+  } catch (error) {
+    console.error('Error updating item:', error);
+  }
+};
+
+
+
 
   const handleDelete = async (id) => {
     try {

@@ -26,7 +26,7 @@ export default function LMS() {
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
 
   const columns = [
-    { Header: 'Question', accessor: 'question' },
+    { Header: 'Question/Title', accessor: 'question' },
     { Header: 'Answer', accessor: 'answer' },
     { Header: 'Added By', accessor: 'addedBy' },
     { Header: 'Created At', accessor: 'createdAt' },

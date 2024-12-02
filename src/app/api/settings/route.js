@@ -4,38 +4,53 @@ import Settings from '../../models/Settings'; // Adjust the path to your Mongoos
 
 export async function POST(request) {
   try {
-    // Connect to MongoDB
-    await connectMongoDB();
-
-    // Parse the form data
     const formData = await request.formData();
     const engagingPrompt = formData.get('engagingPrompt');
     const engagingVideo = formData.get('engagingVideo') || null;
-    const imageFile = formData.get('image') || null;
+    const imageFile = formData.get('image');
 
-    // Ensure `engagingPrompt` is provided
-    if (!engagingPrompt) {
-      return NextResponse.json({ error: 'engagingPrompt is required' }, { status: 400 });
+    const newData = { engagingPrompt, engagingVideo };
+
+    if (imageFile) {
+      console.log('Uploading file:', imageFile.name);
+
+      // Connect to MongoDB and GridFS bucket
+      const { bucket } = await connectMongoDB();
+
+      const fileName = imageFile.name;
+      const buffer = Buffer.from(await imageFile.arrayBuffer());
+
+      // Upload file to GridFS
+      const uploadStream = bucket.openUploadStream(fileName);
+
+      await new Promise((resolve, reject) => {
+        uploadStream.end(buffer, (err) => {
+          if (err) {
+            console.error('File upload failed:', err);
+            return reject(err);
+          }
+          console.log('File upload successful:', fileName);
+          resolve();
+        });
+      });
+
+      // Save the filename in the database
+      newData.engagingImage = fileName;
     }
 
-    // Create a new settings document
-    const newSettings = new Settings({
-      engagingPrompt,
-      engagingVideo,
-      imageFile, // Assuming you handle image saving elsewhere, like using GridFS or similar
-    });
+    // Save new data to the MongoDB collection
+    await connectMongoDB();
+    const result = await new Settings(newData).save();
 
-    // Save to the database
-    const savedSettings = await newSettings.save();
-
-    return NextResponse.json(savedSettings, { status: 201 });
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error('Failed to save content:', error);
     return NextResponse.json({ error: 'Failed to save content' }, { status: 500 });
   }
-
-  
 }
+
+
+
 export const GET = async () => {
   const { client, bucket } = await connectMongoDB();
 

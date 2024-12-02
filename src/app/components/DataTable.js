@@ -24,26 +24,34 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
     setEditItem(null);
   };
 
-  const handleSaveEdit = async () => {
-    if (!editItem) return;
-    try {
-      const response = await fetch(`/api/settings/${editItem._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editItem),
-      });
+ const handleSaveEdit = async () => {
+  if (!editItem) return;
 
-      if (response.ok) {
-        alert('Item updated successfully!');
-        closeEditPopup();
-        onEdit(editItem); // Notify parent component
-      } else {
-        console.error('Failed to update item');
-      }
-    } catch (error) {
-      console.error('Error updating item:', error);
+  const formData = new FormData();
+  formData.append('engagingPrompt', editItem.engagingPrompt);
+  formData.append('engagingVideo', editItem.engagingVideo || '');
+
+  if (editItem.engagingImageFile) {
+    formData.append('engagingImage', editItem.engagingImageFile); // Ensure the key matches the backend's expected key
+  }
+
+  try {
+    const response = await fetch(`/api/settings/${editItem._id}`, {
+      method: 'PUT',
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert('Item updated successfully!');
+      closeEditPopup();
+      onEdit(editItem); // Notify parent component
+    } else {
+      console.error('Failed to update item');
     }
-  };
+  } catch (error) {
+    console.error('Error updating item:', error);
+  }
+};
 
   const handleConfirmDelete = async () => {
     if (!itemToDelete) return;
@@ -69,6 +77,12 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
     setShowDeleteConfirm(false);
     setItemToDelete(null);
   };
+
+    const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setEditItem({ ...editItem, engagingImageFile: file });
+  };
+
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -158,40 +172,55 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
       </div>
 
       {/* Edit Popup */}
+      {/* Edit Popup */}
       {showEditPopup && editItem && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm mx-auto">
             <h4 className="text-xl font-semibold text-white mb-4">Edit Item</h4>
-            <form className="flex flex-col">
-              <label className="block mb-4">
-                <span className="text-gray-300 text-sm">Name</span>
+            <form className="flex flex-col gap-4">
+              <label>
+                <span className="text-gray-300">Engaging Prompt</span>
                 <input
                   type="text"
-                  value={editItem.name}
-                  onChange={(e) => setEditItem({ ...editItem, name: e.target.value })}
-                  className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={editItem.engagingPrompt}
+                  onChange={(e) =>
+                    setEditItem({ ...editItem, engagingPrompt: e.target.value })
+                  }
+                  className="block w-full p-2 bg-gray-700 border border-gray-600 rounded-md"
                 />
               </label>
-              <label className="block mb-4">
-                <span className="text-gray-300 text-sm">Description</span>
-                <textarea
-                  value={editItem.description}
-                  onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                  className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+              <label>
+                <span className="text-gray-300">Engaging Video URL</span>
+                <input
+                  type="text"
+                  value={editItem.engagingVideo}
+                  onChange={(e) =>
+                    setEditItem({ ...editItem, engagingVideo: e.target.value })
+                  }
+                  className="block w-full p-2 bg-gray-700 border border-gray-600 rounded-md"
+                />
+              </label>
+              <label>
+                <span className="text-gray-300">Upload New Image</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="block w-full p-2 bg-gray-700 border border-gray-600 rounded-md"
                 />
               </label>
               <div className="flex gap-4">
                 <button
                   type="button"
                   onClick={handleSaveEdit}
-                  className="px-6 py-2 bg-green-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-green-600 transition-colors"
+                  className="px-4 py-2 bg-green-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-green-600 transition-colors"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={closeEditPopup}
-                  className="px-6 py-2 bg-red-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-red-600 transition-colors"
+                  className="px-4 py-2 bg-red-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-red-600 transition-colors"
                 >
                   Cancel
                 </button>
