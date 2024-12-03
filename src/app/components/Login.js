@@ -74,13 +74,13 @@ const Login = () => {
                 id="remember"
                 className="w-4 h-4 text-green-500 bg-gray-700 border-gray-600 rounded focus:ring-2 focus:ring-green-500"
               />
-              <label htmlFor="remember" className="ml-2 text-sm text-gray-300">
+              {/* <label htmlFor="remember" className="ml-2 text-sm text-gray-300">
                 Remember me
-              </label>
+              </label> */}
             </div>
-            <Link href="#" className="text-sm text-green-400 hover:underline">
+            {/* <Link href="#" className="text-sm text-green-400 hover:underline">
               Forgot password?
-            </Link>
+            </Link> */}
           </div>
           <button
             type="submit"

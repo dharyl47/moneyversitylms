@@ -110,7 +110,7 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
   if (!isOpen || !selectedItem) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style={{zIndex: "9999999999999999999999"}}>
       <div className="bg-white rounded-lg p-6 max-w-3xl w-full shadow-lg relative">
         <button className="absolute top-4 right-4 text-gray-500 hover:text-gray-700" onClick={onClose}>
           <AiOutlineClose size={24} />
@@ -245,7 +245,7 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
   // Function to render each field with toggle question functionality
   function renderDisplayField(label, value, fieldKey) {
     return (
-      <div key={fieldKey} className="flex flex-col">
+      <div key={fieldKey} className="flex flex-col" style={{zIndex: "9999999999999999999999"}}>
         <span className="font-medium text-gray-600 cursor-pointer" onClick={() => handleToggleQuestion(fieldKey)}>
           <b>{label}:</b> {value || 'N/A'}
         </span>
@@ -259,7 +259,7 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
 
 // Section component for reusable collapsible section structure
 const Section = ({ title, icon, children }) => (
-  <div className="mb-6">
+  <div className="mb-6" style={{zIndex: "9999999999999999999999"}}>
     <h3 className="flex items-center text-xl font-semibold text-gray-700 mb-2">{icon} {title}</h3>
     <div className="grid grid-cols-2 gap-4">{children}</div>
   </div>
