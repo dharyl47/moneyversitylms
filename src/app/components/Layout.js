@@ -23,7 +23,7 @@ const Layout = ({ children }) => {
         {/* Content Area */}
         <div
           className={`flex-1 p-4 transition-all duration-300 mt-16 ${
-            isSidebarCollapsed ? "ml-16" : "ml-48"
+            isSidebarCollapsed ? "ml-48" : "ml-48"
           }`}
         >
           {children}

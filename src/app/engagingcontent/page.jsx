@@ -101,7 +101,10 @@ export default function EngagingContent() {
   return (
     <main className="bg-gray-900 text-white">
       <Layout>
-        <div className="max-w-7xl mx-auto p-6">
+         <div className="p-6 min-h-screen container mx-auto pl-16">
+       
+               <h1 className="text-3xl font-bold mb-4">Engaging Content</h1><br/>
+        <div className="max-w-7xl mx-auto">
           {/* Unified Upload Component */}
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Upload Content</h2>
@@ -150,6 +153,7 @@ export default function EngagingContent() {
               </form>
             </div>
           )}
+        </div>
         </div>
       </Layout>
     </main>

@@ -23,8 +23,8 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 
   return (
     <div
-      className={`h-full bg-gray-800 fixed text-white transition-all duration-300 ${
-        isCollapsed ? "w-16" : "w-48"
+       className={`h-full bg-gray-800 fixed text-white transition-all duration-300 ${
+        isCollapsed ? "w-48" : "w-48"
       }`}
     >
       <div className="flex flex-col items-center h-full overflow-y-auto">
@@ -33,77 +33,71 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
             <li>
               <Link
                 href="/dashboard"
-                className={`flex items-center p-2 rounded hover:bg-gray-700 ${
-                  isCollapsed ? "justify-center" : ""
+                className={`flex items-center p-2 rounded hover:bg-gray-700  ""
                 }`}
               >
                 <FontAwesomeIcon icon={faHome} className="mr-2" />
-                {!isCollapsed && "Home"}
+                {"Dashboard"}
               </Link>
             </li>
             <li>
               <Link
                 href="/lms"
-                className={`flex items-center p-2 rounded hover:bg-gray-700 ${
-                  isCollapsed ? "justify-center" : ""
+                className={`flex items-center p-2 rounded hover:bg-gray-700 : ""
                 }`}
               >
                 <FontAwesomeIcon icon={faBook} className="mr-2" />
-                {!isCollapsed && "LMS"}
+                {"LMS"}
               </Link>
             </li>
             <li>
               <Link
                 href="/engagingcontent"
-                className={`flex items-center p-2 rounded hover:bg-gray-700 ${
-                  isCollapsed ? "justify-center" : ""
+                className={`flex items-center p-2 rounded hover:bg-gray-700  ""
                 }`}
               >
                 <FontAwesomeIcon icon={faNewspaper} className="mr-2" />
-                {!isCollapsed && "Engaging Content"}
+                {"Engaging Content"}
               </Link>
             </li>
             <li>
               <Link
                 href="/user-control"
-                className={`flex items-center p-2 rounded hover:bg-gray-700 ${
-                  isCollapsed ? "justify-center" : ""
+                className={`flex items-center p-2 rounded hover:bg-gray-700 ""
                 }`}
               >
                 <FontAwesomeIcon icon={faUserGear} className="mr-2" />
-                {!isCollapsed && "User Profile"}
+                {"User Profile"}
               </Link>
             </li>
             <li>
               <Link
                 href="/privacy-policy"
-                className={`flex items-center p-2 rounded hover:bg-gray-700 ${
-                  isCollapsed ? "justify-center" : ""
+                className={`flex items-center p-2 rounded hover:bg-gray-700  ""
                 }`}
               >
                 <FontAwesomeIcon icon={faFileCircleQuestion} className="mr-2" />
-                {!isCollapsed && "Privacy Policy"}
+                {"Privacy Policy"}
               </Link>
             </li>
             <li>
               <button
                 onClick={handleLogout}
-                className={`flex items-center p-2 rounded hover:bg-gray-700 w-full ${
-                  isCollapsed ? "justify-center" : ""
+                className={`flex items-center p-2 rounded hover:bg-gray-700 w-full ""
                 }`}
               >
                 <FontAwesomeIcon icon={faRightFromBracket} className="mr-2" />
-                {!isCollapsed && "Logout"}
+                {"Logout"}
               </button>
             </li>
           </ul>
         </nav>
-        <button
+        {/* <button
           className="p-2 text-gray-400 hover:text-white focus:outline-none mb-28"
           onClick={toggleSidebar}
         >
           <FontAwesomeIcon icon={isCollapsed ? faBars : faChevronLeft} />
-        </button>
+        </button> */}
       </div>
     </div>
   );

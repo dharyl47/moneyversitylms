@@ -170,10 +170,13 @@ export default function UserControl() {
     <main className="bg-[#111827] min-h-screen text-white ">
   <Layout>
     {/* Main Container */}
-    <div className="flex flex-col h-screen pl-16">
+    <div className="p-6 min-h-screen container mx-auto pl-16">
+       
+               <h1 className="text-3xl font-bold mb-4">User Profile</h1><br/>
+    <div className="flex flex-col h-screen">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-50 bg-[#111827] px-4 py-2 flex justify-between items-center">
-        <h1 className="text-3xl font-bold">User Profiles</h1>
+      <div className="sticky top-0 z-50 bg-[#111827]  py-2 flex justify-between items-center">
+       
         <div className="flex space-x-4">
           {/* Search Input */}
           <input
@@ -215,6 +218,7 @@ export default function UserControl() {
           <p>No profiles available for the selected criteria.</p>
         )}
       </div>
+    </div>
     </div>
   </Layout>
 </main>

@@ -201,62 +201,63 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
 
       {/* Edit Popup */}
       {/* Edit Popup */}
-      {showEditPopup && editItem && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm mx-auto">
-            <h4 className="text-xl font-semibold text-white mb-4">Edit Item</h4>
-            <form className="flex flex-col gap-4">
-              <label>
-                <span className="text-gray-300">Engaging Prompt</span>
-                <input
-                  type="text"
-                  value={editItem.engagingPrompt}
-                  onChange={(e) =>
-                    setEditItem({ ...editItem, engagingPrompt: e.target.value })
-                  }
-                  className="block w-full p-2 bg-gray-700 border border-gray-600 rounded-md"
-                />
-              </label>
-              <label>
-                <span className="text-gray-300">Engaging Video URL</span>
-                <input
-                  type="text"
-                  value={editItem.engagingVideo}
-                  onChange={(e) =>
-                    setEditItem({ ...editItem, engagingVideo: e.target.value })
-                  }
-                  className="block w-full p-2 bg-gray-700 border border-gray-600 rounded-md"
-                />
-              </label>
-              <label>
-                <span className="text-gray-300">Upload New Image</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="block w-full p-2 bg-gray-700 border border-gray-600 rounded-md"
-                />
-              </label>
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={handleSaveEdit}
-                  className="px-4 py-2 bg-green-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-green-600 transition-colors"
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  onClick={closeEditPopup}
-                  className="px-4 py-2 bg-red-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-red-600 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
+     {showEditPopup && editItem && (
+  <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
+    <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-3xl mx-auto w-full">
+      <h4 className="text-xl font-semibold text-white mb-6">Edit Item</h4>
+      <form className="flex flex-col gap-6">
+        <label>
+          <span className="text-gray-300">Engaging Prompt</span>
+          <textarea
+            value={editItem.engagingPrompt}
+            onChange={(e) =>
+              setEditItem({ ...editItem, engagingPrompt: e.target.value })
+            }
+            rows={6} // Adjust the number of rows as needed
+            className="block w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-gray-100 resize-none"
+          />
+        </label>
+        <label>
+          <span className="text-gray-300">Engaging Video URL</span>
+          <input
+            type="text"
+            value={editItem.engagingVideo}
+            onChange={(e) =>
+              setEditItem({ ...editItem, engagingVideo: e.target.value })
+            }
+            className="block w-full p-3 bg-gray-700 border border-gray-600 rounded-md"
+          />
+        </label>
+        <label>
+          <span className="text-gray-300">Upload New Image</span>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="block w-full p-3 bg-gray-700 border border-gray-600 rounded-md"
+          />
+        </label>
+        <div className="flex gap-6 justify-end">
+          <button
+            type="button"
+            onClick={handleSaveEdit}
+            className="px-6 py-3 bg-green-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-green-600 transition-colors"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={closeEditPopup}
+            className="px-6 py-3 bg-red-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-red-600 transition-colors"
+          >
+            Cancel
+          </button>
         </div>
-      )}
+      </form>
+    </div>
+  </div>
+)}
+
 
       {/* Delete Confirmation */}
       {showDeleteConfirm && itemToDelete && (

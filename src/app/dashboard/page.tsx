@@ -82,38 +82,35 @@ const calculateStatistics = (profiles: Profile[]) => {
     hasMeaningfulData(profile.InvestmentTrusts)
   ).length;
 
-    const stages = [
-    "Personal Information",
-    "Step-by-step Guidance",
-    "Objectives of Estate Planning",
-    "Assets",
-    "Liabilities",
-    "Policies",
-    "Investment Portfolios",
-    "Estate Duty",
-    "Current Will",
-    "Maintenance Claims",
-    "Maintenance of Surviving Spouse",
-    "Provisions for Dependents",
-    "Trusts",
-    "The Investment Trust",
-  ];
+   const stages = [
+  "Consent",
+  "Personal Information",
+  "Step-by-Step Guidance",
+  "Objectives of Estate Planning",
+  "Assets & Liabilities",
+  "Policies & Investments",
+  "Estate Duty & Executor Fees",
+  "Liquidity Position",
+  "Maintenance Claims",
+  "Provisions for Dependents",
+  "Trusts",
+  "Final Details",
+];
+
 
   const mapSchemaToStage: Record<string, string[]> = {
+  "Consent": [], // Add keys if specific data is tied to this stage
   "Personal Information": ["name", "dateOfBirth", "emailAddress"],
-  "Step-by-step Guidance": ["ownBusiness", "ownFarm", "ownInvestmentPortfolio"],
+  "Step-by-Step Guidance": ["ownBusiness", "ownFarm", "ownInvestmentPortfolio"],
   "Objectives of Estate Planning": ["ObjectivesOfEstatePlanning"],
-  "Assets": ["Assets"],
-  "Liabilities": ["Liabilities"],
-  "Policies": ["Policies"],
-  "Investment Portfolios": ["Assets.investmentPortfolio"],
-  "Estate Duty": ["EstateDuty"],
-  "Current Will": ["will", "willStatus"],
+  "Assets & Liabilities": ["Assets", "Liabilities"],
+  "Policies & Investments": ["Policies", "Assets.investmentPortfolio"],
+  "Estate Duty & Executor Fees": ["EstateDuty", "ExecutorFees"],
+  "Liquidity Position": ["LiquidityPosition"],
   "Maintenance Claims": ["MaintenanceClaims"],
-  "Maintenance of Surviving Spouse": ["MaintenanceSurvivingSpouse"],
   "Provisions for Dependents": ["ProvisionsDependents"],
   "Trusts": ["Trusts"],
-  "The Investment Trust": ["InvestmentTrusts"],
+  "Final Details": ["finalDetailsKey"], // Replace with the actual schema key for final details
 };
 
 
