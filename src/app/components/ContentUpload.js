@@ -10,15 +10,34 @@ const ContentUpload = ({ onSave }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+
+    // Check if a file was selected
+    if (!file) {
+      console.error("No file selected.");
+      return;
+    }
+
+    // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+    if (file.size > 2 * 1024 * 1024) {
+      alert("File size exceeds 2MB. Please upload a smaller file.");
+      e.target.value = ""; // Reset the file input
+      return;
+    }
+
     setImageFile(file);
     setPreview(URL.createObjectURL(file));
   };
 
   const handleSave = () => {
+    if (!imageFile && !engagingPrompt && !engagingVideo) {
+      alert("Please upload content before saving.");
+      return;
+    }
+
     setShowWarning(true);
   };
 
-   const confirmSave = async () => {
+  const confirmSave = async () => {
     const formData = new FormData();
     formData.append('engagingPrompt', engagingPrompt);
 
@@ -62,7 +81,7 @@ const ContentUpload = ({ onSave }) => {
       {/* Content Upload Form */}
       <form className="flex flex-col mb-6">
         <label className="block mb-4">
-          <span className="text-gray-300 text-sm">Upload Image</span>
+          <span className="text-gray-300 text-sm">Upload Image (Max 2MB)</span>
           <input
             type="file"
             accept="image/*"
@@ -70,15 +89,15 @@ const ContentUpload = ({ onSave }) => {
             className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </label>
-     <label className="block mb-4">
-  <span className="text-gray-300 text-sm">Engaging Prompt</span>
-  <textarea
-    value={engagingPrompt}
-    onChange={(e) => setEngagingPrompt(e.target.value)}
-    className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-    rows="4"  // Adjust the number of rows to make it bigger
-  />
-</label>
+        <label className="block mb-4">
+          <span className="text-gray-300 text-sm">Engaging Prompt</span>
+          <textarea
+            value={engagingPrompt}
+            onChange={(e) => setEngagingPrompt(e.target.value)}
+            className="mt-2 block w-full text-sm text-white border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+            rows="4" // Adjust the number of rows to make it bigger
+          />
+        </label>
 
         <label className="block mb-4">
           <span className="text-gray-300 text-sm">Engaging Video URL</span>
@@ -99,7 +118,7 @@ const ContentUpload = ({ onSave }) => {
           </button>
         </div>
       </form>
-      
+
       {/* Image Preview */}
       {preview && (
         <div className="mb-6">
@@ -111,7 +130,7 @@ const ContentUpload = ({ onSave }) => {
           />
         </div>
       )}
-      
+
       {/* Warning Popup */}
       {showWarning && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">

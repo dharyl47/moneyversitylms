@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 
-const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for data
+const DataTable = ({ data = [], onEdit, onDelete }) => {
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -24,7 +24,7 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
     setEditItem(null);
   };
 
- const handleSaveEdit = async () => {
+  const handleSaveEdit = async () => {
   if (!editItem) return;
 
   const formData = new FormData();
@@ -32,7 +32,7 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
   formData.append('engagingVideo', editItem.engagingVideo || '');
 
   if (editItem.engagingImageFile) {
-    formData.append('engagingImage', editItem.engagingImageFile); // Ensure the key matches the backend's expected key
+    formData.append('engagingImage', editItem.engagingImageFile);
   }
 
   try {
@@ -43,8 +43,7 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
 
     if (response.ok) {
       alert('Item updated successfully!');
-      closeEditPopup();
-      onEdit(editItem); // Notify parent component
+      window.location.reload(); // Reload the page
     } else {
       console.error('Failed to update item');
     }
@@ -78,11 +77,26 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
     setItemToDelete(null);
   };
 
-    const handleFileChange = (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
+
+    // Check if a file was selected
+    if (!file) {
+      console.error("No file selected.");
+      return;
+    }
+
+    console.log(`File size: ${file.size} bytes`); // Debugging file size
+
+    // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+    if (file.size > 2 * 1024 * 1024) {
+      alert("File size exceeds 2MB. Please upload a smaller file.");
+      e.target.value = ""; // Reset the file input
+      return;
+    }
+
     setEditItem({ ...editItem, engagingImageFile: file });
   };
-
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -90,7 +104,6 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
   const currentItems = Array.isArray(data) ? data.slice(indexOfFirstItem, indexOfLastItem) : [];
   const totalPages = Array.isArray(data) ? Math.ceil(data.length / itemsPerPage) : 0;
 
-  // Handle image URL (example: if images are stored on a server)
   const getImageUrl = (filename) => `/api/uploads/${encodeURIComponent(filename)}`;
 
   return (
@@ -105,7 +118,7 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
           </tr>
         </thead>
         <tbody>
-          {currentItems.map(item => (
+          {currentItems.map((item) => (
             <tr key={item._id}>
               <td className="py-2 px-4 text-left">{item.engagingPrompt}</td>
               <td className="py-2 px-4 text-left">
@@ -117,7 +130,7 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
                   />
                 )}
               </td>
-             <td className="py-2 px-4 text-left">
+              <td className="py-2 px-4 text-left">
                 {item.engagingVideo && (
                   <div className="relative w-32 h-24">
                     <iframe
@@ -132,47 +145,19 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
                 )}
               </td>
               <td className="py-2 px-4 text-left flex gap-2">
-  <button
-    onClick={() => handleEdit(item)}
-    className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md shadow-lg hover:bg-blue-600 transition-colors focus:outline-none focus:ring focus:ring-blue-300"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M11 17l-5-5m0 0l5-5m-5 5h12"
-      />
-    </svg>
-    Edit
-  </button>
-  <button
-    onClick={() => handleDelete(item)}
-    className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white font-semibold rounded-md shadow-lg hover:bg-red-600 transition-colors focus:outline-none focus:ring focus:ring-red-300"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M6 18L18 6M6 6l12 12"
-      />
-    </svg>
-    Delete
-  </button>
-</td>
+                <button
+                  onClick={() => handleEdit(item)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md shadow-lg hover:bg-blue-600 transition-colors focus:outline-none focus:ring focus:ring-blue-300"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(item)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white font-semibold rounded-md shadow-lg hover:bg-red-600 transition-colors focus:outline-none focus:ring focus:ring-red-300"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -181,7 +166,7 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
       {/* Pagination Controls */}
       <div className="flex justify-between items-center mt-4">
         <button
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
           className="px-4 py-2 bg-gray-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-gray-600 transition-colors disabled:opacity-50"
         >
@@ -191,7 +176,7 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
           Page {currentPage} of {totalPages}
         </span>
         <button
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
           className="px-4 py-2 bg-gray-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-gray-600 transition-colors disabled:opacity-50"
         >
@@ -200,71 +185,71 @@ const DataTable = ({ data = [], onEdit, onDelete }) => { // Default value for da
       </div>
 
       {/* Edit Popup */}
-      {/* Edit Popup */}
-     {showEditPopup && editItem && (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
-    <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-3xl mx-auto w-full">
-      <h4 className="text-xl font-semibold text-white mb-6">Edit Item</h4>
-      <form className="flex flex-col gap-6">
-        <label>
-          <span className="text-gray-300">Engaging Prompt</span>
-          <textarea
-            value={editItem.engagingPrompt}
-            onChange={(e) =>
-              setEditItem({ ...editItem, engagingPrompt: e.target.value })
-            }
-            rows={6} // Adjust the number of rows as needed
-            className="block w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-gray-100 resize-none"
-          />
-        </label>
-        <label>
-          <span className="text-gray-300">Engaging Video URL</span>
-          <input
-            type="text"
-            value={editItem.engagingVideo}
-            onChange={(e) =>
-              setEditItem({ ...editItem, engagingVideo: e.target.value })
-            }
-            className="block w-full p-3 bg-gray-700 border border-gray-600 rounded-md"
-          />
-        </label>
-        <label>
-          <span className="text-gray-300">Upload New Image</span>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="block w-full p-3 bg-gray-700 border border-gray-600 rounded-md"
-          />
-        </label>
-        <div className="flex gap-6 justify-end">
-          <button
-            type="button"
-            onClick={handleSaveEdit}
-            className="px-6 py-3 bg-green-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-green-600 transition-colors"
-          >
-            Save
-          </button>
-          <button
-            type="button"
-            onClick={closeEditPopup}
-            className="px-6 py-3 bg-red-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-red-600 transition-colors"
-          >
-            Cancel
-          </button>
+      {showEditPopup && editItem && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
+          <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-3xl mx-auto w-full">
+            <h4 className="text-xl font-semibold text-white mb-6">Edit Item</h4>
+            <form className="flex flex-col gap-6">
+              <label>
+                <span className="text-gray-300">Engaging Prompt</span>
+                <textarea
+                  value={editItem.engagingPrompt}
+                  onChange={(e) =>
+                    setEditItem({ ...editItem, engagingPrompt: e.target.value })
+                  }
+                  rows={6}
+                  className="block w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-gray-100 resize-none"
+                />
+              </label>
+              <label>
+                <span className="text-gray-300">Engaging Video URL</span>
+                <input
+                  type="text"
+                  value={editItem.engagingVideo}
+                  onChange={(e) =>
+                    setEditItem({ ...editItem, engagingVideo: e.target.value })
+                  }
+                  className="block w-full p-3 bg-gray-700 border border-gray-600 rounded-md"
+                />
+              </label>
+              <label>
+                <span className="text-gray-300">Upload New Image (Max 2MB)</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="block w-full p-3 bg-gray-700 border border-gray-600 rounded-md"
+                />
+              </label>
+              <div className="flex gap-6 justify-end">
+                <button
+                  type="button"
+                  onClick={handleSaveEdit}
+                  className="px-6 py-3 bg-green-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-green-600 transition-colors"
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={closeEditPopup}
+                  className="px-6 py-3 bg-red-500 text-gray-100 font-semibold rounded-md shadow-lg hover:bg-red-600 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
-    </div>
-  </div>
-)}
-
+      )}
 
       {/* Delete Confirmation */}
       {showDeleteConfirm && itemToDelete && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm mx-auto">
             <h4 className="text-xl font-semibold text-white mb-4">Confirm Deletion</h4>
-            <p className="text-gray-300 mb-4">Are you sure you want to delete this item?</p>
+            <p className="text-gray-300 mb-4">
+              Are you sure you want to delete this item?
+            </p>
             <div className="flex justify-end gap-4">
               <button
                 onClick={closeDeleteConfirm}
