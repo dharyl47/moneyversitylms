@@ -16,7 +16,7 @@ const Layout = ({ children }) => {
       <Sidebar isCollapsed={isSidebarCollapsed} toggleSidebar={handleSidebarToggle} />
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1 bg-gray-900 text-white">
+      <div className="flex flex-col flex-1 bg-gray-300 text-white">
         {/* Navbar */}
         <Navbar />
 

@@ -3,6 +3,113 @@ import mongoose from 'mongoose';
 // Define schema
 const userProfileSchema = new mongoose.Schema({
   name: { type: String },
+  auth: { type: String },
+  guardianNamed: { type: String },
+  childrenOrDependents: {
+  hasDependents: { type: String, enum: ['Yes', 'No'], default: 'No' },
+  details: { type: String, default: 'N/A' },
+  },
+
+  estatePlanGoals: {
+    type: String,
+    default: 'N/A'
+  },
+
+
+
+
+estateProfileV2: {
+  ownsProperty: { type: String, default: 'N/A' },
+  propertyDetails: { type: String, default: 'N/A' },
+
+  ownsVehicle: { type: String, default: 'N/A' },
+  vehicleDetails: { type: String, default: 'N/A' },
+
+  ownsBusiness: { type: String, default: 'N/A' },
+  businessDetails: { type: String, default: 'N/A' },
+
+  ownsValuables: { type: String, default: 'N/A' },
+  valuableDetails: { type: String, default: 'N/A' },
+
+  hasDebts: { type: String, default: 'N/A' },
+  debtDetails: { type: String, default: 'N/A' },
+},
+
+estateGoalsV2: {
+  assetDistribution: { type: String, default: 'N/A' },
+  careForDependents: { type: String, default: 'N/A' },
+  minimizeTaxes: { type: String, default: 'N/A' },
+  businessSuccession: { type: String, default: 'N/A' },
+  incapacityPlanning: { type: String, default: 'N/A' },
+  emergencyFund: { type: String, default: 'N/A' },
+  financialPlan: { type: String, default: 'N/A' },
+},
+
+
+estateToolsV2: {
+  trusts: [{ type: String }],
+  will: { type: String, default: 'N/A' },
+  willReview: { type: String, default: 'N/A' },
+  trustSetup: { type: String, default: 'N/A' },
+  donations: { type: String, default: 'N/A' },
+  donationsProceedReview: { type: String, default: 'N/A' },
+  donationsDetails: { type: String, default: 'N/A' },
+  lifeInsurance: { type: String, default: 'N/A' },
+  lifeInsuranceDetails: { type: String, default: 'N/A' },
+  estateExpensePlan: { type: String, default: 'N/A' },
+  marriagePropertyStatus: { type: String, default: 'N/A' },
+  digitalAssets: { type: String, default: 'N/A' },
+  digitalAssetsDetails: { type: String, default: 'N/A' },
+},
+
+estateTaxV2: {
+estateDuty: { type: String, default: 'N/A' },
+gainsTax: { type: String, default: 'N/A' },
+incomeTax: { type: String, default: 'N/A' },
+protectionClaims: { type: String, default: 'N/A' },
+},
+
+businessV2: {
+businessPlan: { type: String, default: 'N/A' },
+},
+
+livingWillV2: {
+createLivingWill: { type: String, default: 'N/A' },
+healthCareDecisions: { type: String, default: 'N/A' },
+},
+
+reviewForeignAssetsV2: {
+ownProperty: { type: String, default: 'N/A' },
+},
+
+
+
+
+
+
+
+
+  userChatInputs: [
+    {
+      input: { type: String, required: true },
+      timestamp: { type: Date, default: Date.now }
+    }
+  ],
+   estatePlanningMessages: [
+    {
+      id: { type: String, required: true },
+      content: { type: String, required: true },
+      role: { type: String, enum: ["assistant", "user"], required: true },
+    },
+  ],
+  messages: [
+    {
+      id: { type: String, required: true },
+      content: { type: String, required: true },
+      role: { type: String, enum: ["assistant", "user"], required: true },
+    },
+  ],
+  flowNextResponse: { type: String, default: 'N/A' },
   dateCreated: { type: Date, default: Date.now },
   propertyRegime: { type: String, default: 'N/A' },
   deletionRequest: { type: String, default: 'N/A' },
@@ -22,6 +129,7 @@ const userProfileSchema = new mongoose.Schema({
     stepChildren: { type: Boolean, default: false },
     grandChildren: { type: Boolean, default: false },
     factualDependents: { type: Boolean, default: false },
+    parents: { type: Boolean, default: false },
     other: { type: Boolean, default: false },
   },
   asset: {
@@ -45,6 +153,7 @@ const userProfileSchema = new mongoose.Schema({
     trust: { type: Boolean, default: false },
     powerOfAttorney: { type: Boolean, default: false },
     livingWill: { type: Boolean, default: false },
+    allTemplates: { type: Boolean, default: false },
   },
    ObjectivesOfEstatePlanning: {
     estatePlanFlexibility: { type: String, default: 'N/A' },
@@ -56,6 +165,7 @@ const userProfileSchema = new mongoose.Schema({
   },
   Assets: {
     realEstateProperties: {
+      downloadAtEndOfChat: { type: Boolean, default: false },
       uploadDocumentAtEndOfChat: { type: Boolean, default: false },  // Boolean to indicate document upload
       propertiesDetails: { type: String, default: '' },  // General property details
       inDepthDetails: {  // Nested object inside realEstateProperties
@@ -67,11 +177,13 @@ const userProfileSchema = new mongoose.Schema({
       },
     },
     farmProperties: {
+        downloadAtEndOfChat: { type: Boolean, default: false },
         uploadDocumentAtEndOfChat: { type: Boolean, default: false },
         propertiesDetails: { type: String, default: '' },
       },
       vehicleProperties: {
         uploadDocumentAtEndOfChat: { type: Boolean, default: false },
+        downloadAtEndOfChat: { type: Boolean, default: false },
         propertiesDetails: { type: String, default: '' },
       },
       valuablePossessions: {
@@ -79,30 +191,37 @@ const userProfileSchema = new mongoose.Schema({
         propertiesDetails: { type: String, default: '' },
       },
       householdEffects: {
+        downloadAtEndOfChat: { type: Boolean, default: false },
         uploadDocumentAtEndOfChat: { type: Boolean, default: false },
         propertiesDetails: { type: String, default: '' },
       },
       investmentPortfolio: {
+        downloadAtEndOfChat: { type: Boolean, default: false },
         uploadDocumentAtEndOfChat: { type: Boolean, default: false },
         propertiesDetails: { type: String, default: '' },
       },
       bankBalances: {
         uploadDocumentAtEndOfChat: { type: Boolean, default: false },
+        downloadAtEndOfChat: { type: Boolean, default: false },
         propertiesDetails: { type: String, default: '' },
       },
       businessAssets: {
+        downloadAtEndOfChat: { type: Boolean, default: false },
         uploadDocumentAtEndOfChat: { type: Boolean, default: false },
         propertiesDetails: { type: String, default: '' },
       },
       otherAssets: {
+        downloadAtEndOfChat: { type: Boolean, default: false },
         uploadDocumentAtEndOfChat: { type: Boolean, default: false },
         propertiesDetails: { type: String, default: '' },
       },
       intellectualPropertyRights: {
+        downloadAtEndOfChat: { type: Boolean, default: false },
         uploadDocumentAtEndOfChat: { type: Boolean, default: false },
         propertiesDetails: { type: String, default: '' },
       },
       assetsInTrust: {
+        downloadAtEndOfChat: { type: Boolean, default: false },
         uploadDocumentAtEndOfChat: { type: Boolean, default: false },
         propertiesDetails: { type: String, default: '' },
       },
@@ -166,6 +285,7 @@ const userProfileSchema = new mongoose.Schema({
         },
         disabilityInsuranceAssist: {
           answer: { type: Boolean, default: false },
+          alreadyHave: { type: Boolean, default: false },
         },
         contingentLiabilityInsurance: {
           answer: { type: Boolean, default: false },
@@ -193,6 +313,38 @@ const userProfileSchema = new mongoose.Schema({
           answer: { type: String, default: '' },
         },
         funeralCoverInfo: {
+          answer: { type: String, default: '' },
+        },
+    },
+    InvestmentsPortfolio: {
+      stocksEquities: {
+           uploadDocumentAtEndOfChat: { type: Boolean, default: false },
+          details: { type: String, default: '' },
+        },
+        bondsFixedIncome: {
+           uploadDocumentAtEndOfChat: { type: Boolean, default: false },
+          details: { type: String, default: '' },
+        },
+        mutualFunds: {
+           uploadDocumentAtEndOfChat: { type: Boolean, default: false },
+          details: { type: String, default: '' },
+        },
+        retirementFunds: {
+           uploadDocumentAtEndOfChat: { type: Boolean, default: false },
+          details: { type: String, default: '' },
+        },
+        investmentProperties: {
+           uploadDocumentAtEndOfChat: { type: Boolean, default: false },
+          details: { type: String, default: '' },
+        },
+        otherAssetClassess: {
+           uploadDocumentAtEndOfChat: { type: Boolean, default: false },
+          details: { type: String, default: '' },
+        },
+        investmentGoalsRiskTolerance: {
+          answer: { type: String, default: '' },
+        },
+        specificInvestmentChanges: {
           answer: { type: String, default: '' },
         },
     },
@@ -244,6 +396,7 @@ const userProfileSchema = new mongoose.Schema({
   },
 ExecutorFees: { 
       noExecutorFeesPolicy: {
+          uploadDocumentAtEndOfChat: { type: Boolean, default: false },
           answer: { type: String, default: '' },
         },
 
@@ -251,6 +404,7 @@ ExecutorFees: {
 
   LiquidityPosition: { 
       liquiditySources: {
+          uploadDocumentAtEndOfChat: { type: Boolean, default: false },
           answer: { type: String, default: '' },
         },
         shortfallHeirContribution: {

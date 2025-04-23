@@ -43,7 +43,7 @@ const Navbar = () => {
 
       {/* Centered Title */}
       <a href="/" className="flex justify-center items-center">
-        <span className="self-center text-xl font-semibold text-white dark:text-white">
+        <span className="self-center text-xl font-semibold text-gray-900">
           Estate Planning AI
         </span>
       </a>

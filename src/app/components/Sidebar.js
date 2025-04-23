@@ -22,19 +22,15 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
   };
 
   return (
-    <div
-       className={`h-full bg-gray-800 fixed text-white transition-all duration-300 ${
-        isCollapsed ? "w-48" : "w-48"
-      }`}
-    >
+    <div className={`h-full bg-gray-100 fixed text-gray-900 transition-all duration-300 ${ isCollapsed ? "w-48" : "w-48" }`}>
+
       <div className="flex flex-col items-center h-full overflow-y-auto">
         <nav className="flex-1 flex flex-col mt-16"> {/* Add spacing for Navbar */}
           <ul className="space-y-2 p-2">
             <li>
               <Link
                 href="/dashboard"
-                className={`flex items-center p-2 rounded hover:bg-gray-700  ""
-                }`}
+                className={`flex items-center p-2 rounded hover:bg-gray-300`}
               >
                 <FontAwesomeIcon icon={faHome} className="mr-2" />
                 {"Dashboard"}
