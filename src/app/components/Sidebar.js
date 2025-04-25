@@ -30,13 +30,13 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
             <li>
               <Link
                 href="/dashboard"
-                className={`flex items-center p-2 rounded hover:bg-gray-300`}
+                className={`flex items-center p-2 rounded hover:bg-gray-700 w-full hover:text-white `}
               >
                 <FontAwesomeIcon icon={faHome} className="mr-2" />
                 {"Dashboard"}
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link
                 href="/lms"
                 className={`flex items-center p-2 rounded hover:bg-gray-700 : ""
@@ -45,8 +45,8 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
                 <FontAwesomeIcon icon={faBook} className="mr-2" />
                 {"LMS"}
               </Link>
-            </li>
-            <li>
+            </li> */}
+            {/* <li>
               <Link
                 href="/engagingcontent"
                 className={`flex items-center p-2 rounded hover:bg-gray-700  ""
@@ -55,11 +55,11 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
                 <FontAwesomeIcon icon={faNewspaper} className="mr-2" />
                 {"Engaging Content"}
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link
                 href="/user-control"
-                className={`flex items-center p-2 rounded hover:bg-gray-700 ""
+                className={`flex items-center p-2 rounded hover:bg-gray-700 hover:text-white ""
                 }`}
               >
                 <FontAwesomeIcon icon={faUserGear} className="mr-2" />
@@ -69,7 +69,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
             <li>
               <Link
                 href="/privacy-policy"
-                className={`flex items-center p-2 rounded hover:bg-gray-700  ""
+                className={`flex items-center p-2 rounded hover:bg-gray-700  hover:text-white ""
                 }`}
               >
                 <FontAwesomeIcon icon={faFileCircleQuestion} className="mr-2" />
@@ -79,7 +79,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
             <li>
               <button
                 onClick={handleLogout}
-                className={`flex items-center p-2 rounded hover:bg-gray-700 w-full ""
+                className={`flex items-center p-2 rounded hover:bg-gray-700 w-full hover:text-white ""
                 }`}
               >
                 <FontAwesomeIcon icon={faRightFromBracket} className="mr-2" />

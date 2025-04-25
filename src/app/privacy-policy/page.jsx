@@ -2,11 +2,11 @@ import Layout from "@/app/components/Layout";
 
 export default function Privacy() {
   return (
-    <main className="bg-gray-900 min-h-screen text-white">
+    <main className="bg-gray-900 min-h-screen text-gray-900">
       <Layout>
         <div className="p-6 max-w-6xl mx-auto h-screen">
-          <h1 className="text-5xl font-bold mb-4 text-center">Privacy Policy</h1>
-          <p className="text-base leading-relaxed">
+          <h1 className="text-5xl font-bold mb-4 text-center text-gray-900">Privacy Policy</h1>
+          <p className="text-base leading-relaxed text-gray-900">
             The companies in the Old Mutual Group represented on this website (&ldquo;Old Mutual Moneyversity&rdquo;) and its employees respect your privacy and the confidentiality of your personal information. Personal information that you supply to us via this website and via e­mail (&ldquo;your personal information&rdquo;) is only used and processed for the purpose: For which we request the information, as stated in the relevant e-mail; and/or to the extent necessary to enable Old Mutual to meet its obligations to you; and to comply with our legal obligations.
             <br /><br />
             Old Mutual will not disclose your personal information to third parties outside the Old Mutual Group, unless: Old Mutual is permitted or required to do so by law; or it is in the public interest to do so; or it is necessary to protect the rights of a company in the Old Mutual Group; or you have expressly authorised Old Mutual to do so.

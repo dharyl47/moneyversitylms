@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import ProfileModal from '@/app/components/ProfileModal';
 import ConfirmationModal from '@/app/components/ConfirmationModal';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 const DataTableV2 = ({ data, onEdit, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,102 +10,267 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  const handleDownloadPDF = async (item) => {
+    try {
+      const response = await fetch("/api/generatePdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item),
+      });
 
+      if (!response.ok) throw new Error("Failed to generate PDF");
 
+      const pdfBlob = await response.blob();
+      const downloadUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.setAttribute("download", `${item.name}_Estate_Planning_Report.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
 
+      console.log("PDF downloaded successfully!");
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+    }
+  };
 
-const questions = {
-  // Objectives of Estate Planning
-  estatePlanFlexibility: "How important is it for your estate plan to be flexible and adapt to changes in your environment?",
-  businessProtectionImportance: "How important is it for your estate plan to protect your business interests?",
-  financialSafeguardStrategies: "What strategies would you like in place for safeguarding financial resources for retirement?",
-  insolvencyProtectionConcern: "Are you concerned about protecting assets from potential insolvency issues?",
-  dependentsMaintenanceImportance: "How important is it to have provisions in place for your dependants' maintenance?",
-  taxMinimizationPriority: "How high a priority is it for you to minimize taxes?",
-  estatePlanReviewConfidence: "How confident are you in reviewing and updating your estate plan regularly?",
+  const handleOpenModal = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
 
-  // Assets
-  realEstateProperties: "Do you own any real estate properties, such as houses, apartments, or land?",
-  farmProperties: "Do you own a farm? Please provide details about the farm.",
-  vehicleProperties: "How many vehicles do you own, and what are their makes, models, and estimated values?",
-  valuablePossessions: "Do you own any valuable possessions such as artwork, jewelry, or collectibles?",
-  householdEffects: "What is the estimated value of your household effects (e.g., furniture, appliances)?",
-  intellectualPropertyRights: "Do you own any intellectual property rights, such as patents, trademarks, or copyrights?",
-  assetsInTrust: "Are there assets held in trust? If yes, please specify the nature of the trust and assets.",
-  investmentPortfolio: "Please provide details about your investment portfolio.",
-  bankBalances: "Do you have cash savings or deposits in bank accounts?",
-  businessAssets: "Do you have any business interests or ownership stakes in companies?",
-  otherAssets: "Are there any other significant assets you would like to include in your estate plan?",
+  const handleCloseModal = () => {
+    setSelectedItem(null);
+    setIsModalOpen(false);
+  };
 
-  // Liabilities
-  outstandingMortgageLoans: "Do you have any outstanding mortgage loans? Please specify details.",
-  personalLoans: "Are there any personal loans you owe?",
-  creditCardDebt: "Do you have any credit card debt? Please specify details.",
-  vehicleLoans: "Are there loans for vehicles you own?",
-  otherOutstandingDebts: "Are there any other outstanding debts?",
-  strategyLiabilities: "Do you have a strategy for managing and reducing your liabilities over time?",
-  foreseeableFuture: "Are there any expected changes in your liabilities?",
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
+    setIsDeleteModalOpen(true);
+  };
 
-  // Policies
-  lifeInsurancePolicies: "Do you currently have any life insurance policies in place?",
-  healthInsurancePolicies: "Are you covered by health insurance policies?",
-  propertyInsurance: "Are your properties adequately insured?",
-  vehicleInsurance: "Are your vehicles insured?",
-  disabilityInsurance: "Do you currently have disability insurance?",
-  disabilityInsuranceType: "Which type of disability insurance do you have or consider?",
-  disabilityInsuranceAwareness: "Are you aware of any limitations on your disability insurance coverage?",
-  contingentLiabilityInsurance: "Do you have contingent liability insurance for unexpected liabilities?",
-  buySellInsurance: "Have you considered buy and sell insurance to protect your business partners and family?",
-  keyPersonInsurance: "Do you have key person insurance in place for business continuity?",
-  otherInsurance: "Do you have any other types of insurance not mentioned?",
-  funeralCoverInfo: "Have you considered obtaining funeral cover for liquidity after passing?",
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      onDelete(itemToDelete._id);
+      setIsDeleteModalOpen(false);
+      setItemToDelete(null);
+    }
+  };
 
-  // Estate Duty
-  estateBequeathToSpouse: "Do you bequeath your estate to your spouse?",
-  bequeathToSpouseCondition: "Are there any conditions or limitations on bequests to your spouse?",
-  bequeathToSpousePercentage: "Specify the percentage or assets you'd like to leave to your spouse.",
-  estateDistributed: "How would you like your estate to be distributed among beneficiaries?",
-  estateBequeathResidue: "What happens to the residue of your estate?",
-  estateBequeathToTrust: "Do you bequeath any portion of your estate to a trust?",
-  estateBequeathProperty: "Is there a specific property bequeathed to a trust?",
-  estateBequeathWhom: "To whom are farm implements, tools, or vehicles bequeathed?",
-  estateBequeathDifference: "How should asset differences be managed upon massing?",
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setItemToDelete(null);
+  };
 
-  // Executor Fees
-  noExecutorFeesPolicy: "Are executor's fees payable on proceeds from policies with beneficiary nomination?",
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Liquidity Position
-  liquiditySources: "Are you aware of any sources of liquidity in your estate?",
-  shortfallHeirContribution: "If there's a shortfall, are you open to heirs contributing cash?",
-  borrowingFundsForShortfall: "Have you considered borrowing funds for shortfalls?",
-  lifeAssuranceCashShortfall: "Have you considered life assurance for addressing cash shortfalls?",
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const maxPageButtons = 10;
+  const startPage = Math.floor((currentPage - 1) / maxPageButtons) * maxPageButtons + 1;
+  const endPage = Math.min(startPage + maxPageButtons - 1, totalPages);
+  const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
 
-  // Maintenance Claims
-  maintenanceClaimsAwareness: "Are you aware of any existing maintenance obligations?",
-  maintenanceCostOfEducation: "Have you considered the cost of education in your maintenance planning?",
-  maintenanceInsurancePolicy: "Have you considered life insurance for maintenance obligations?",
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
-  // Maintenance of Surviving Spouse
-  provisionsForSurvivingSpouse: "Are you considering provisions for maintenance of the surviving spouse?",
-  reviewExistingProvisionsInfo: "Would you like to review existing provisions for alignment with goals?",
-  incomeMaintenanceTax: "What monthly income would be required for spouse maintenance?",
+  const handleNextPageSet = () => {
+    if (endPage < totalPages) {
+      setCurrentPage(endPage + 1);
+    }
+  };
 
-  // Provisions for Dependents
-  dependentsIncomeNeeds: "Do your dependents require income for maintenance?",
-  shortfallHouseholdIncome: "Have you assessed capital for generating income for dependents?",
-  additionalLifeInsuranceDependents: "Have you considered additional life insurance for income needs?",
+  const handlePrevPageSet = () => {
+    if (startPage > 1) {
+      setCurrentPage(startPage - 1);
+    }
+  };
 
-  // Trusts
-  familiarWithTrust: "Are you familiar with trusts?",
-  consideredSettingUpTrust: "Have you considered setting up a trust?",
-  reasonTrustRelevant: "Are any asset protection reasons relevant to your estate planning?",
-  trustAdvantages: "Have you considered the advantages of transferring assets to a trust?",
+  return (
+    <div className="overflow-x-auto border rounded-lg shadow-sm bg-white">
+      <table className="min-w-full text-gray-800 border-collapse">
+        <thead>
+          <tr className="bg-gray-100 border-b">
+            {["Name", "Email", "Date of Birth", "Property Regime", "Marital Status", "Request to Remove", "Actions"].map((header) => (
+              <th key={header} className="py-3 px-4 text-left text-sm font-semibold border-r last:border-r-0">
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {currentItems.map((item, idx) => (
+            <tr key={item._id} className={`border-b hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+              <td className="py-2 px-4">{item.name}</td>
+              <td className="py-2 px-4">{item.emailAddress}</td>
+              <td className="py-2 px-4">{item.dateOfBirth}</td>
+              <td className="py-2 px-4">{item.propertyRegime}</td>
+              <td className="py-2 px-4">{item.maritalStatus}</td>
+              <td className="py-2 px-4">{item.deletionRequest || "No"}</td>
+              <td className="py-2 px-4 space-x-2">
+                <button
+                  onClick={() => handleOpenModal(item)}
+                  className="text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  More Info
+                </button>
+                <button
+                  onClick={() => handleDeleteClick(item)}
+                  className="text-red-600 hover:text-red-800 text-sm"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={() => handleDownloadPDF(item)}
+                  className="text-green-600 hover:text-green-800 text-sm"
+                >
+                  Download PDF
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-  // Investment Trusts
-  settingUpInvestmentTrust: "Are you interested in setting up an investment trust?",
-  investmentTrustFlexibility: "Does investment trust flexibility align with your goals?",
+      <div className="flex justify-center mt-4 space-x-1">
+        <button
+          onClick={handlePrevPageSet}
+          disabled={startPage === 1}
+          className="px-3 py-2 border rounded-md bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+        >
+          &lt;
+        </button>
+
+        {pageNumbers.map((page) => (
+          <button
+            key={page}
+            onClick={() => handlePageChange(page)}
+            className={`px-3 py-2 border rounded-md text-sm font-medium ${
+              currentPage === page
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+
+        <button
+          onClick={handleNextPageSet}
+          disabled={endPage === totalPages}
+          className="px-3 py-2 border rounded-md bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+        >
+          &gt;
+        </button>
+      </div>
+
+      <ProfileModal isOpen={isModalOpen} onClose={handleCloseModal} selectedItem={selectedItem} />
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDelete}
+        itemName={itemToDelete?.name}
+      />
+    </div>
+  );
 };
 
+export default DataTableV2;
+
+// const questions = {
+//   // Objectives of Estate Planning
+//   estatePlanFlexibility: "How important is it for your estate plan to be flexible and adapt to changes in your environment?",
+//   businessProtectionImportance: "How important is it for your estate plan to protect your business interests?",
+//   financialSafeguardStrategies: "What strategies would you like in place for safeguarding financial resources for retirement?",
+//   insolvencyProtectionConcern: "Are you concerned about protecting assets from potential insolvency issues?",
+//   dependentsMaintenanceImportance: "How important is it to have provisions in place for your dependants' maintenance?",
+//   taxMinimizationPriority: "How high a priority is it for you to minimize taxes?",
+//   estatePlanReviewConfidence: "How confident are you in reviewing and updating your estate plan regularly?",
+
+//   // Assets
+//   realEstateProperties: "Do you own any real estate properties, such as houses, apartments, or land?",
+//   farmProperties: "Do you own a farm? Please provide details about the farm.",
+//   vehicleProperties: "How many vehicles do you own, and what are their makes, models, and estimated values?",
+//   valuablePossessions: "Do you own any valuable possessions such as artwork, jewelry, or collectibles?",
+//   householdEffects: "What is the estimated value of your household effects (e.g., furniture, appliances)?",
+//   intellectualPropertyRights: "Do you own any intellectual property rights, such as patents, trademarks, or copyrights?",
+//   assetsInTrust: "Are there assets held in trust? If yes, please specify the nature of the trust and assets.",
+//   investmentPortfolio: "Please provide details about your investment portfolio.",
+//   bankBalances: "Do you have cash savings or deposits in bank accounts?",
+//   businessAssets: "Do you have any business interests or ownership stakes in companies?",
+//   otherAssets: "Are there any other significant assets you would like to include in your estate plan?",
+
+//   // Liabilities
+//   outstandingMortgageLoans: "Do you have any outstanding mortgage loans? Please specify details.",
+//   personalLoans: "Are there any personal loans you owe?",
+//   creditCardDebt: "Do you have any credit card debt? Please specify details.",
+//   vehicleLoans: "Are there loans for vehicles you own?",
+//   otherOutstandingDebts: "Are there any other outstanding debts?",
+//   strategyLiabilities: "Do you have a strategy for managing and reducing your liabilities over time?",
+//   foreseeableFuture: "Are there any expected changes in your liabilities?",
+
+//   // Policies
+//   lifeInsurancePolicies: "Do you currently have any life insurance policies in place?",
+//   healthInsurancePolicies: "Are you covered by health insurance policies?",
+//   propertyInsurance: "Are your properties adequately insured?",
+//   vehicleInsurance: "Are your vehicles insured?",
+//   disabilityInsurance: "Do you currently have disability insurance?",
+//   disabilityInsuranceType: "Which type of disability insurance do you have or consider?",
+//   disabilityInsuranceAwareness: "Are you aware of any limitations on your disability insurance coverage?",
+//   contingentLiabilityInsurance: "Do you have contingent liability insurance for unexpected liabilities?",
+//   buySellInsurance: "Have you considered buy and sell insurance to protect your business partners and family?",
+//   keyPersonInsurance: "Do you have key person insurance in place for business continuity?",
+//   otherInsurance: "Do you have any other types of insurance not mentioned?",
+//   funeralCoverInfo: "Have you considered obtaining funeral cover for liquidity after passing?",
+
+//   // Estate Duty
+//   estateBequeathToSpouse: "Do you bequeath your estate to your spouse?",
+//   bequeathToSpouseCondition: "Are there any conditions or limitations on bequests to your spouse?",
+//   bequeathToSpousePercentage: "Specify the percentage or assets you'd like to leave to your spouse.",
+//   estateDistributed: "How would you like your estate to be distributed among beneficiaries?",
+//   estateBequeathResidue: "What happens to the residue of your estate?",
+//   estateBequeathToTrust: "Do you bequeath any portion of your estate to a trust?",
+//   estateBequeathProperty: "Is there a specific property bequeathed to a trust?",
+//   estateBequeathWhom: "To whom are farm implements, tools, or vehicles bequeathed?",
+//   estateBequeathDifference: "How should asset differences be managed upon massing?",
+
+//   // Executor Fees
+//   noExecutorFeesPolicy: "Are executor's fees payable on proceeds from policies with beneficiary nomination?",
+
+//   // Liquidity Position
+//   liquiditySources: "Are you aware of any sources of liquidity in your estate?",
+//   shortfallHeirContribution: "If there's a shortfall, are you open to heirs contributing cash?",
+//   borrowingFundsForShortfall: "Have you considered borrowing funds for shortfalls?",
+//   lifeAssuranceCashShortfall: "Have you considered life assurance for addressing cash shortfalls?",
+
+//   // Maintenance Claims
+//   maintenanceClaimsAwareness: "Are you aware of any existing maintenance obligations?",
+//   maintenanceCostOfEducation: "Have you considered the cost of education in your maintenance planning?",
+//   maintenanceInsurancePolicy: "Have you considered life insurance for maintenance obligations?",
+
+//   // Maintenance of Surviving Spouse
+//   provisionsForSurvivingSpouse: "Are you considering provisions for maintenance of the surviving spouse?",
+//   reviewExistingProvisionsInfo: "Would you like to review existing provisions for alignment with goals?",
+//   incomeMaintenanceTax: "What monthly income would be required for spouse maintenance?",
+
+//   // Provisions for Dependents
+//   dependentsIncomeNeeds: "Do your dependents require income for maintenance?",
+//   shortfallHouseholdIncome: "Have you assessed capital for generating income for dependents?",
+//   additionalLifeInsuranceDependents: "Have you considered additional life insurance for income needs?",
+
+//   // Trusts
+//   familiarWithTrust: "Are you familiar with trusts?",
+//   consideredSettingUpTrust: "Have you considered setting up a trust?",
+//   reasonTrustRelevant: "Are any asset protection reasons relevant to your estate planning?",
+//   trustAdvantages: "Have you considered the advantages of transferring assets to a trust?",
+
+//   // Investment Trusts
+//   settingUpInvestmentTrust: "Are you interested in setting up an investment trust?",
+//   investmentTrustFlexibility: "Does investment trust flexibility align with your goals?",
+// };
 
 // const handleDownloadPDF = (item) => {
 //   const doc = new jsPDF({
@@ -297,168 +460,3 @@ const questions = {
 //   doc.save(`Profile_${item.name}.pdf`);
 // };
 
-
-const handleDownloadPDF = async (item) => {
-  try {
-    // Call the backend API to generate the PDF
-    const response = await fetch("/api/generatePdf", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(item), // Pass the selected item data to the backend
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to generate PDF");
-    }
-
-    // Convert the response to a Blob
-    const pdfBlob = await response.blob();
-
-    // Create a download link for the PDF
-    const downloadUrl = URL.createObjectURL(pdfBlob);
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.setAttribute("download", `${item.name}_Estate_Planning_Report.pdf`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    console.log("PDF downloaded successfully!");
-  } catch (error) {
-    console.error("Error downloading PDF:", error);
-  }
-};
-
-
-
-
-  const handleOpenModal = (item) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedItem(null);
-    setIsModalOpen(false);
-  };
-
-  const handleDeleteClick = (item) => {
-    setItemToDelete(item);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (itemToDelete) {
-      onDelete(itemToDelete._id);
-      setIsDeleteModalOpen(false);
-      setItemToDelete(null);
-    }
-  };
-
-  const handleCloseDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-    setItemToDelete(null);
-  };
-
-  
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Pagination settings
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const maxPageButtons = 10;
-  const startPage = Math.floor((currentPage - 1) / maxPageButtons) * maxPageButtons + 1;
-  const endPage = Math.min(startPage + maxPageButtons - 1, totalPages);
-  const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleNextPageSet = () => {
-    if (endPage < totalPages) {
-      setCurrentPage(endPage + 1);
-    }
-  };
-
-  const handlePrevPageSet = () => {
-    if (startPage > 1) {
-      setCurrentPage(startPage - 1);
-    }
-  };
-
-  return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-gray-700 text-gray-200">
-        <thead>
-          <tr>
-            <th className="py-2 px-4">Name</th>
-            <th className="py-2 px-4">Email</th>
-            <th className="py-2 px-4">Date of Birth</th>
-            <th className="py-2 px-4">Property Regime</th>
-            <th className="py-2 px-4">Marital Status</th>
-            <th className="py-2 px-4">Request to Remove</th>
-            <th className="py-2 px-4">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.map((item) => (
-            <tr key={item._id}>
-              <td className="py-2 px-4 text-center">{item.name}</td>
-              <td className="py-2 px-4 text-center">{item.emailAddress}</td>
-              <td className="py-2 px-4 text-center">{item.dateOfBirth}</td>
-              <td className="py-2 px-4 text-center">{item.propertyRegime}</td>
-              <td className="py-2 px-4 text-center">{item.maritalStatus}</td>
-              <td className="py-2 px-4 text-center">{item.deletionRequest || "No"}</td>
-              <td className="py-2 px-4 text-center">
-                <button
-                  onClick={() => handleOpenModal(item)}
-                  className="text-blue-500 hover:underline mr-2"
-                >
-                  More Info
-                </button>
-                <button
-                  onClick={() => handleDeleteClick(item)}
-                  className="text-red-500 hover:underline mr-2"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={() => handleDownloadPDF(item)}
-                  className="text-green-500 hover:underline"
-                >
-                  Download PDF
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="flex justify-center mt-4 space-x-1">
-        <button onClick={handlePrevPageSet} disabled={startPage === 1} className="px-3 py-2 rounded-md bg-gray-300 text-gray-700 hover:bg-gray-400 disabled:opacity-50">
-          &lt;
-        </button>
-        
-        {pageNumbers.map((page) => (
-          <button key={page} onClick={() => handlePageChange(page)} className={`px-3 py-2 rounded-md text-sm font-medium focus:outline-none ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}`}>
-            {page}
-          </button>
-        ))}
-
-        <button onClick={handleNextPageSet} disabled={endPage === totalPages} className="px-3 py-2 rounded-md bg-gray-300 text-gray-700 hover:bg-gray-400 disabled:opacity-50">
-          &gt;
-        </button>
-      </div>
-
-      <ProfileModal isOpen={isModalOpen} onClose={handleCloseModal} selectedItem={selectedItem} />
-      <ConfirmationModal isOpen={isDeleteModalOpen} onClose={handleCloseDeleteModal} onConfirm={handleConfirmDelete} itemName={itemToDelete?.name} />
-    </div>
-  );
-};
-
-export default DataTableV2;

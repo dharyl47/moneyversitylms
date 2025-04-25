@@ -172,10 +172,10 @@ export default function UserControl() {
     {/* Main Container */}
     <div className="p-6 min-h-screen container mx-auto pl-16">
        
-               <h1 className="text-3xl font-bold mb-4">User Profile</h1><br/>
+               <h1 className="text-3xl font-bold mb-4 text-gray-900">User Profile</h1><br/>
     <div className="flex flex-col h-screen">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-50 bg-[#111827]  py-2 flex justify-between items-center">
+      <div className="sticky top-0 z-50   py-2 flex justify-between items-center">
        
         <div className="flex space-x-4">
           {/* Search Input */}

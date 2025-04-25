@@ -23,22 +23,22 @@ const Login = () => {
     const data = await response.json();
 
     if (response.ok) {
-      localStorage.setItem("isAuthenticated", "true"); // Set auth status
-      router.push('/dashboard'); // Redirect to dashboard
+      localStorage.setItem("isAuthenticated", "true");
+      router.push('/dashboard');
     } else {
       alert(data.message);
     }
   };
 
   return (
-    <section className="bg-gray-900 min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">
+    <section className="bg-gray-100 min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8 border border-gray-200">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           Sign in to your account
         </h1>
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
               Email Address
             </label>
             <input
@@ -48,12 +48,12 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               required
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
             <input
@@ -63,7 +63,7 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               required
             />
           </div>
@@ -72,13 +72,15 @@ const Login = () => {
               <input
                 type="checkbox"
                 id="remember"
-                className="w-4 h-4 text-green-500 bg-gray-700 border-gray-600 rounded focus:ring-2 focus:ring-green-500"
+                className="w-4 h-4 text-green-500 bg-white border-gray-300 rounded focus:ring-2 focus:ring-green-500"
               />
-              {/* <label htmlFor="remember" className="ml-2 text-sm text-gray-300">
+              {/* Uncomment if needed */}
+              {/* <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
                 Remember me
               </label> */}
             </div>
-            {/* <Link href="#" className="text-sm text-green-400 hover:underline">
+            {/* Uncomment if needed */}
+            {/* <Link href="#" className="text-sm text-green-600 hover:underline">
               Forgot password?
             </Link> */}
           </div>
