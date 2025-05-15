@@ -94,37 +94,71 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
       <table className="min-w-full text-gray-800 border-collapse">
       <thead>
   <tr className="bg-white border-b">
-    {["Name", "Email", "Date of Birth", "Owns Property", "Owns Business", "Has Debts", "Life Insurance", "Actions"].map((header) => (
+    {["Name", "Email", "Date of Birth", "Current Stage", "Status", "Actions"].map((header) => (
       <th key={header} className="py-3 px-4 text-left text-sm font-semibold border-r last:border-r-0">
         {header}
       </th>
     ))}
   </tr>
 </thead>
+
 <tbody>
-  {currentItems.map((item, idx) => (
-    <tr key={item._id} className={`border-b hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-      <td className="py-2 px-4">{item.name}</td>
-      <td className="py-2 px-4">{item.emailAddress}</td>
-      <td className="py-2 px-4">{item.dateOfBirth}</td>
-      <td className="py-2 px-4">{item.estateProfileV2?.ownsProperty || "N/A"}</td>
-      <td className="py-2 px-4">{item.estateProfileV2?.ownsBusiness || "N/A"}</td>
-      <td className="py-2 px-4">{item.estateProfileV2?.hasDebts || "N/A"}</td>
-      <td className="py-2 px-4">{item.estateToolsV2?.lifeInsurance || "N/A"}</td>
-      <td className="py-2 px-4 space-x-2">
-        <button onClick={() => handleOpenModal(item)} className="text-blue-600 hover:text-blue-800 text-sm">
-          More Info
-        </button>
-        <button onClick={() => handleDeleteClick(item)} className="text-red-600 hover:text-red-800 text-sm">
-          Delete
-        </button>
-        <button onClick={() => handleDownloadPDF(item)} className="text-green-600 hover:text-green-800 text-sm">
-          Download PDF
-        </button>
-      </td>
-    </tr>
-  ))}
+  {currentItems.map((item, idx) => {
+    const requiredSections = [
+      "estateProfileV2",
+      "estateGoalsV2",
+      "estateToolsV2",
+      "estateTaxV2",
+      "businessV2",
+      "livingWillV2",
+      "reviewForeignAssetsV2"
+    ];
+
+    const hasMeaningfulData = (obj) => {
+      if (!obj) return false;
+      if (typeof obj === "object") return Object.values(obj).some((v) => v && v !== "N/A");
+      return obj !== "" && obj !== "N/A";
+    };
+
+    const isCompleted = requiredSections.every((section) => hasMeaningfulData(item[section]));
+    const status = isCompleted ? "Completed" : "In Progress";
+
+    const stages = [
+      "Consent",
+      "Personal Information",
+      "Net Worth Assessment",
+      "Estate Planning Goals",
+      "Choosing Estate Planning Tools",
+      "Tax Planning and Minimization",
+      "Business Succession Planning",
+      "Living Will and Healthcare Directives",
+      "Review of Foreign Assets",
+      "Final Review and Next Steps"
+    ];
+
+    const currentStage = stages.find((stage, index) => {
+      return !hasMeaningfulData(item[requiredSections[index]]);
+    }) || "Completed";
+
+    return (
+      <tr key={item._id} className={`border-b hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+        <td className="py-2 px-4">{item.name}</td>
+        <td className="py-2 px-4">{item.emailAddress}</td>
+        <td className="py-2 px-4">{item.dateOfBirth}</td>
+        <td className="py-2 px-4">{currentStage}</td>
+        <td className={`py-2 px-4 font-semibold ${status === "Completed" ? "text-green-600" : "text-yellow-600"}`}>
+          {status}
+        </td>
+        <td className="py-2 px-4 space-x-2">
+          <button onClick={() => handleOpenModal(item)} className="text-blue-600 hover:text-blue-800 text-sm">More Info</button>
+          <button onClick={() => handleDeleteClick(item)} className="text-red-600 hover:text-red-800 text-sm">Delete</button>
+          <button onClick={() => handleDownloadPDF(item)} className="text-green-600 hover:text-green-800 text-sm">Download PDF</button>
+        </td>
+      </tr>
+    );
+  })}
 </tbody>
+
 
       </table>
 
