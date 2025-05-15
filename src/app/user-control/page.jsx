@@ -127,9 +127,11 @@ export default function UserControl() {
 
   const filterProfiles = (stage, profiles = profile) => {
     const filtered = profiles.filter((p) => {
-      // Only check the name if searchText is not empty and p.name is a valid string
+      const search = searchText.toLowerCase();
+
       const matchesSearch = searchText
-        ? p.name && p.name.toLowerCase().includes(searchText.toLowerCase())
+        ? (p.name && p.name.toLowerCase().includes(search)) ||
+          (p.emailAddress && p.emailAddress.toLowerCase().includes(search))
         : true;
 
       const matchesStage = stage === "Show All" || hasCompletedStage(p, stage);
@@ -190,11 +192,12 @@ export default function UserControl() {
                 {/* Search Input */}
                 <input
                   type="text"
-                  placeholder="Enter name..."
+                  placeholder="Search by name or email..."
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   className="px-3 py-2 rounded-md bg-white text-black shadow-lg"
                 />
+
                 {/* Filter Dropdown */}
                 <select
                   value={selectedStage}

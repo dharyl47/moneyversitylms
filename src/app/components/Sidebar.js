@@ -35,9 +35,17 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
   }}
 >
 
+ {/* Title Section */}
+ <div className="pl-3 mt-2 w-full text-left">
+ <h1 className="text-sm font-semibold text-black leading-snug">
+  AI Estate Planning<br />Admin Dashboard
+</h1>
+
+</div>
+
 
       <div className="flex flex-col items-center h-full overflow-y-auto">
-        <nav className="flex-1 flex flex-col mt-16 w-full">
+        <nav className="flex-1 flex flex-col mt-4 w-full">
           <ul className="space-y-1 p-1 w-full">
             <li>
               <Link href="/dashboard" className={linkClasses("/dashboard")}>

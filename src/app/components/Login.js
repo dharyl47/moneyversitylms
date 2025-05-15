@@ -34,7 +34,7 @@ const Login = () => {
     <section className="bg-gray-100 min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8 border border-gray-200">
         <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          Sign in to your account
+          AI Estate Planning Admin Dashboard
         </h1>
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
@@ -69,11 +69,11 @@ const Login = () => {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <input
+              {/* <input
                 type="checkbox"
                 id="remember"
                 className="w-4 h-4 text-green-500 bg-white border-gray-300 rounded focus:ring-2 focus:ring-green-500"
-              />
+              /> */}
               {/* Uncomment if needed */}
               {/* <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
                 Remember me

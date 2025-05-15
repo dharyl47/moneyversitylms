@@ -210,7 +210,7 @@ export default function Dashboard() {
                   'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
                 fontSize: "20px",
               }}
-              >Users Completed Flow</h2>
+              >User Journey Completed</h2>
               <Bar data={completedFlowData} options={{ responsive: true }} />
             </div>
 
@@ -222,21 +222,11 @@ export default function Dashboard() {
                   'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
                 fontSize: "20px",
               }}
-              >Users by Stages Stopped</h2>
+              >Users in Progress</h2>
               <Bar data={stagesData} options={{ responsive: true }} />
             </div>
 
-            {/* Property Regime Chart */}
-            <div className="bg-white p-4 rounded-lg shadow-lg">
-              <h2 className="text-xl font-semibold mb-2 text-gray-900"
-              style={{
-                fontFamily:
-                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
-                fontSize: "20px",
-              }}
-              >User Property Regime</h2>
-              <Pie data={propertyRegimeData} options={{ responsive: true }} />
-            </div>
+           
 
             {/* User Growth Over Time Chart */}
             <div className="bg-white p-4 rounded-lg shadow-lg">
