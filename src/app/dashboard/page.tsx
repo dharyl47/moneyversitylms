@@ -58,14 +58,17 @@ export default function Dashboard() {
   }, []);
 
   const hasMeaningfulData = (obj: any): boolean => {
-    if (typeof obj !== "object" || obj === null) return false;
-    return Object.values(obj).some((value: any) => {
-      if (typeof value === "object" && value !== null) {
-        return hasMeaningfulData(value);
-      }
-      return value !== null && value !== false && value !== "" && value !== "N/A";
-    });
+    if (obj === null || obj === undefined) return false;
+  
+    // If it's a primitive value, directly check
+    if (typeof obj !== "object") {
+      return obj !== "" && obj !== false && obj !== "N/A";
+    }
+  
+    // If it's an object, check its values recursively
+    return Object.values(obj).some((value: any) => hasMeaningfulData(value));
   };
+  
 
   const calculateStatistics = (profiles: Profile[]) => {
     const completedFlowCount = profiles.filter((profile) =>
@@ -85,33 +88,68 @@ export default function Dashboard() {
     const stages = [
       "Consent",
       "Personal Information",
-      "Step-by-Step Guidance",
-      "Objectives of Estate Planning",
-      "Assets & Liabilities",
-      "Policies & Investments",
-      "Estate Duty & Executor Fees",
-      "Liquidity Position",
-      "Maintenance Claims",
-      "Provisions for Dependents",
-      "Trusts",
-      "Final Details",
+      "Net Worth Assessment",
+      "Estate Planning Goals",
+      "Choosing Estate Planning Tools",
+      "Tax Planning and Minimization",
+      "Business Succession Planning",
+      "Living Will and Healthcare Directives",
+      "Review of Foreign Assets",
+      "Final Review and Next Steps",
     ];
-
+    
     const mapSchemaToStage: Record<string, string[]> = {
       "Consent": [],
       "Personal Information": ["name", "dateOfBirth", "emailAddress"],
-      "Step-by-Step Guidance": ["ownBusiness", "ownFarm", "ownInvestmentPortfolio"],
-      "Objectives of Estate Planning": ["ObjectivesOfEstatePlanning"],
-      "Assets & Liabilities": ["Assets", "Liabilities"],
-      "Policies & Investments": ["Policies", "Assets.investmentPortfolio"],
-      "Estate Duty & Executor Fees": ["EstateDuty", "ExecutorFees"],
-      "Liquidity Position": ["LiquidityPosition"],
-      "Maintenance Claims": ["MaintenanceClaims"],
-      "Provisions for Dependents": ["ProvisionsDependents"],
-      "Trusts": ["Trusts"],
-      "Final Details": ["finalDetailsKey"],
+    
+      "Net Worth Assessment": [
+        "estateProfileV2.ownsProperty",
+        "estateProfileV2.ownsVehicle",
+        "estateProfileV2.ownsBusiness",
+        "estateProfileV2.ownsValuables",
+        "estateProfileV2.hasDebts",
+      ],
+    
+      "Estate Planning Goals": [
+        "estateGoalsV2.assetDistribution",
+        "estateGoalsV2.careForDependents",
+        "estateGoalsV2.minimizeTaxes",
+        "estateGoalsV2.businessSuccession",
+        "estateGoalsV2.incapacityPlanning",
+        "estateGoalsV2.emergencyFund",
+        "estateGoalsV2.financialPlan",
+      ],
+    
+      "Choosing Estate Planning Tools": [
+        "estateToolsV2.trusts",
+        "estateToolsV2.will",
+        "estateToolsV2.trustSetup",
+        "estateToolsV2.donations",
+        "estateToolsV2.lifeInsurance",
+        "estateToolsV2.estateExpensePlan",
+        "estateToolsV2.marriagePropertyStatus",
+        "estateToolsV2.digitalAssets",
+      ],
+    
+      "Tax Planning and Minimization": [
+        "estateTaxV2.estateDuty",
+        "estateTaxV2.gainsTax",
+        "estateTaxV2.incomeTax",
+        "estateTaxV2.protectionClaims",
+      ],
+    
+      "Business Succession Planning": ["businessV2.businessPlan"],
+    
+      "Living Will and Healthcare Directives": [
+        "livingWillV2.createLivingWill",
+        "livingWillV2.healthCareDecisions",
+      ],
+    
+      "Review of Foreign Assets": ["foreignAssetsV2.assetsHeldAbroad"], // Add if you have a schema for this
+    
+      "Final Review and Next Steps": ["finalReviewKey"], // Add if there's a final review schema key
     };
-
+    
     const usersByStage = stages.map((stage) => {
       const schemaKeys = mapSchemaToStage[stage];
       return {
