@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const Navbar = () => {
   return (
-   <nav className="fixed z-30 w-full bg-transparent backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+   <nav className="fixed z-30 w-full bg-transparent border-b border-gray-200 dark:border-gray-300">
   <div className="px-5 py-3 lg:px-10">
     <div className="flex items-center justify-center">
       {/* Sidebar Toggle (Optional for Mobile) */}
@@ -43,7 +43,7 @@ const Navbar = () => {
 
       {/* Centered Title */}
       <a href="/" className="flex justify-center items-center">
-        <span className="self-center text-xl font-semibold text-gray-900">
+        <span className="self-center text-xl font-semibold text-gray-900"  style={{ visibility: 'hidden' }}>
           Estate Planning AI
         </span>
       </a>

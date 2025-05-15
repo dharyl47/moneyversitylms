@@ -92,47 +92,40 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
   return (
     <div className="overflow-x-auto border rounded-lg shadow-sm bg-white">
       <table className="min-w-full text-gray-800 border-collapse">
-        <thead>
-          <tr className="bg-gray-100 border-b">
-            {["Name", "Email", "Date of Birth", "Property Regime", "Marital Status", "Request to Remove", "Actions"].map((header) => (
-              <th key={header} className="py-3 px-4 text-left text-sm font-semibold border-r last:border-r-0">
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.map((item, idx) => (
-            <tr key={item._id} className={`border-b hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-              <td className="py-2 px-4">{item.name}</td>
-              <td className="py-2 px-4">{item.emailAddress}</td>
-              <td className="py-2 px-4">{item.dateOfBirth}</td>
-              <td className="py-2 px-4">{item.propertyRegime}</td>
-              <td className="py-2 px-4">{item.maritalStatus}</td>
-              <td className="py-2 px-4">{item.deletionRequest || "No"}</td>
-              <td className="py-2 px-4 space-x-2">
-                <button
-                  onClick={() => handleOpenModal(item)}
-                  className="text-blue-600 hover:text-blue-800 text-sm"
-                >
-                  More Info
-                </button>
-                <button
-                  onClick={() => handleDeleteClick(item)}
-                  className="text-red-600 hover:text-red-800 text-sm"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={() => handleDownloadPDF(item)}
-                  className="text-green-600 hover:text-green-800 text-sm"
-                >
-                  Download PDF
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+      <thead>
+  <tr className="bg-white border-b">
+    {["Name", "Email", "Date of Birth", "Owns Property", "Owns Business", "Has Debts", "Life Insurance", "Actions"].map((header) => (
+      <th key={header} className="py-3 px-4 text-left text-sm font-semibold border-r last:border-r-0">
+        {header}
+      </th>
+    ))}
+  </tr>
+</thead>
+<tbody>
+  {currentItems.map((item, idx) => (
+    <tr key={item._id} className={`border-b hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+      <td className="py-2 px-4">{item.name}</td>
+      <td className="py-2 px-4">{item.emailAddress}</td>
+      <td className="py-2 px-4">{item.dateOfBirth}</td>
+      <td className="py-2 px-4">{item.estateProfileV2?.ownsProperty || "N/A"}</td>
+      <td className="py-2 px-4">{item.estateProfileV2?.ownsBusiness || "N/A"}</td>
+      <td className="py-2 px-4">{item.estateProfileV2?.hasDebts || "N/A"}</td>
+      <td className="py-2 px-4">{item.estateToolsV2?.lifeInsurance || "N/A"}</td>
+      <td className="py-2 px-4 space-x-2">
+        <button onClick={() => handleOpenModal(item)} className="text-blue-600 hover:text-blue-800 text-sm">
+          More Info
+        </button>
+        <button onClick={() => handleDeleteClick(item)} className="text-red-600 hover:text-red-800 text-sm">
+          Delete
+        </button>
+        <button onClick={() => handleDownloadPDF(item)} className="text-green-600 hover:text-green-800 text-sm">
+          Download PDF
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
       </table>
 
       <div className="flex justify-center mt-4 space-x-1">

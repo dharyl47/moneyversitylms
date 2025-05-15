@@ -193,30 +193,60 @@ export default function Dashboard() {
   return (
     <main className="bg-white text-gray-900 overflow-hidden">
       <Layout>
-        <div className="p-6 min-h-screen container mx-auto pl-16">
-          <h1 className="text-3xl font-bold mb-4 text-gray-900">Dashboard</h1>
-          <div className="grid grid-cols-2 gap-6 mt-8">
+        <div className="p-2 min-h-screen container mx-auto pl-16">
+          <h1 className="text-3xl mb-4 text-gray-900" 
+          style={{
+            fontFamily:
+              'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+            fontSize: "27px",
+          }}
+          >Dashboard</h1>
+          <div className="grid grid-cols-2 gap-6 mt-6">
             {/* Completed Flow Chart */}
-            <div className="bg-gray-100 p-4 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-2 text-gray-900">Users Completed Flow</h2>
+            <div className="bg-white p-4 rounded-lg shadow-lg">
+              <h2 className="text-xl font-semibold mb-2 text-gray-900"
+              style={{
+                fontFamily:
+                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                fontSize: "20px",
+              }}
+              >Users Completed Flow</h2>
               <Bar data={completedFlowData} options={{ responsive: true }} />
             </div>
 
             {/* Users by Stage Chart */}
-            <div className="bg-gray-100 p-4 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-2 text-gray-900">Users by Stages Stopped</h2>
+            <div className="bg-white p-4 rounded-lg shadow-lg">
+              <h2 className="text-xl font-semibold mb-2 text-gray-900"
+              style={{
+                fontFamily:
+                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                fontSize: "20px",
+              }}
+              >Users by Stages Stopped</h2>
               <Bar data={stagesData} options={{ responsive: true }} />
             </div>
 
             {/* Property Regime Chart */}
-            <div className="bg-gray-100 p-4 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-2 text-gray-900">User Property Regime</h2>
+            <div className="bg-white p-4 rounded-lg shadow-lg">
+              <h2 className="text-xl font-semibold mb-2 text-gray-900"
+              style={{
+                fontFamily:
+                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                fontSize: "20px",
+              }}
+              >User Property Regime</h2>
               <Pie data={propertyRegimeData} options={{ responsive: true }} />
             </div>
 
             {/* User Growth Over Time Chart */}
-            <div className="bg-gray-100 p-4 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-2 text-gray-900">User Growth Over Time</h2>
+            <div className="bg-white p-4 rounded-lg shadow-lg">
+              <h2 className="text-xl font-semibold mb-2 text-gray-900"
+              style={{
+                fontFamily:
+                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                fontSize: "20px",
+              }}
+              >User Growth Over Time</h2>
               <Line data={userGrowthData} options={{ responsive: true }} />
             </div>
           </div>
