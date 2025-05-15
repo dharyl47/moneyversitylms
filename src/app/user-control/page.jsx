@@ -68,82 +68,55 @@ export default function UserControl() {
   }, [selectedStage, searchText, profile]);
 
   const hasMeaningfulData = (obj) => {
-    if (typeof obj !== "object" || obj === null) return false;
-
-    return Object.values(obj).some((value) => {
-      if (typeof value === "object" && value !== null) {
-        return hasMeaningfulData(value);
-      }
-      return (
-        value !== null && value !== false && value !== "" && value !== "N/A"
-      );
-    });
+    if (obj === null || obj === undefined) return false;
+  
+    if (typeof obj !== "object") {
+      return obj !== "" && obj !== false && obj !== "N/A";
+    }
+  
+    return Object.values(obj).some((value) => hasMeaningfulData(value));
   };
+  
 
   const hasCompletedStage = (profile, stage) => {
     if (stage === "Show All") return true;
-
-    switch (stage) {
-      case "Completed Flow":
-        return (
-          hasMeaningfulData(profile.Assets) &&
-          hasMeaningfulData(profile.Liabilities) &&
-          hasMeaningfulData(profile.Policies) &&
-          hasMeaningfulData(profile.EstateDuty) &&
-          hasMeaningfulData(profile.ExecutorFees) &&
-          hasMeaningfulData(profile.LiquidityPosition) &&
-          hasMeaningfulData(profile.MaintenanceClaims) &&
-          hasMeaningfulData(profile.MaintenanceSurvivingSpouse) &&
-          hasMeaningfulData(profile.ProvisionsDependents) &&
-          hasMeaningfulData(profile.Trusts) &&
-          hasMeaningfulData(profile.InvestmentTrusts)
-        );
-      case "Assets":
-        return hasMeaningfulData(profile.Assets);
-      case "Liabilities":
-        return hasMeaningfulData(profile.Liabilities);
-      case "Policies":
-        return hasMeaningfulData(profile.Policies);
-      case "Estate Duty":
-        return hasMeaningfulData(profile.EstateDuty);
-      case "Executor Fees":
-        return hasMeaningfulData(profile.ExecutorFees);
-      case "Liquidity Position":
-        return hasMeaningfulData(profile.LiquidityPosition);
-      case "Maintenance Claims":
-        return hasMeaningfulData(profile.MaintenanceClaims);
-      case "Maintenance Surviving Spouse":
-        return hasMeaningfulData(profile.MaintenanceSurvivingSpouse);
-      case "Provisions Dependents":
-        return hasMeaningfulData(profile.ProvisionsDependents);
-      case "Trusts":
-        return hasMeaningfulData(profile.Trusts);
-      case "Investment Trusts":
-        return hasMeaningfulData(profile.InvestmentTrusts);
-      default:
-        return false;
+  
+    if (stage === "Completed Flow") {
+      return (
+        hasMeaningfulData(profile.estateProfileV2) &&
+        hasMeaningfulData(profile.estateGoalsV2) &&
+        hasMeaningfulData(profile.estateToolsV2) &&
+        hasMeaningfulData(profile.estateTaxV2) &&
+        hasMeaningfulData(profile.businessV2) &&
+        hasMeaningfulData(profile.livingWillV2) &&
+        hasMeaningfulData(profile.reviewForeignAssetsV2)
+      );
     }
+  
+    return false; // For now, only handling 'Show All' and 'Completed Flow'
   };
+  
 
   const filterProfiles = (stage, profiles = profile) => {
     const filtered = profiles.filter((p) => {
       const search = searchText.toLowerCase();
-
+  
       const matchesSearch = searchText
         ? (p.name && p.name.toLowerCase().includes(search)) ||
           (p.emailAddress && p.emailAddress.toLowerCase().includes(search))
         : true;
-
-      const matchesStage = stage === "Show All" || hasCompletedStage(p, stage);
-
+  
+      const matchesStage = hasCompletedStage(p, stage);
+  
       return matchesSearch && matchesStage;
     });
-
+  
     setFilteredProfiles(filtered);
     console.log(
       `Filtered profiles length for stage "${stage}" with search "${searchText}": ${filtered.length}`
     );
   };
+  
 
   const handleDelete = async (_id) => {
     try {

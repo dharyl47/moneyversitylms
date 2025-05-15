@@ -68,3 +68,29 @@ body {
     text-wrap: balance;
   }
 }
+
+
+
+table td {
+  font-size: 14px;
+  color: rgb(31 41 55/var(--tw-text-opacity)) !important;
+}
+
+table td .text-blue-600,
+table td .text-red-600,
+table td .text-green-600 {
+  font-size: 12px !important;
+  color: #ffffff !important;
+  background-color: rgb(31 41 55/var(--tw-text-opacity)) !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+table td .text-blue-600:hover,
+table td .text-red-600:hover,
+table td .text-green-600:hover {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
