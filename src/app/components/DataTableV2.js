@@ -136,9 +136,11 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
       "Final Review and Next Steps"
     ];
 
-    const currentStage = stages.find((stage, index) => {
-      return !hasMeaningfulData(item[requiredSections[index]]);
-    }) || "Completed";
+    const currentStage = (() => {
+      const incompleteIndex = requiredSections.findIndex((section) => !hasMeaningfulData(item[section]));
+      return incompleteIndex === -1 ? "Final Review and Next Steps" : stages[incompleteIndex];
+    })();
+    
 
     return (
       <tr key={item._id} className={`border-b hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
