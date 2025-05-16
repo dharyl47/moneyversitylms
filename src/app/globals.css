@@ -94,3 +94,14 @@ table td .text-green-600:hover {
   background-color: #000000 !important;
   color: #ffffff !important;
 }
+
+
+
+@media only screen and (max-width: 1115px) {
+  table td .text-blue-600,
+  table td .text-red-600,
+  table td .text-green-600 {
+    margin-left: 0 !important;
+    margin-bottom: 2px !important;
+  }
+}
