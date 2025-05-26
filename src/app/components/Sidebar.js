@@ -59,12 +59,12 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
                 User Profile
               </Link>
             </li>
-            {/* <li>
-              <Link href="/privacy-policy" className={linkClasses("/privacy-policy")}>
+            <li>
+              <Link href="/callmeback" className={linkClasses("/callmeback")}>
                 <FontAwesomeIcon icon={faFileCircleQuestion} className="mr-2" />
-                Privacy Policy
+                Call Me Back
               </Link>
-            </li> */}
+            </li>
             <li>
               <button
                 onClick={handleLogout}
