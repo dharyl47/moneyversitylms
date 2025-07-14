@@ -53,7 +53,14 @@ estateToolsV2: {
   trustSetup: { type: String, default: 'N/A' },
   donations: { type: String, default: 'N/A' },
   donationsProceedReview: { type: String, default: 'N/A' },
-  donationsDetails: { type: String, default: 'N/A' },
+  donationsDetails: [
+    {
+      description: { type: String },
+      value: { type: String },
+      recipient: { type: String },
+      notes: { type: String }
+    }
+  ],
   lifeInsurance: { type: String, default: 'N/A' },
   lifeInsuranceDetails: { type: String, default: 'N/A' },
   estateExpensePlan: { type: String, default: 'N/A' },
@@ -82,9 +89,22 @@ reviewForeignAssetsV2: {
 ownProperty: { type: String, default: 'N/A' },
 },
 
-
-
-
+additionalConsideration: {
+  contactLegalAdviser: { type: String, default: 'N/A' },
+  legacyHeirlooms: { type: String, default: 'N/A' },
+  legacyHeirloomsDetails: [
+    {
+      item: { type: String },
+      recipient: { type: String },
+    }
+  ],
+  beneficiaryDesignations: { type: String, default: 'N/A' },
+  executorRemuneration: { type: String, default: 'N/A' },
+  informedNominated: { type: String, default: 'N/A' },
+  prepaidFuneral: { type: String, default: 'N/A' },
+  petCarePlanning: { type: String, default: 'N/A' },
+  setAReminder: { type: String, default: 'N/A' },
+},
 
 
 
