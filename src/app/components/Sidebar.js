@@ -38,7 +38,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
  {/* Title Section */}
  <div className="pl-3 mt-2 w-full text-left">
  <h1 className="text-sm font-semibold text-black leading-snug">
-  AI Estate Planning<br />Admin Dashboard
+  Guidance for Inheritance<br />and Assets
 </h1>
 
 </div>
