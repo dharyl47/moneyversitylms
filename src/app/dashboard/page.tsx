@@ -85,70 +85,99 @@ export default function Dashboard() {
       hasMeaningfulData(profile.InvestmentTrusts)
     ).length;
 
-    const stages = [
-      "Consent",
-      "Personal Information",
-      "Net Worth Assessment",
-      "Estate Planning Goals",
-      "Choosing Estate Planning Tools",
-      "Tax Planning and Minimization",
-      "Business Succession Planning",
-      "Living Will and Healthcare Directives",
-      "Review of Foreign Assets",
-      "Final Review and Next Steps",
-    ];
+const stages = [
+  "Personal Information",
+  "Net Worth Assessment",
+  "Estate Planning Goals",
+  "Choosing Estate Planning Tools",
+  "Tax Planning and Minimization",
+  "Business Succession Planning",
+  "Living Will and Healthcare Directives",
+  "Review of Foreign Assets",
+  "Additional Considerations",
+];
     
-    const mapSchemaToStage: Record<string, string[]> = {
-      "Consent": [],
-      "Personal Information": ["name", "dateOfBirth", "emailAddress"],
-    
-      "Net Worth Assessment": [
-        "estateProfileV2.ownsProperty",
-        "estateProfileV2.ownsVehicle",
-        "estateProfileV2.ownsBusiness",
-        "estateProfileV2.ownsValuables",
-        "estateProfileV2.hasDebts",
-      ],
-    
-      "Estate Planning Goals": [
-        "estateGoalsV2.assetDistribution",
-        "estateGoalsV2.careForDependents",
-        "estateGoalsV2.minimizeTaxes",
-        "estateGoalsV2.businessSuccession",
-        "estateGoalsV2.incapacityPlanning",
-        "estateGoalsV2.emergencyFund",
-        "estateGoalsV2.financialPlan",
-      ],
-    
-      "Choosing Estate Planning Tools": [
-        "estateToolsV2.trusts",
-        "estateToolsV2.will",
-        "estateToolsV2.trustSetup",
-        "estateToolsV2.donations",
-        "estateToolsV2.lifeInsurance",
-        "estateToolsV2.estateExpensePlan",
-        "estateToolsV2.marriagePropertyStatus",
-        "estateToolsV2.digitalAssets",
-      ],
-    
-      "Tax Planning and Minimization": [
-        "estateTaxV2.estateDuty",
-        "estateTaxV2.gainsTax",
-        "estateTaxV2.incomeTax",
-        "estateTaxV2.protectionClaims",
-      ],
-    
-      "Business Succession Planning": ["businessV2.businessPlan"],
-    
-      "Living Will and Healthcare Directives": [
-        "livingWillV2.createLivingWill",
-        "livingWillV2.healthCareDecisions",
-      ],
-    
-      "Review of Foreign Assets": ["foreignAssetsV2.assetsHeldAbroad"], // Add if you have a schema for this
-    
-      "Final Review and Next Steps": ["finalReviewKey"], // Add if there's a final review schema key
-    };
+const mapSchemaToStage: Record<string, string[]> = {
+  "Personal Information": [
+    "name",
+    "childrenOrDependents.hasDependents",    // Yes/No is still meaningful
+    "childrenOrDependents.details",
+    "guardianNamed",
+    "estatePlanGoals",
+  ],
+
+  "Net Worth Assessment": [
+    "estateProfileV2.ownsProperty",
+    "estateProfileV2.propertyDetails",
+    "estateProfileV2.ownsVehicle",
+    "estateProfileV2.vehicleDetails",
+    "estateProfileV2.ownsBusiness",
+    "estateProfileV2.businessDetails",
+    "estateProfileV2.ownsValuables",
+    "estateProfileV2.valuableDetails",
+    "estateProfileV2.hasDebts",
+    "estateProfileV2.debtDetails",
+  ],
+
+  "Estate Planning Goals": [
+    "estateGoalsV2.assetDistribution",
+    "estateGoalsV2.careForDependents",
+    "estateGoalsV2.minimizeTaxes",
+    "estateGoalsV2.businessSuccession",
+    "estateGoalsV2.incapacityPlanning",
+    "estateGoalsV2.emergencyFund",
+    "estateGoalsV2.financialPlan",
+  ],
+
+  "Choosing Estate Planning Tools": [
+    "estateToolsV2.trusts",                 // array counts when non-empty
+    "estateToolsV2.will",
+    "estateToolsV2.willReview",
+    "estateToolsV2.trustSetup",
+    "estateToolsV2.donations",
+    "estateToolsV2.donationsProceedReview",
+    "estateToolsV2.donationsDetails",       // array of objects
+    "estateToolsV2.lifeInsurance",
+    "estateToolsV2.lifeInsuranceDetails",
+    "estateToolsV2.estateExpensePlan",
+    "estateToolsV2.marriagePropertyStatus",
+    "estateToolsV2.digitalAssets",
+    "estateToolsV2.digitalAssetsDetails",
+  ],
+
+  "Tax Planning and Minimization": [
+    "estateTaxV2.estateDuty",
+    "estateTaxV2.gainsTax",
+    "estateTaxV2.incomeTax",
+    "estateTaxV2.protectionClaims",
+  ],
+
+  "Business Succession Planning": [
+    "businessV2.businessPlan",
+  ],
+
+  "Living Will and Healthcare Directives": [
+    "livingWillV2.createLivingWill",
+    "livingWillV2.healthCareDecisions",
+  ],
+
+  "Review of Foreign Assets": [
+    "reviewForeignAssetsV2.ownProperty",
+  ],
+
+  "Additional Considerations": [
+    "additionalConsideration.contactLegalAdviser",
+    "additionalConsideration.legacyHeirlooms",
+    "additionalConsideration.legacyHeirloomsDetails", // array of {item, recipient}
+    "additionalConsideration.beneficiaryDesignations",
+    "additionalConsideration.executorRemuneration",
+    "additionalConsideration.informedNominated",
+    "additionalConsideration.prepaidFuneral",
+    "additionalConsideration.petCarePlanning",
+    "additionalConsideration.setAReminder",
+  ],
+
+};
     
     const usersByStage = stages.map((stage) => {
       const schemaKeys = mapSchemaToStage[stage];
