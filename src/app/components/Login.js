@@ -33,7 +33,7 @@ const Login = () => {
   return (
     <section className="bg-gray-100 min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8 border border-gray-200">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+        <h1 className="text-1xl font-bold text-gray-800 mb-6 text-center">
           Guidance for Inheritance and Assets
         </h1>
         <form onSubmit={handleLogin} className="space-y-6">
