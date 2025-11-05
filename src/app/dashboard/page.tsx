@@ -100,7 +100,7 @@ export default function Dashboard() {
     let incompleteCount = 0;
     
     filteredProfiles.forEach((profile, index) => {
-      // Check if user has ALL Additional Considerations fields filled (equivalent to Final Review and Next Steps)
+      // Check if user has ANY meaningful data in Additional Considerations (Final Review and Next Steps)
       const additionalConsiderationFields = [
         profile.additionalConsideration?.contactLegalAdviser,
         profile.additionalConsideration?.legacyHeirlooms,
@@ -112,25 +112,14 @@ export default function Dashboard() {
         profile.additionalConsideration?.setAReminder,
       ];
       
-      // Check field by field for debugging
-      const fieldStatus = fieldNames.map((fieldName, i) => {
-        const fieldValue = additionalConsiderationFields[i];
-        const hasData = hasMeaningfulData(fieldValue);
-        return {
-          field: fieldName,
-          value: fieldValue,
-          hasData: hasData
-        };
-      });
-      
-      // Check if ALL fields have meaningful data
-      const hasAllAdditionalConsiderations = additionalConsiderationFields.every(field => hasMeaningfulData(field));
+      // Check if ANY field has meaningful data (simplified - any data = completed)
+      const hasAnyAdditionalConsiderations = additionalConsiderationFields.some(field => hasMeaningfulData(field));
       const filledFieldsCount = additionalConsiderationFields.filter(field => hasMeaningfulData(field)).length;
       
       const date = new Date(profile.dateCreated);
       const monthKey = date.toLocaleDateString("en-US", { month: 'short', year: 'numeric' });
       
-      if (hasAllAdditionalConsiderations) {
+      if (hasAnyAdditionalConsiderations) {
         completedCount++;
         completedFlowByMonth[monthKey] = (completedFlowByMonth[monthKey] || 0) + 1;
         
@@ -144,11 +133,6 @@ export default function Dashboard() {
         console.log(`   Name: ${profile.name || 'N/A'}`);
         console.log(`   Date: ${monthKey}`);
         console.log(`   Fields filled: ${filledFieldsCount}/8`);
-        fieldStatus.forEach(field => {
-          if (!field.hasData) {
-            console.log(`   Missing: ${field.field} = ${field.value || 'undefined'}`);
-          }
-        });
       }
     });
     
@@ -494,31 +478,54 @@ const mapSchemaToStage: Record<string, string[]> = {
         };
       }
 
-      // Handle Final Review and Next Steps - count users who completed ALL Additional Considerations
+      // Helper function to check if user has ANY meaningful data in Additional Considerations
+      const hasAnyAdditionalConsiderations = (profile: Profile): boolean => {
+        const additionalConsiderationFields = [
+          "additionalConsideration.contactLegalAdviser",
+          "additionalConsideration.legacyHeirlooms",
+          "additionalConsideration.beneficiaryDesignations",
+          "additionalConsideration.executorRemuneration",
+          "additionalConsideration.informedNominated",
+          "additionalConsideration.prepaidFuneral",
+          "additionalConsideration.petCarePlanning",
+          "additionalConsideration.setAReminder",
+        ];
+        
+        return additionalConsiderationFields.some((key: string) => {
+          const keys = key.split(".");
+          let value: any = profile;
+          for (const subKey of keys) {
+            value = value?.[subKey as keyof typeof value];
+            if (!value) break;
+          }
+          return hasMeaningfulData(value);
+        });
+      };
+
+      // Handle Additional Considerations - count users who have ANY Additional Considerations data
+      // (but they will also appear in Final Review if they have any data)
+      if (stage === "Additional Considerations") {
+        return {
+          stage,
+          count: filteredProfiles.filter((profile) => {
+            // Check if user has ANY Additional Considerations data
+            return schemaKeys.some((key: string) => {
+              const keys = key.split(".");
+              let value: any = profile;
+              for (const subKey of keys) {
+                value = value?.[subKey as keyof typeof value];
+                if (!value) break;
+              }
+              return hasMeaningfulData(value);
+            });
+          }).length,
+        };
+      }
+
+      // Handle Final Review and Next Steps - count users who have ANY Additional Considerations data
       if (stage === "Final Review and Next Steps") {
         const finalReviewCount = filteredProfiles.filter((profile) => {
-          // Check if user has ALL Additional Considerations fields filled
-          const additionalConsiderationFields = [
-            "additionalConsideration.contactLegalAdviser",
-            "additionalConsideration.legacyHeirlooms",
-            "additionalConsideration.beneficiaryDesignations",
-            "additionalConsideration.executorRemuneration",
-            "additionalConsideration.informedNominated",
-            "additionalConsideration.prepaidFuneral",
-            "additionalConsideration.petCarePlanning",
-            "additionalConsideration.setAReminder",
-          ];
-          
-          // Check if ALL fields have meaningful data
-          return additionalConsiderationFields.every((key: string) => {
-            const keys = key.split(".");
-            let value: any = profile;
-            for (const subKey of keys) {
-              value = value?.[subKey as keyof typeof value];
-              if (!value) break;
-            }
-            return hasMeaningfulData(value);
-          });
+          return hasAnyAdditionalConsiderations(profile);
         }).length;
         
         console.log(`\n📊 Final Review and Next Steps count: ${finalReviewCount}`);
@@ -871,7 +878,7 @@ const mapSchemaToStage: Record<string, string[]> = {
                   'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
                 fontSize: "20px",
               }}
-              >User Journey Completed (Per Month)</h2>
+              >Completed Flow (Per Month) {selectedYear !== "all" && `(${selectedYear})`}</h2>
               <Bar data={completedFlowData} options={{ responsive: true }} />
             </div>
 
