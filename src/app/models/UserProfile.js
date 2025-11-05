@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 // Define schema
 const userProfileSchema = new mongoose.Schema({
   name: { type: String },
+  firstName: { type: String },
+  sureName: { type: String },
+  age: { type: String },
   auth: { type: String },
   guardianNamed: { type: String },
   childrenOrDependents: {

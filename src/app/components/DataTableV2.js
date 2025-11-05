@@ -320,7 +320,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                     Delete
                   </button>
                   <button onClick={() => handleDownloadPDF(item)} className="text-green-600 text-sm">
-                    Download PDF
+                    Download Report
                   </button>
                 </td>
               </tr>

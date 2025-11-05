@@ -32,6 +32,10 @@ interface Statistics {
   propertyRegimeCount: { [key: string]: number };
   userGrowth: { [key: string]: number };
   reportDownloadsByMonth: { [key: string]: number };
+  templateDownloadsByMonth: { [key: string]: number };
+  totalReportDownloads: number;
+  totalTemplateDownloads: number;
+  templateBreakdown: { fileName: string; fileLabel: string; count: number }[];
 }
 
 // Helper function outside component
@@ -55,7 +59,11 @@ export default function Dashboard() {
     usersByStage: [],
     propertyRegimeCount: {},
     userGrowth: {},
-    reportDownloadsByMonth: {}
+    reportDownloadsByMonth: {},
+    templateDownloadsByMonth: {},
+    totalReportDownloads: 0,
+    totalTemplateDownloads: 0,
+    templateBreakdown: []
   });
   const [downloadLogs, setDownloadLogs] = useState<any[]>([]);
 
@@ -583,7 +591,17 @@ const mapSchemaToStage: Record<string, string[]> = {
     
     console.log(`\n=== END OF ANALYSIS ===\n`);
 
-    setStatistics({ completedFlowByMonth, usersByStage, propertyRegimeCount, userGrowth, reportDownloadsByMonth: {} });
+    setStatistics({ 
+      completedFlowByMonth, 
+      usersByStage, 
+      propertyRegimeCount, 
+      userGrowth, 
+      reportDownloadsByMonth: {},
+      templateDownloadsByMonth: {},
+      totalReportDownloads: 0,
+      totalTemplateDownloads: 0,
+      templateBreakdown: []
+    });
   }, []);
 
   useEffect(() => {
@@ -604,32 +622,83 @@ const mapSchemaToStage: Record<string, string[]> = {
     fetchProfileData();
   }, [calculateStatistics, selectedYear]);
 
-  // Fetch download logs
+  // Fetch download logs (all types)
   useEffect(() => {
     const fetchDownloadLogs = async () => {
       try {
-        const url = `/api/downloadlogs?downloadType=user_report${selectedYear !== 'all' ? `&year=${selectedYear}` : ''}`;
+        const url = `/api/downloadlogs${selectedYear !== 'all' ? `?year=${selectedYear}` : ''}`;
+        console.log('📊 Fetching download logs from:', url);
         const response = await fetch(url);
         const result = await response.json();
         
+        console.log('📊 Download logs response:', {
+          success: result.success,
+          count: result.count,
+          totalCount: result.totalCount,
+          stats: result.stats,
+          dataLength: result.data?.length
+        });
+        
         if (result && result.success) {
-          setDownloadLogs(result.data);
+          setDownloadLogs(result.data || []);
           
-          // Calculate downloads per month
-          const downloadsByMonth: { [key: string]: number } = {};
-          result.data.forEach((log: any) => {
-            const date = new Date(log.downloadDate);
-            const monthKey = date.toLocaleDateString("en-US", { month: 'short', year: 'numeric' });
-            downloadsByMonth[monthKey] = (downloadsByMonth[monthKey] || 0) + 1;
-          });
+          // Calculate downloads per month by type
+          const reportDownloadsByMonth: { [key: string]: number } = {};
+          const templateDownloadsByMonth: { [key: string]: number } = {};
+          let totalReportDownloads = 0;
+          let totalTemplateDownloads = 0;
+          const templateCounts: { [key: string]: { fileName: string; fileLabel: string; count: number } } = {};
+          
+          if (result.data && result.data.length > 0) {
+            result.data.forEach((log: any) => {
+              const date = new Date(log.downloadDate);
+              const monthKey = date.toLocaleDateString("en-US", { month: 'short', year: 'numeric' });
+              
+              if (log.downloadType === 'user_report') {
+                reportDownloadsByMonth[monthKey] = (reportDownloadsByMonth[monthKey] || 0) + 1;
+                totalReportDownloads++;
+              } else if (log.downloadType === 'resource_template') {
+                templateDownloadsByMonth[monthKey] = (templateDownloadsByMonth[monthKey] || 0) + 1;
+                totalTemplateDownloads++;
+                
+                // Track individual template downloads
+                const templateKey = log.fileName || 'Unknown';
+                if (!templateCounts[templateKey]) {
+                  templateCounts[templateKey] = {
+                    fileName: log.fileName || 'Unknown',
+                    fileLabel: log.fileLabel || log.fileName || 'Unknown',
+                    count: 0
+                  };
+                }
+                templateCounts[templateKey].count++;
+              }
+            });
+            
+            // Convert template counts object to array and sort by count
+            const templateBreakdown = Object.values(templateCounts).sort((a, b) => b.count - a.count);
+            
+            console.log('📊 Report downloads by month:', reportDownloadsByMonth);
+            console.log('📊 Template downloads by month:', templateDownloadsByMonth);
+            console.log('📊 Total report downloads:', totalReportDownloads);
+            console.log('📊 Total template downloads:', totalTemplateDownloads);
+            console.log('📊 Template breakdown:', templateBreakdown);
+          } else {
+            console.log('⚠️ No download logs found');
+          }
           
           setStatistics(prev => ({
             ...prev,
-            reportDownloadsByMonth: downloadsByMonth
+            reportDownloadsByMonth,
+            templateDownloadsByMonth,
+            totalReportDownloads,
+            totalTemplateDownloads,
+            templateBreakdown: Object.values(templateCounts).sort((a, b) => b.count - a.count)
           }));
+        } else {
+          console.error('❌ Failed to fetch download logs:', result);
         }
       } catch (error) {
-        console.error("Error fetching download logs:", error);
+        console.error("❌ Error fetching download logs:", error);
       }
     };
 
@@ -708,8 +777,14 @@ const mapSchemaToStage: Record<string, string[]> = {
     ],
   };
 
-  // Sort months for report downloads
-  const sortedDownloadMonths = Object.keys(statistics.reportDownloadsByMonth).sort((a, b) => {
+  // Get all unique months from both download types
+  const allDownloadMonths = new Set([
+    ...Object.keys(statistics.reportDownloadsByMonth),
+    ...Object.keys(statistics.templateDownloadsByMonth)
+  ]);
+
+  // Sort months for downloads
+  const sortedDownloadMonths = Array.from(allDownloadMonths).sort((a, b) => {
     const parseDate = (str: string) => {
       const [month, year] = str.split(' ');
       const monthMap: { [key: string]: number } = {
@@ -725,10 +800,17 @@ const mapSchemaToStage: Record<string, string[]> = {
     labels: sortedDownloadMonths,
     datasets: [
       {
-        label: "Report Downloads",
+        label: `User Reports (Total: ${statistics.totalReportDownloads})`,
         data: sortedDownloadMonths.map(month => statistics.reportDownloadsByMonth[month] || 0),
         backgroundColor: "rgba(153, 102, 255, 0.6)",
         borderColor: "rgba(153, 102, 255, 1)",
+        borderWidth: 1,
+      },
+      {
+        label: `Resource Templates (Total: ${statistics.totalTemplateDownloads})`,
+        data: sortedDownloadMonths.map(month => statistics.templateDownloadsByMonth[month] || 0),
+        backgroundColor: "rgba(255, 159, 64, 0.6)",
+        borderColor: "rgba(255, 159, 64, 1)",
         borderWidth: 1,
       },
     ],
@@ -825,8 +907,89 @@ const mapSchemaToStage: Record<string, string[]> = {
                   'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
                 fontSize: "20px",
               }}
-              >Report Downloads (Per Month) {selectedYear !== "all" && `(${selectedYear})`}</h2>
+              >Downloads (Per Month) {selectedYear !== "all" && `(${selectedYear})`}</h2>
+              <div className="mb-4 flex gap-4 text-sm"
+              style={{
+                fontFamily:
+                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+              }}>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(153, 102, 255, 0.6)' }}></div>
+                  <span className="text-gray-700">
+                    <strong>User Reports:</strong> {statistics.totalReportDownloads}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(255, 159, 64, 0.6)' }}></div>
+                  <span className="text-gray-700">
+                    <strong>Resource Templates:</strong> {statistics.totalTemplateDownloads}
+                  </span>
+                </div>
+              </div>
               <Bar data={reportDownloadsData} options={{ responsive: true }} />
+              
+              {/* Template Breakdown Table */}
+              {statistics.templateBreakdown && statistics.templateBreakdown.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold mb-3 text-gray-900"
+                  style={{
+                    fontFamily:
+                      'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                    fontSize: "18px",
+                  }}
+                  >Template Download Breakdown</h3>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full border-collapse border border-gray-300">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-900"
+                          style={{
+                            fontFamily:
+                              'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                          }}
+                          >Template Name</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-900"
+                          style={{
+                            fontFamily:
+                              'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                          }}
+                          >File Name</th>
+                          <th className="border border-gray-300 px-4 py-2 text-center text-sm font-semibold text-gray-900"
+                          style={{
+                            fontFamily:
+                              'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                          }}
+                          >Downloads</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {statistics.templateBreakdown.map((template, index) => (
+                          <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                            <td className="border border-gray-300 px-4 py-2 text-sm text-gray-700"
+                            style={{
+                              fontFamily:
+                                'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                            }}
+                            >{template.fileLabel}</td>
+                            <td className="border border-gray-300 px-4 py-2 text-sm text-gray-600"
+                            style={{
+                              fontFamily:
+                                'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                            }}
+                            >{template.fileName}</td>
+                            <td className="border border-gray-300 px-4 py-2 text-sm text-center font-semibold text-gray-900"
+                            style={{
+                              fontFamily:
+                                'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                            }}
+                            >{template.count}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
