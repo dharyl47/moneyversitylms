@@ -1,6 +1,6 @@
 "use client";
 import Layout from "@/app/components/Layout";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import DataTableV2 from "@/app/components/DataTableV2";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import Papa from "papaparse";
@@ -12,21 +12,202 @@ export default function UserControl() {
   const [selectedStage, setSelectedStage] = useState("Show All");
   const [searchText, setSearchText] = useState("");
 
+  const hasMeaningfulData = useCallback((obj) => {
+    if (obj === null || obj === undefined) return false;
+  
+    if (typeof obj !== "object") {
+      return obj !== "" && obj !== false && obj !== "N/A";
+    }
+  
+    return Object.values(obj).some((value) => hasMeaningfulData(value));
+  }, []);
+  
+  const hasCompletedStage = useCallback((profile, stage) => {
+    if (stage === "Show All") return true;
+  
+    // Completed Flow: User has completed ALL Additional Considerations fields
+    if (stage === "Completed Flow") {
+      const additionalConsiderationFields = [
+        profile.additionalConsideration?.contactLegalAdviser,
+        profile.additionalConsideration?.legacyHeirlooms,
+        profile.additionalConsideration?.beneficiaryDesignations,
+        profile.additionalConsideration?.executorRemuneration,
+        profile.additionalConsideration?.informedNominated,
+        profile.additionalConsideration?.prepaidFuneral,
+        profile.additionalConsideration?.petCarePlanning,
+        profile.additionalConsideration?.setAReminder,
+      ];
+      return additionalConsiderationFields.every(field => hasMeaningfulData(field));
+    }
+
+    // Stage 1: Welcome - No data collected (always show)
+    if (stage === "Welcome") return true;
+
+    // Stage 2: Personal Information
+    if (stage === "Personal Information") {
+      return (
+        hasMeaningfulData(profile.firstName) ||
+        hasMeaningfulData(profile.sureName) ||
+        hasMeaningfulData(profile.age) ||
+        hasMeaningfulData(profile.maritalStatus) ||
+        hasMeaningfulData(profile.childrenOrDependents) ||
+        hasMeaningfulData(profile.adultDependents) ||
+        hasMeaningfulData(profile.guardianNamed) ||
+        hasMeaningfulData(profile.estatePlanGoals)
+      );
+    }
+
+    // Stage 3: Net Worth Assessment
+    if (stage === "Net Worth Assessment") {
+      return (
+        hasMeaningfulData(profile.estateProfileV2?.ownsProperty) ||
+        hasMeaningfulData(profile.estateProfileV2?.ownsVehicle) ||
+        hasMeaningfulData(profile.estateProfileV2?.ownsBusiness) ||
+        hasMeaningfulData(profile.estateProfileV2?.ownsValuables) ||
+        hasMeaningfulData(profile.estateProfileV2?.hasDebts)
+      );
+    }
+
+    // Stage 4: Estate Planning Goals
+    if (stage === "Estate Planning Goals") {
+      return (
+        hasMeaningfulData(profile.estateGoalsV2?.assetDistribution) ||
+        hasMeaningfulData(profile.estateGoalsV2?.careForDependents) ||
+        hasMeaningfulData(profile.estateGoalsV2?.minimizeTaxes) ||
+        hasMeaningfulData(profile.estateGoalsV2?.incapacityPlanning) ||
+        hasMeaningfulData(profile.estateGoalsV2?.emergencyFund) ||
+        hasMeaningfulData(profile.estateGoalsV2?.financialPlan) ||
+        hasMeaningfulData(profile.livingWillV2?.healthcareDecisionMakers)
+      );
+    }
+
+    // Stage 5: Choosing Estate Planning Tools
+    if (stage === "Choosing Estate Planning Tools") {
+      return (
+        hasMeaningfulData(profile.estateToolsV2?.will) ||
+        hasMeaningfulData(profile.estateToolsV2?.willReview) ||
+        hasMeaningfulData(profile.estateToolsV2?.trustSetup) ||
+        hasMeaningfulData(profile.estateToolsV2?.trusts) ||
+        hasMeaningfulData(profile.estateToolsV2?.donations) ||
+        hasMeaningfulData(profile.estateToolsV2?.donationsDetails) ||
+        hasMeaningfulData(profile.estateToolsV2?.lifeInsurance) ||
+        hasMeaningfulData(profile.estateToolsV2?.digitalAssets)
+      );
+    }
+
+    // Stage 6: Tax Planning and Minimization
+    if (stage === "Tax Planning and Minimization") {
+      return (
+        hasMeaningfulData(profile.estateTaxV2?.estateDuty) ||
+        hasMeaningfulData(profile.estateTaxV2?.gainsTax) ||
+        hasMeaningfulData(profile.estateTaxV2?.incomeTax) ||
+        hasMeaningfulData(profile.estateTaxV2?.protectionClaims)
+      );
+    }
+
+    // Stage 7: Business Succession Planning (conditional - only if ownBusiness === "Yes")
+    if (stage === "Business Succession Planning") {
+      if (profile.ownBusiness !== "Yes") return false;
+      return (
+        hasMeaningfulData(profile.businessV2?.businessPlan) ||
+        hasMeaningfulData(profile.businessV2?.keyPerson)
+      );
+    }
+
+    // Stage 8: Living Will and Healthcare Directives
+    if (stage === "Living Will and Healthcare Directives") {
+      return (
+        hasMeaningfulData(profile.livingWillV2?.createLivingWill) ||
+        hasMeaningfulData(profile.livingWillV2?.healthCareDecisions) ||
+        hasMeaningfulData(profile.livingWillV2?.emergencyHealthcareDecisionMakers)
+      );
+    }
+
+    // Stage 9: Review of Foreign Assets
+    if (stage === "Review of Foreign Assets") {
+      return (
+        hasMeaningfulData(profile.reviewForeignAssetsV2?.ownProperty) ||
+        hasMeaningfulData(profile.additionalConsideration?.contactLegalAdviser) ||
+        hasMeaningfulData(profile.additionalConsideration?.legacyHeirlooms)
+      );
+    }
+
+    // Stage 10: Additional Considerations
+    if (stage === "Additional Considerations") {
+      return (
+        hasMeaningfulData(profile.additionalConsideration?.legacyHeirlooms) ||
+        hasMeaningfulData(profile.additionalConsideration?.legacyHeirloomsDetails) ||
+        hasMeaningfulData(profile.additionalConsideration?.beneficiaryDesignations) ||
+        hasMeaningfulData(profile.additionalConsideration?.executorRemuneration) ||
+        hasMeaningfulData(profile.additionalConsideration?.informedNominated) ||
+        hasMeaningfulData(profile.additionalConsideration?.prepaidFuneral) ||
+        hasMeaningfulData(profile.additionalConsideration?.petCarePlanning) ||
+        hasMeaningfulData(profile.additionalConsideration?.setAReminder)
+      );
+    }
+
+    // Stage 11: Final Review and Next Steps - Informational only, no data collected
+    // But we consider it "completed" if all Additional Considerations are filled
+    if (stage === "Final Review and Next Steps") {
+      const additionalConsiderationFields = [
+        profile.additionalConsideration?.contactLegalAdviser,
+        profile.additionalConsideration?.legacyHeirlooms,
+        profile.additionalConsideration?.beneficiaryDesignations,
+        profile.additionalConsideration?.executorRemuneration,
+        profile.additionalConsideration?.informedNominated,
+        profile.additionalConsideration?.prepaidFuneral,
+        profile.additionalConsideration?.petCarePlanning,
+        profile.additionalConsideration?.setAReminder,
+      ];
+      return additionalConsiderationFields.every(field => hasMeaningfulData(field));
+    }
+  
+    return false;
+  }, [hasMeaningfulData]);
+
+  const filterProfiles = useCallback((stage, profiles = profile) => {
+    const filtered = profiles.filter((p) => {
+      const search = searchText.toLowerCase();
+  
+      const fullName = p.firstName && p.sureName 
+        ? `${p.firstName} ${p.sureName}` 
+        : p.firstName || p.name || 'N/A';
+      const matchesSearch = searchText
+        ? (fullName && fullName.toLowerCase().includes(search)) ||
+          (p.emailAddress && p.emailAddress.toLowerCase().includes(search))
+        : true;
+  
+      const matchesStage = hasCompletedStage(p, stage);
+  
+      return matchesSearch && matchesStage;
+    });
+  
+    setFilteredProfiles(filtered);
+    console.log(
+      `Filtered profiles length for stage "${stage}" with search "${searchText}": ${filtered.length}`
+    );
+  }, [searchText, hasCompletedStage, profile]);
+
   const exportToCSV = () => {
     if (filteredProfiles.length === 0) {
       alert("No profiles to export.");
       return;
     }
 
-    const csvData = filteredProfiles.map((profile) => ({
-      Name: profile.name,
-      DateCreated: profile.dateCreated,
-      PropertyRegime: profile.propertyRegime,
-      Email: profile.emailAddress,
-      "Completed Stages": Object.keys(profile)
-        .filter((key) => hasMeaningfulData(profile[key]))
-        .join(", "),
-    }));
+    const csvData = filteredProfiles.map((profile) => {
+      const fullName = profile.firstName && profile.sureName 
+        ? `${profile.firstName} ${profile.sureName}` 
+        : profile.firstName || profile.name || 'N/A';
+      
+      return {
+        Name: fullName,
+        DateCreated: profile.dateCreated,
+        PropertyRegime: profile.propertyRegime,
+        "Completed Stages": Object.keys(profile)
+          .filter((key) => hasMeaningfulData(profile[key]))
+          .join(", "),
+      };
+    });
 
     const csv = Papa.unparse(csvData);
 
@@ -61,61 +242,11 @@ export default function UserControl() {
     };
 
     fetchProfile();
-  }, []);
+  }, [filterProfiles]);
 
   useEffect(() => {
     filterProfiles(selectedStage);
-  }, [selectedStage, searchText, profile]);
-
-  const hasMeaningfulData = (obj) => {
-    if (obj === null || obj === undefined) return false;
-  
-    if (typeof obj !== "object") {
-      return obj !== "" && obj !== false && obj !== "N/A";
-    }
-  
-    return Object.values(obj).some((value) => hasMeaningfulData(value));
-  };
-  
-
-  const hasCompletedStage = (profile, stage) => {
-    if (stage === "Show All") return true;
-  
-    if (stage === "Completed Flow") {
-      return (
-        hasMeaningfulData(profile.estateProfileV2) &&
-        hasMeaningfulData(profile.estateGoalsV2) &&
-        hasMeaningfulData(profile.estateToolsV2) &&
-        hasMeaningfulData(profile.estateTaxV2) &&
-        hasMeaningfulData(profile.businessV2) &&
-        hasMeaningfulData(profile.livingWillV2) &&
-        hasMeaningfulData(profile.reviewForeignAssetsV2)
-      );
-    }
-  
-    return false; // For now, only handling 'Show All' and 'Completed Flow'
-  };
-  
-
-  const filterProfiles = (stage, profiles = profile) => {
-    const filtered = profiles.filter((p) => {
-      const search = searchText.toLowerCase();
-  
-      const matchesSearch = searchText
-        ? (p.name && p.name.toLowerCase().includes(search)) ||
-          (p.emailAddress && p.emailAddress.toLowerCase().includes(search))
-        : true;
-  
-      const matchesStage = hasCompletedStage(p, stage);
-  
-      return matchesSearch && matchesStage;
-    });
-  
-    setFilteredProfiles(filtered);
-    console.log(
-      `Filtered profiles length for stage "${stage}" with search "${searchText}": ${filtered.length}`
-    );
-  };
+  }, [selectedStage, searchText, profile, filterProfiles]);
   
 
   const handleDelete = async (_id) => {
@@ -165,7 +296,7 @@ export default function UserControl() {
                 {/* Search Input */}
                 <input
                   type="text"
-                  placeholder="Search by name or email..."
+                  placeholder="Search by name..."
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   className="px-3 py-2 rounded-md bg-white text-black shadow-lg"
@@ -179,7 +310,17 @@ export default function UserControl() {
                 >
                   <option value="Show All">Show All</option>
                   <option value="Completed Flow">Completed Flow</option>
-                  {/* Other options */}
+                  <option value="Welcome">Welcome</option>
+                  <option value="Personal Information">Personal Information</option>
+                  <option value="Net Worth Assessment">Net Worth Assessment</option>
+                  <option value="Estate Planning Goals">Estate Planning Goals</option>
+                  <option value="Choosing Estate Planning Tools">Choosing Estate Planning Tools</option>
+                  <option value="Tax Planning and Minimization">Tax Planning and Minimization</option>
+                  <option value="Business Succession Planning">Business Succession Planning</option>
+                  <option value="Living Will and Healthcare Directives">Living Will and Healthcare Directives</option>
+                  <option value="Review of Foreign Assets">Review of Foreign Assets</option>
+                  <option value="Additional Considerations">Additional Considerations</option>
+                  <option value="Final Review and Next Steps">Final Review and Next Steps</option>
                 </select>
                 {/* Export to CSV Button */}
                 <button

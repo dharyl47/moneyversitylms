@@ -93,14 +93,30 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
         </h2>
 
         {/* Personal */}
-        {renderSection("Personal Details", {
-          name: selectedItem.name,
-          email: selectedItem.emailAddress,
-          dateOfBirth: selectedItem.dateOfBirth,
-          propertyRegime: selectedItem.propertyRegime,
-          maritalStatus: selectedItem.maritalStatus,
-          deletionRequest: selectedItem.deletionRequest || "No",
-        })}
+        {(() => {
+          // Get full name from firstName + sureName
+          const fullName = selectedItem.firstName && selectedItem.sureName 
+            ? `${selectedItem.firstName} ${selectedItem.sureName}` 
+            : selectedItem.firstName || selectedItem.name || 'N/A';
+          
+          return renderSection("Personal Details", {
+            name: fullName,
+            firstName: selectedItem.firstName,
+            sureName: selectedItem.sureName,
+            age: selectedItem.age,
+            email: selectedItem.emailAddress,
+            dateOfBirth: selectedItem.dateOfBirth,
+            propertyRegime: selectedItem.propertyRegime,
+            maritalStatus: selectedItem.maritalStatus,
+            hasDependents: selectedItem.childrenOrDependents?.hasDependents,
+            dependentsDetails: selectedItem.childrenOrDependents?.details,
+            hasAdultDependents: selectedItem.adultDependents?.hasAdultDependents,
+            adultDependentsDetails: selectedItem.adultDependents?.details,
+            guardianNamed: selectedItem.guardianNamed,
+            estatePlanGoals: selectedItem.estatePlanGoals,
+            deletionRequest: selectedItem.deletionRequest || "No",
+          });
+        })()}
 
         {/* Estate sections */}
         {renderSection("Estate Profile", selectedItem.estateProfileV2)}
@@ -114,6 +130,16 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
         {renderSection("Estate Tax", selectedItem.estateTaxV2)}
         {renderSection("Business", selectedItem.businessV2)}
         {renderSection("Living Will", selectedItem.livingWillV2)}
+        {renderObjectArray(
+          "Healthcare Decision Makers",
+          selectedItem.livingWillV2?.healthcareDecisionMakers,
+          ["name", "relationship"]
+        )}
+        {renderObjectArray(
+          "Emergency Healthcare Decision Makers",
+          selectedItem.livingWillV2?.emergencyHealthcareDecisionMakers,
+          ["name", "relationship"]
+        )}
         {renderSection("Foreign Assets", selectedItem.reviewForeignAssetsV2)}
 
         {/* Additional considerations */}

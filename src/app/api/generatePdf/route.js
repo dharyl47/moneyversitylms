@@ -396,16 +396,27 @@ export async function POST(req) {
 
     /* 4️⃣  Build PDF content ------------------------------------------------ */
 
+    // Get full name from firstName + sureName
+    const fullName = user.firstName && user.sureName 
+      ? `${user.firstName} ${user.sureName}` 
+      : user.firstName || user.name || 'N/A';
+
     const lines = [
-      `Estate Plan Summary for ${user.name || 'N/A'}`,
+      `Estate Plan Summary for ${fullName}`,
       '',
-      `What's your full name?: ${user.name || 'N/A'}`,
-      `What’s your marital status?: ${user.maritalStatus || 'N/A'}`,
+      `What's your full name?: ${fullName}`,
+      `What's your marital status?: ${user.maritalStatus || 'N/A'}`,
       `Do you have any children or dependents?: ${
         user.childrenOrDependents?.hasDependents || 'N/A'
       }`,
       `If yes, provide details about dependents: ${
         user.childrenOrDependents?.details || 'N/A'
+      }`,
+      `Do you have any adult dependents?: ${
+        user.adultDependents?.hasAdultDependents || 'N/A'
+      }`,
+      `If yes, provide details about adult dependents: ${
+        user.adultDependents?.details || 'N/A'
       }`,
       `Have you named a guardian for your minor children in your will?: ${
         user.guardianNamed || 'N/A'
@@ -610,7 +621,7 @@ export async function POST(req) {
     return new Response(bytes, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${user.name || 'EstatePlan'}_Summary.pdf"`,
+        'Content-Disposition': `attachment; filename="${fullName.replace(/\s+/g, '_') || 'EstatePlan'}_Summary.pdf"`,
       },
     });
   } catch (err) {

@@ -28,6 +28,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
     path.split('.').reduce((acc, key) => (acc ? acc[key] : undefined), root);
 
   const stages = [
+    'Welcome',
     'Personal Information',
     'Net Worth Assessment',
     'Estate Planning Goals',
@@ -37,53 +38,46 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
     'Living Will and Healthcare Directives',
     'Review of Foreign Assets',
     'Additional Considerations',
+    'Final Review and Next Steps',
   ];
 
   const stageFieldMap = {
+    'Welcome': [], // No data collected, informational only
     'Personal Information': [
-      'name',
-      'dateOfBirth',
-      'emailAddress',
-      'childrenOrDependents.hasDependents',
-      'childrenOrDependents.details',
+      'firstName',
+      'sureName',
+      'age',
+      'maritalStatus',
+      'childrenOrDependents',
+      'adultDependents',
       'guardianNamed',
       'estatePlanGoals',
     ],
     'Net Worth Assessment': [
       'estateProfileV2.ownsProperty',
-      'estateProfileV2.propertyDetails',
       'estateProfileV2.ownsVehicle',
-      'estateProfileV2.vehicleDetails',
       'estateProfileV2.ownsBusiness',
-      'estateProfileV2.businessDetails',
       'estateProfileV2.ownsValuables',
-      'estateProfileV2.valuableDetails',
       'estateProfileV2.hasDebts',
-      'estateProfileV2.debtDetails',
     ],
     'Estate Planning Goals': [
       'estateGoalsV2.assetDistribution',
       'estateGoalsV2.careForDependents',
       'estateGoalsV2.minimizeTaxes',
-      'estateGoalsV2.businessSuccession',
       'estateGoalsV2.incapacityPlanning',
       'estateGoalsV2.emergencyFund',
       'estateGoalsV2.financialPlan',
+      'livingWillV2.healthcareDecisionMakers',
     ],
     'Choosing Estate Planning Tools': [
-      'estateToolsV2.trusts',
       'estateToolsV2.will',
       'estateToolsV2.willReview',
       'estateToolsV2.trustSetup',
+      'estateToolsV2.trusts',
       'estateToolsV2.donations',
-      'estateToolsV2.donationsProceedReview',
       'estateToolsV2.donationsDetails',
       'estateToolsV2.lifeInsurance',
-      'estateToolsV2.lifeInsuranceDetails',
-      'estateToolsV2.estateExpensePlan',
-      'estateToolsV2.marriagePropertyStatus',
       'estateToolsV2.digitalAssets',
-      'estateToolsV2.digitalAssetsDetails',
     ],
     'Tax Planning and Minimization': [
       'estateTaxV2.estateDuty',
@@ -91,16 +85,34 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
       'estateTaxV2.incomeTax',
       'estateTaxV2.protectionClaims',
     ],
-    'Business Succession Planning': ['businessV2.businessPlan'],
+    'Business Succession Planning': [
+      'businessV2.businessPlan',
+      'businessV2.keyPerson',
+    ],
     'Living Will and Healthcare Directives': [
       'livingWillV2.createLivingWill',
       'livingWillV2.healthCareDecisions',
+      'livingWillV2.emergencyHealthcareDecisionMakers',
     ],
-    'Review of Foreign Assets': ['reviewForeignAssetsV2.ownProperty'],
-    'Additional Considerations': [
+    'Review of Foreign Assets': [
+      'reviewForeignAssetsV2.ownProperty',
       'additionalConsideration.contactLegalAdviser',
       'additionalConsideration.legacyHeirlooms',
+    ],
+    'Additional Considerations': [
+      'additionalConsideration.legacyHeirlooms',
       'additionalConsideration.legacyHeirloomsDetails',
+      'additionalConsideration.beneficiaryDesignations',
+      'additionalConsideration.executorRemuneration',
+      'additionalConsideration.informedNominated',
+      'additionalConsideration.prepaidFuneral',
+      'additionalConsideration.petCarePlanning',
+      'additionalConsideration.setAReminder',
+    ],
+    'Final Review and Next Steps': [
+      // Check if ALL Additional Considerations fields are filled
+      'additionalConsideration.contactLegalAdviser',
+      'additionalConsideration.legacyHeirlooms',
       'additionalConsideration.beneficiaryDesignations',
       'additionalConsideration.executorRemuneration',
       'additionalConsideration.informedNominated',
@@ -115,12 +127,65 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
     return keys.some((k) => hasMeaningfulData(getValueByPath(item, k)));
   };
 
+  const hasAllStageData = (item, stage) => {
+    const keys = stageFieldMap[stage] || [];
+    if (keys.length === 0) return true; // Welcome stage has no data
+    return keys.every((k) => hasMeaningfulData(getValueByPath(item, k)));
+  };
+
   const getCurrentStage = (item) => {
-    for (let i = 0; i < stages.length; i++) {
-      const s = stages[i];
-      if (!hasAnyStageData(item, s)) return s;
+    // Check if Final Review and Next Steps (all Additional Considerations filled)
+    const finalReviewFields = [
+      'additionalConsideration.contactLegalAdviser',
+      'additionalConsideration.legacyHeirlooms',
+      'additionalConsideration.beneficiaryDesignations',
+      'additionalConsideration.executorRemuneration',
+      'additionalConsideration.informedNominated',
+      'additionalConsideration.prepaidFuneral',
+      'additionalConsideration.petCarePlanning',
+      'additionalConsideration.setAReminder',
+    ];
+    const allFinalReviewFieldsFilled = finalReviewFields.every((k) => 
+      hasMeaningfulData(getValueByPath(item, k))
+    );
+    if (allFinalReviewFieldsFilled) {
+      return 'Final Review and Next Steps';
     }
-    return stages[stages.length - 1];
+
+    // Check Business Succession Planning conditionally
+    const ownBusiness = item.ownBusiness === 'Yes';
+    
+    // Iterate through stages and find the first incomplete one
+    for (let i = 0; i < stages.length; i++) {
+      const stage = stages[i];
+      
+      // Skip Welcome (no data to check)
+      if (stage === 'Welcome') continue;
+      
+      // Handle Business Succession Planning conditionally
+      if (stage === 'Business Succession Planning') {
+        if (!ownBusiness) {
+          // Skip this stage if user doesn't own a business
+          continue;
+        }
+      }
+      
+      // Check if this stage has any data
+      if (!hasAnyStageData(item, stage)) {
+        return stage;
+      }
+    }
+    
+    // If all stages are complete, return the last stage
+    return 'Final Review and Next Steps';
+  };
+
+  // Get display name from firstName + sureName, fallback to name
+  const getDisplayName = (item) => {
+    const fullName = item.firstName && item.sureName 
+      ? `${item.firstName} ${item.sureName}` 
+      : item.firstName || item.name || 'N/A';
+    return fullName;
   };
 
   // ---------- handlers ----------
@@ -136,7 +201,8 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
       const downloadUrl = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.setAttribute('download', `${item.name}_Estate_Planning_Report.pdf`);
+      const displayName = getDisplayName(item);
+      link.setAttribute('download', `${displayName.replace(/\s+/g, '_')}_Estate_Planning_Report.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -202,7 +268,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
       <table className="min-w-full text-gray-800 border-collapse">
         <thead>
           <tr className="bg-white border-b">
-            {['Name', 'Email', 'Date of Birth', 'Current Stage', 'Status', 'Actions'].map((header) => (
+            {['Name', 'Age', 'Marital Status', 'Current Stage', 'Status', 'Actions'].map((header) => (
               <th key={header} className="py-3 px-4 text-left text-sm font-semibold border-r last:border-r-0">
                 {header}
               </th>
@@ -212,9 +278,24 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
 
         <tbody>
           {currentItems.map((item, idx) => {
-            const isCompleted = hasMeaningfulData(item.additionalConsideration);
+            // Check if completed (all Additional Considerations fields filled)
+            const finalReviewFields = [
+              'additionalConsideration.contactLegalAdviser',
+              'additionalConsideration.legacyHeirlooms',
+              'additionalConsideration.beneficiaryDesignations',
+              'additionalConsideration.executorRemuneration',
+              'additionalConsideration.informedNominated',
+              'additionalConsideration.prepaidFuneral',
+              'additionalConsideration.petCarePlanning',
+              'additionalConsideration.setAReminder',
+            ];
+            const allFinalReviewFieldsFilled = finalReviewFields.every((k) => 
+              hasMeaningfulData(getValueByPath(item, k))
+            );
+            const isCompleted = allFinalReviewFieldsFilled;
             const status = isCompleted ? 'Completed' : 'In Progress';
             const currentStage = getCurrentStage(item);
+            const displayName = getDisplayName(item);
 
             // robust id (works with _id or id)
             const itemId = item._id || item.id;
@@ -224,9 +305,9 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                 key={itemId}
                 className={`border-b hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
               >
-                <td className="py-2 px-4">{item.name}</td>
-                <td className="py-2 px-4">{item.emailAddress}</td>
-                <td className="py-2 px-4">{item.dateOfBirth}</td>
+                <td className="py-2 px-4">{displayName}</td>
+                <td className="py-2 px-4">{item.age || 'N/A'}</td>
+                <td className="py-2 px-4">{item.maritalStatus || 'N/A'}</td>
                 <td className="py-2 px-4">{currentStage}</td>
                 <td className={`py-2 px-4 font-semibold ${status === 'Completed' ? 'text-green-600' : 'text-yellow-600'}`}>
                   {status}
