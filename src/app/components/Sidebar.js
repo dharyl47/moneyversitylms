@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
   faUserGear,
-  faFileCircleQuestion,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -38,7 +37,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
  {/* Title Section */}
  <div className="pl-3 mt-2 w-full text-left">
  <h1 className="text-sm font-semibold text-black leading-snug">
-  Guidance for Inheritance<br />and Assets
+  Guidance for Inheritance <br />and assets (GIA)
 </h1>
 
 </div>
@@ -57,12 +56,6 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
               <Link href="/user-control" className={linkClasses("/user-control")}>
                 <FontAwesomeIcon icon={faUserGear} className="mr-2" />
                 User Profile
-              </Link>
-            </li>
-            <li>
-              <Link href="/callmeback" className={linkClasses("/callmeback")}>
-                <FontAwesomeIcon icon={faFileCircleQuestion} className="mr-2" />
-                Call Me Back
               </Link>
             </li>
             <li>

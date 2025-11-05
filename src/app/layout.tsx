@@ -1,10 +1,15 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import AuthLayout from "@/app/components/AuthLayout";
 
 const inter = Inter({ subsets: ["latin"] });
+const montserrat = Montserrat({ 
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  weight: ["400", "600", "700"]
+});
 
 export const metadata: Metadata = {
   title: "Chat Bot Admin",
@@ -18,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} ${montserrat.variable}`}>
         <AuthLayout>{children}</AuthLayout> {/* Wrap in AuthLayout */}
       </body>
     </html>
