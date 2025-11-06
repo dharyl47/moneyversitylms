@@ -37,7 +37,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 
  {/* Title Section */}
  <div className="pl-3 mt-7 w-full text-left">
- <h1 className="text-lg font-semibold text-black leading-snug">
+ <h1 className="text-lg font-semibold text-[#4FB748] leading-snug">
    <span className="relative inline-block">
      Gu
      <span className="relative inline-block">
