@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const Navbar = () => {
   return (
-   <nav className="fixed z-30 w-full bg-transparent border-b border-gray-200 dark:border-gray-300">
+   <nav className="fixed z-30 bg-transparent border-b border-gray-200 dark:border-gray-300" style={{ left: '250px', width: 'calc(100% - 250px)' }}>
   <div className="px-5 py-3 lg:px-10">
     <div className="flex items-center justify-center">
       {/* Sidebar Toggle (Optional for Mobile) */}

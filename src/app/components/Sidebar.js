@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
@@ -35,17 +36,48 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 >
 
  {/* Title Section */}
- <div className="pl-3 mt-2 w-full text-left">
- <h1 className="text-sm font-semibold text-black leading-snug">
-  Guidance for Inheritance <br />and assets (GIA)
-</h1>
-
+ <div className="pl-3 mt-7 w-full text-left">
+ <h1 className="text-lg font-semibold text-black leading-snug">
+   <span className="relative inline-block">
+     Gu
+     <span className="relative inline-block">
+       i
+       <Image
+         src="/images/mvhat.png"
+         alt="Graduation cap"
+         width={36.6}
+         height={29.4}
+         className="absolute left-1/2"
+         style={{ 
+           transform: 'translateX(-50%)',
+           top: '-14px',
+           width: '30.6px',
+           height: '23.4px',
+           maxWidth: '100px'
+         }}
+         unoptimized
+       />
+     </span>dance
+   </span> for Inheritance <br />and assets (GIA)
+ </h1>
+ 
+ {/* Horizontal separator line */}
+ <div 
+   className="mt-4"
+   style={{
+     height: '1px',
+     backgroundColor: '#E5E5E5',
+     marginLeft: '-12px',
+     marginRight: '0',
+     width: 'calc(100% + 12px)'
+   }}
+ />
 </div>
 
 
       <div className="flex flex-col items-center h-full overflow-y-auto">
-        <nav className="flex-1 flex flex-col mt-4 w-full">
-          <ul className="space-y-1 p-1 w-full">
+        <nav className="flex-1 flex flex-col mt-4 w-full border-none">
+          <ul className="space-y-1 p-1 w-full border-none">
             <li>
               <Link href="/dashboard" className={linkClasses("/dashboard")}>
                 <FontAwesomeIcon icon={faHome} className="mr-2" />

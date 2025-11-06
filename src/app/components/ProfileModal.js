@@ -6,12 +6,16 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
 
   /* ---------- helpers ---------- */
 
-  const formatLabel = (label) =>
-    label
+  const formatLabel = (label) => {
+    // Special case for sureName -> Surename
+    if (label === 'sureName') return 'Surename';
+    
+    return label
       .replace(/([A-Z])/g, " $1")
       .replace(/^./, (str) => str.toUpperCase())
       .replace(/V2$/, "")
       .replace(/_/g, " ");
+  };
 
   const formatValue = (value) => {
     if (Array.isArray(value))
@@ -52,7 +56,7 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
                 {columns.map((c) => (
                   <th
                     key={c}
-                    className="px-3 py-2 border text-left font-medium"
+                    className="px-3 py-2 border text-left font-medium text-gray-800"
                   >
                     {formatLabel(c)}
                   </th>
@@ -104,8 +108,6 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
             firstName: selectedItem.firstName,
             sureName: selectedItem.sureName,
             age: selectedItem.age,
-            email: selectedItem.emailAddress,
-            dateOfBirth: selectedItem.dateOfBirth,
             propertyRegime: selectedItem.propertyRegime,
             maritalStatus: selectedItem.maritalStatus,
             hasDependents: selectedItem.childrenOrDependents?.hasDependents,

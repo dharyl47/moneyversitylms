@@ -278,21 +278,19 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
 
         <tbody>
           {currentItems.map((item, idx) => {
-            // Check if completed (all Additional Considerations fields filled)
-            const finalReviewFields = [
-              'additionalConsideration.contactLegalAdviser',
-              'additionalConsideration.legacyHeirlooms',
-              'additionalConsideration.beneficiaryDesignations',
-              'additionalConsideration.executorRemuneration',
-              'additionalConsideration.informedNominated',
-              'additionalConsideration.prepaidFuneral',
-              'additionalConsideration.petCarePlanning',
-              'additionalConsideration.setAReminder',
+            // Check if completed (matches dashboard logic: ANY meaningful data in Additional Considerations)
+            const additionalConsiderationFields = [
+              item.additionalConsideration?.contactLegalAdviser,
+              item.additionalConsideration?.legacyHeirlooms,
+              item.additionalConsideration?.beneficiaryDesignations,
+              item.additionalConsideration?.executorRemuneration,
+              item.additionalConsideration?.informedNominated,
+              item.additionalConsideration?.prepaidFuneral,
+              item.additionalConsideration?.petCarePlanning,
+              item.additionalConsideration?.setAReminder,
             ];
-            const allFinalReviewFieldsFilled = finalReviewFields.every((k) => 
-              hasMeaningfulData(getValueByPath(item, k))
-            );
-            const isCompleted = allFinalReviewFieldsFilled;
+            const hasAnyAdditionalConsiderations = additionalConsiderationFields.some(field => hasMeaningfulData(field));
+            const isCompleted = hasAnyAdditionalConsiderations;
             const status = isCompleted ? 'Completed' : 'In Progress';
             const currentStage = getCurrentStage(item);
             const displayName = getDisplayName(item);
