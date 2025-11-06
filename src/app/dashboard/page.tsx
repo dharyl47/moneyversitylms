@@ -1,42 +1,14 @@
 "use client";
 import Layout from "@/app/components/Layout";
 import React, { useEffect, useState, useCallback } from "react";
-import { Bar, Pie, Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, ArcElement, PointElement, Tooltip, Legend } from 'chart.js';
+import CompletedFlowChart from "./_components/CompletedFlowChart";
+import UsersByStageChart from "./_components/UsersByStageChart";
+import UserGrowthChart from "./_components/UserGrowthChart";
+import DownloadsChart from "./_components/DownloadsChart";
+import { Profile, Statistics } from "./_components/types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, ArcElement, PointElement, Tooltip, Legend);
-
-interface Profile {
-  name: string;
-  dateCreated: string;
-  propertyRegime: string;
-  ownBusiness?: string;
-  Assets?: object;
-  Liabilities?: object;
-  Policies?: object;
-  EstateDuty?: object;
-  ExecutorFees?: object;
-  LiquidityPosition?: object;
-  MaintenanceClaims?: object;
-  MaintenanceSurvivingSpouse?: object;
-  ProvisionsDependents?: object;
-  Trusts?: object;
-  InvestmentTrusts?: object;
-  InvestmentsPortfolio?: object;
-  [key: string]: any; // Allow any additional fields
-}
-
-interface Statistics {
-  completedFlowByMonth: { [key: string]: number };
-  usersByStage: { stage: string; count: number }[];
-  propertyRegimeCount: { [key: string]: number };
-  userGrowth: { [key: string]: number };
-  reportDownloadsByMonth: { [key: string]: number };
-  templateDownloadsByMonth: { [key: string]: number };
-  totalReportDownloads: number;
-  totalTemplateDownloads: number;
-  templateBreakdown: { fileName: string; fileLabel: string; count: number }[];
-}
 
 // Helper function outside component
   const hasMeaningfulData = (obj: any): boolean => {
@@ -724,105 +696,6 @@ const mapSchemaToStage: Record<string, string[]> = {
     ? Array.from(new Set(profileData.map(p => new Date(p.dateCreated).getFullYear().toString()))).sort((a, b) => b.localeCompare(a))
     : [];
 
-  // Sort months properly for completed flow
-  const sortedMonths = Object.keys(statistics.completedFlowByMonth).sort((a, b) => {
-    // Parse "Jan 2024" format
-    const parseDate = (str: string) => {
-      const [month, year] = str.split(' ');
-      const monthMap: { [key: string]: number } = {
-        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-      };
-      return new Date(parseInt(year), monthMap[month] || 0);
-    };
-    return parseDate(a).getTime() - parseDate(b).getTime();
-  });
-
-  const completedFlowData = {
-    labels: sortedMonths,
-    datasets: [
-      {
-        label: "Users Completed Flow",
-        data: sortedMonths.map(month => statistics.completedFlowByMonth[month]),
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-      },
-    ],
-  };
-
-  const stagesData = {
-    labels: statistics.usersByStage.map((stage) => stage.stage),
-    datasets: [
-      {
-        label: "Users by Stage",
-        data: statistics.usersByStage.map((stage) => stage.count),
-        backgroundColor: "rgba(255, 99, 132, 0.6)",
-      },
-    ],
-  };
-
-  const propertyRegimeData = {
-    labels: Object.keys(statistics.propertyRegimeCount),
-    datasets: [
-      {
-        label: "Property Regime Distribution",
-        data: Object.values(statistics.propertyRegimeCount),
-        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
-      },
-    ],
-  };
-
-  const userGrowthData = {
-    labels: Object.keys(statistics.userGrowth),
-    datasets: [
-      {
-        label: "Users who have started the journey",
-        data: Object.values(statistics.userGrowth),
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        fill: false,
-      },
-    ],
-  };
-
-  // Get all unique months from both download types
-  const allDownloadMonths = new Set([
-    ...Object.keys(statistics.reportDownloadsByMonth),
-    ...Object.keys(statistics.templateDownloadsByMonth)
-  ]);
-
-  // Sort months for downloads
-  const sortedDownloadMonths = Array.from(allDownloadMonths).sort((a, b) => {
-    const parseDate = (str: string) => {
-      const [month, year] = str.split(' ');
-      const monthMap: { [key: string]: number } = {
-        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-      };
-      return new Date(parseInt(year), monthMap[month] || 0);
-    };
-    return parseDate(a).getTime() - parseDate(b).getTime();
-  });
-
-  const reportDownloadsData = {
-    labels: sortedDownloadMonths,
-    datasets: [
-      {
-        label: `User Reports (Total: ${statistics.totalReportDownloads})`,
-        data: sortedDownloadMonths.map(month => statistics.reportDownloadsByMonth[month] || 0),
-        backgroundColor: "rgba(153, 102, 255, 0.6)",
-        borderColor: "rgba(153, 102, 255, 1)",
-        borderWidth: 1,
-      },
-      {
-        label: `Resource Templates (Total: ${statistics.totalTemplateDownloads})`,
-        data: sortedDownloadMonths.map(month => statistics.templateDownloadsByMonth[month] || 0),
-        backgroundColor: "rgba(255, 159, 64, 0.6)",
-        borderColor: "rgba(255, 159, 64, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
-
   return (
     <main className="bg-[#F4F6F9] min-h-screen">
       <Layout>
@@ -872,155 +745,29 @@ const mapSchemaToStage: Record<string, string[]> = {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            {/* Completed Flow Chart */}
-            <div className="bg-white p-4 rounded-lg shadow-lg">
-              <h2 className="text-xl font-semibold mb-2 text-gray-900"
-              style={{
-                fontFamily: 'Montserrat, sans-serif',
-                fontWeight: 600,
-                fontSize: "18px",
-                lineHeight: '20px',
-              }}
-              >Completed Flow (Per Month) {selectedYear !== "all" && `(${selectedYear})`}</h2>
-              <Bar data={completedFlowData} options={{ responsive: true }} />
-            </div>
+            <CompletedFlowChart 
+              completedFlowByMonth={statistics.completedFlowByMonth}
+              selectedYear={selectedYear}
+            />
 
-            {/* Users by Stage Chart */}
-            <div className="bg-white p-4 rounded-lg shadow-lg">
-              <h2 className="text-xl font-semibold mb-2 text-gray-900"
-              style={{
-                fontFamily: 'Montserrat, sans-serif',
-                fontWeight: 600,
-                fontSize: "18px",
-                lineHeight: '20px',
-              }}
-              >Users in Progress {selectedYear !== "all" && `(${selectedYear})`}</h2>
-              <Bar data={stagesData} options={{ responsive: true }} />
-            </div>
+            <UsersByStageChart 
+              usersByStage={statistics.usersByStage}
+              selectedYear={selectedYear}
+            />
 
-            {/* Users who have started the journey Chart */}
-            <div className="bg-white p-4 rounded-lg shadow-lg">
-              <h2 className="text-xl font-semibold mb-2 text-gray-900"
-              style={{
-                fontFamily: 'Montserrat, sans-serif',
-                fontWeight: 600,
-                fontSize: "18px",
-                lineHeight: '20px',
-              }}
-              >Users who have started the journey {selectedYear !== "all" && `(${selectedYear})`}</h2>
-              <Line data={userGrowthData} options={{ responsive: true }} />
-            </div>
+            <UserGrowthChart 
+              userGrowth={statistics.userGrowth}
+              selectedYear={selectedYear}
+            />
 
-            {/* Report Downloads Chart */}
-            <div className="bg-white p-4 rounded-lg shadow-lg">
-              <h2 className="text-xl font-semibold mb-2 text-gray-900"
-              style={{
-                fontFamily: 'Montserrat, sans-serif',
-                fontWeight: 600,
-                fontSize: "18px",
-                lineHeight: '20px',
-              }}
-              >Downloads (Per Month) {selectedYear !== "all" && `(${selectedYear})`}</h2>
-              <div className="mb-4 flex gap-4 text-sm"
-              style={{
-                fontFamily: 'Montserrat, sans-serif',
-                fontWeight: 400,
-                fontSize: '16px',
-              }}>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(153, 102, 255, 0.6)' }}></div>
-                  <span className="text-gray-700">
-                    <strong>User Reports:</strong> {statistics.totalReportDownloads}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(255, 159, 64, 0.6)' }}></div>
-                  <span className="text-gray-700">
-                    <strong>Resource Templates:</strong> {statistics.totalTemplateDownloads}
-                  </span>
-                </div>
-              </div>
-              <Bar data={reportDownloadsData} options={{ responsive: true }} />
-              
-              {/* Template Breakdown Table */}
-              {statistics.templateBreakdown && statistics.templateBreakdown.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="text-lg font-semibold mb-3 text-gray-900"
-                  style={{
-                    fontFamily: 'Montserrat, sans-serif',
-                    fontWeight: 600,
-                    fontSize: "18px",
-                    lineHeight: '20px',
-                  }}
-                  >Template Download Breakdown</h3>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full border-collapse border border-gray-300">
-                      <thead>
-                        <tr className="bg-gray-100">
-                          <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-900"
-                          style={{
-                            fontFamily: 'Montserrat, sans-serif',
-                            fontWeight: 600,
-                            fontSize: '18px',
-                            lineHeight: '20px',
-                            color: '#1F2937',
-                          }}
-                          >Template Name</th>
-                          <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-900"
-                          style={{
-                            fontFamily: 'Montserrat, sans-serif',
-                            fontWeight: 600,
-                            fontSize: '18px',
-                            lineHeight: '20px',
-                            color: '#1F2937',
-                          }}
-                          >File Name</th>
-                          <th className="border border-gray-300 px-4 py-2 text-center text-sm font-semibold text-gray-900"
-                          style={{
-                            fontFamily: 'Montserrat, sans-serif',
-                            fontWeight: 600,
-                            fontSize: '18px',
-                            lineHeight: '20px',
-                            color: '#1F2937',
-                          }}
-                          >Downloads</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {statistics.templateBreakdown.map((template, index) => (
-                          <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                            <td className="border border-gray-300 px-4 py-2 text-sm text-gray-700"
-                            style={{
-                              fontFamily: 'Montserrat, sans-serif',
-                              fontWeight: 400,
-                              fontSize: '16px',
-                              color: '#1F2937',
-                            }}
-                            >{template.fileLabel}</td>
-                            <td className="border border-gray-300 px-4 py-2 text-sm text-gray-600"
-                            style={{
-                              fontFamily: 'Montserrat, sans-serif',
-                              fontWeight: 400,
-                              fontSize: '16px',
-                              color: '#1F2937',
-                            }}
-                            >{template.fileName}</td>
-                            <td className="border border-gray-300 px-4 py-2 text-sm text-center font-semibold text-gray-900"
-                            style={{
-                              fontFamily: 'Montserrat, sans-serif',
-                              fontWeight: 400,
-                              fontSize: '16px',
-                              color: '#1F2937',
-                            }}
-                            >{template.count}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-            </div>
+            <DownloadsChart
+              reportDownloadsByMonth={statistics.reportDownloadsByMonth}
+              templateDownloadsByMonth={statistics.templateDownloadsByMonth}
+              totalReportDownloads={statistics.totalReportDownloads}
+              totalTemplateDownloads={statistics.totalTemplateDownloads}
+              templateBreakdown={statistics.templateBreakdown}
+              selectedYear={selectedYear}
+            />
           </div>
           </div>
         </div>
