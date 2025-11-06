@@ -1,172 +1,141 @@
 "use client";
 import Layout from "@/app/components/Layout";
-import React, { useState, useEffect, useCallback } from "react";
-import DataTableV2 from "@/app/components/DataTableV2";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import DataTableV2 from "./_components/DataTableV2";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import Breadcrumb from "@/app/components/Breadcrumb";
 import Papa from "papaparse";
 
 export default function UserControl() {
   const [profile, setProfile] = useState([]);
-  const [filteredProfiles, setFilteredProfiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedStage, setSelectedStage] = useState("Show All");
   const [searchText, setSearchText] = useState("");
 
-  const hasMeaningfulData = useCallback((obj) => {
-    if (obj === null || obj === undefined) return false;
-  
-    if (typeof obj !== "object") {
-      return obj !== "" && obj !== false && obj !== "N/A";
+  const hasMeaningfulData = useCallback((val) => {
+    if (val == null) return false;
+    if (typeof val !== 'object') {
+      if (typeof val === 'string') {
+        const s = val.trim();
+        return s !== '' && s !== 'N/A';
+      }
+      return !!val;
     }
-  
-    return Object.values(obj).some((value) => hasMeaningfulData(value));
+    if (Array.isArray(val)) return val.some((v) => hasMeaningfulData(v));
+    return Object.values(val).some((v) => hasMeaningfulData(v));
   }, []);
   
+  // Helper to get value by path (nested object access)
+  const getValueByPath = useCallback((root, path) => {
+    return path.split('.').reduce((acc, key) => (acc ? acc[key] : undefined), root);
+  }, []);
+  
+  // Check if a stage has any data (matches DataTableV2 logic)
+  const hasAnyStageData = useCallback((profile, stage) => {
+    const stageFieldMap = {
+      'Welcome': [],
+      'Personal Information': ['firstName', 'sureName', 'age', 'maritalStatus', 'childrenOrDependents', 'adultDependents', 'guardianNamed', 'estatePlanGoals'],
+      'Net Worth Assessment': ['estateProfileV2.ownsProperty', 'estateProfileV2.ownsVehicle', 'estateProfileV2.ownsBusiness', 'estateProfileV2.ownsValuables', 'estateProfileV2.hasDebts'],
+      'Estate Planning Goals': ['estateGoalsV2.assetDistribution', 'estateGoalsV2.careForDependents', 'estateGoalsV2.minimizeTaxes', 'estateGoalsV2.incapacityPlanning', 'estateGoalsV2.emergencyFund', 'estateGoalsV2.financialPlan', 'livingWillV2.healthcareDecisionMakers'],
+      'Choosing Estate Planning Tools': ['estateToolsV2.will', 'estateToolsV2.willReview', 'estateToolsV2.trustSetup', 'estateToolsV2.trusts', 'estateToolsV2.donations', 'estateToolsV2.donationsDetails', 'estateToolsV2.lifeInsurance', 'estateToolsV2.digitalAssets'],
+      'Tax Planning and Minimization': ['estateTaxV2.estateDuty', 'estateTaxV2.gainsTax', 'estateTaxV2.incomeTax', 'estateTaxV2.protectionClaims'],
+      'Business Succession Planning': ['businessV2.businessPlan', 'businessV2.keyPerson'],
+      'Living Will and Healthcare Directives': ['livingWillV2.createLivingWill', 'livingWillV2.healthCareDecisions', 'livingWillV2.emergencyHealthcareDecisionMakers'],
+      'Review of Foreign Assets': ['reviewForeignAssetsV2.ownProperty', 'additionalConsideration.contactLegalAdviser', 'additionalConsideration.legacyHeirlooms'],
+      'Additional Considerations': ['additionalConsideration.legacyHeirlooms', 'additionalConsideration.legacyHeirloomsDetails', 'additionalConsideration.beneficiaryDesignations', 'additionalConsideration.executorRemuneration', 'additionalConsideration.informedNominated', 'additionalConsideration.prepaidFuneral', 'additionalConsideration.petCarePlanning', 'additionalConsideration.setAReminder'],
+      'Final Review and Next Steps': ['additionalConsideration.contactLegalAdviser', 'additionalConsideration.legacyHeirlooms', 'additionalConsideration.beneficiaryDesignations', 'additionalConsideration.executorRemuneration', 'additionalConsideration.informedNominated', 'additionalConsideration.prepaidFuneral', 'additionalConsideration.petCarePlanning', 'additionalConsideration.setAReminder'],
+    };
+    
+    const keys = stageFieldMap[stage] || [];
+    return keys.some((k) => hasMeaningfulData(getValueByPath(profile, k)));
+  }, [hasMeaningfulData, getValueByPath]);
+
+  // Get current stage (matches DataTableV2 getCurrentStage logic exactly)
+  const getCurrentStage = useCallback((profile) => {
+    // Check if Completed Flow (all Additional Considerations filled)
+    const finalReviewFields = [
+      'additionalConsideration.contactLegalAdviser',
+      'additionalConsideration.legacyHeirlooms',
+      'additionalConsideration.beneficiaryDesignations',
+      'additionalConsideration.executorRemuneration',
+      'additionalConsideration.informedNominated',
+      'additionalConsideration.prepaidFuneral',
+      'additionalConsideration.petCarePlanning',
+      'additionalConsideration.setAReminder',
+    ];
+    const allFinalReviewFieldsFilled = finalReviewFields.every((k) => 
+      hasMeaningfulData(getValueByPath(profile, k))
+    );
+    if (allFinalReviewFieldsFilled) {
+      return 'Completed Flow';
+    }
+
+    // Check Business Succession Planning conditionally
+    const ownBusiness = profile.ownBusiness === 'Yes';
+    
+    const stages = [
+      'Welcome',
+      'Personal Information',
+      'Net Worth Assessment',
+      'Estate Planning Goals',
+      'Choosing Estate Planning Tools',
+      'Tax Planning and Minimization',
+      'Business Succession Planning',
+      'Living Will and Healthcare Directives',
+      'Review of Foreign Assets',
+      'Additional Considerations',
+      'Final Review and Next Steps',
+    ];
+    
+    // Iterate through stages and find the first incomplete one
+    for (let i = 0; i < stages.length; i++) {
+      const stage = stages[i];
+      
+      // Skip Welcome (no data to check)
+      if (stage === 'Welcome') continue;
+      
+      // Handle Business Succession Planning conditionally
+      if (stage === 'Business Succession Planning') {
+        if (!ownBusiness) {
+          // Skip this stage if user doesn't own a business
+          continue;
+        }
+      }
+      
+      // Check if this stage has any data
+      if (!hasAnyStageData(profile, stage)) {
+        return stage;
+      }
+    }
+    
+    // If all stages are complete, return Completed Flow
+    return 'Completed Flow';
+  }, [hasMeaningfulData, getValueByPath, hasAnyStageData]);
+
+  // Filter function that matches the displayed current stage
   const hasCompletedStage = useCallback((profile, stage) => {
     if (stage === "Show All") return true;
-  
-    // Completed Flow: User has completed ALL Additional Considerations fields
-    if (stage === "Completed Flow") {
-      const additionalConsiderationFields = [
-        profile.additionalConsideration?.contactLegalAdviser,
-        profile.additionalConsideration?.legacyHeirlooms,
-        profile.additionalConsideration?.beneficiaryDesignations,
-        profile.additionalConsideration?.executorRemuneration,
-        profile.additionalConsideration?.informedNominated,
-        profile.additionalConsideration?.prepaidFuneral,
-        profile.additionalConsideration?.petCarePlanning,
-        profile.additionalConsideration?.setAReminder,
-      ];
-      return additionalConsiderationFields.every(field => hasMeaningfulData(field));
+    
+    // Completed Flow and Final Review and Next Steps - use getCurrentStage which has the exact same logic as the table
+    // The table's getCurrentStage checks: 1) all Additional Considerations filled, OR 2) all stages complete
+    if (stage === "Completed Flow" || stage === "Final Review and Next Steps") {
+      const currentStage = getCurrentStage(profile);
+      // getCurrentStage returns "Completed Flow" if either:
+      // - All Additional Considerations fields are filled, OR
+      // - All stages are complete (fallback)
+      return currentStage === "Completed Flow";
     }
+    
+    // For other stages, get the actual current stage for this profile (same logic as table display)
+    const currentStage = getCurrentStage(profile);
+    
+    // Match if the current stage equals the selected filter stage
+    return currentStage === stage;
+  }, [getCurrentStage]);
 
-    // Stage 1: Welcome - No data collected (always show)
-    if (stage === "Welcome") return true;
-
-    // Stage 2: Personal Information
-    if (stage === "Personal Information") {
-      return (
-        hasMeaningfulData(profile.firstName) ||
-        hasMeaningfulData(profile.sureName) ||
-        hasMeaningfulData(profile.age) ||
-        hasMeaningfulData(profile.maritalStatus) ||
-        hasMeaningfulData(profile.childrenOrDependents) ||
-        hasMeaningfulData(profile.adultDependents) ||
-        hasMeaningfulData(profile.guardianNamed) ||
-        hasMeaningfulData(profile.estatePlanGoals)
-      );
-    }
-
-    // Stage 3: Net Worth Assessment
-    if (stage === "Net Worth Assessment") {
-      return (
-        hasMeaningfulData(profile.estateProfileV2?.ownsProperty) ||
-        hasMeaningfulData(profile.estateProfileV2?.ownsVehicle) ||
-        hasMeaningfulData(profile.estateProfileV2?.ownsBusiness) ||
-        hasMeaningfulData(profile.estateProfileV2?.ownsValuables) ||
-        hasMeaningfulData(profile.estateProfileV2?.hasDebts)
-      );
-    }
-
-    // Stage 4: Estate Planning Goals
-    if (stage === "Estate Planning Goals") {
-      return (
-        hasMeaningfulData(profile.estateGoalsV2?.assetDistribution) ||
-        hasMeaningfulData(profile.estateGoalsV2?.careForDependents) ||
-        hasMeaningfulData(profile.estateGoalsV2?.minimizeTaxes) ||
-        hasMeaningfulData(profile.estateGoalsV2?.incapacityPlanning) ||
-        hasMeaningfulData(profile.estateGoalsV2?.emergencyFund) ||
-        hasMeaningfulData(profile.estateGoalsV2?.financialPlan) ||
-        hasMeaningfulData(profile.livingWillV2?.healthcareDecisionMakers)
-      );
-    }
-
-    // Stage 5: Choosing Estate Planning Tools
-    if (stage === "Choosing Estate Planning Tools") {
-      return (
-        hasMeaningfulData(profile.estateToolsV2?.will) ||
-        hasMeaningfulData(profile.estateToolsV2?.willReview) ||
-        hasMeaningfulData(profile.estateToolsV2?.trustSetup) ||
-        hasMeaningfulData(profile.estateToolsV2?.trusts) ||
-        hasMeaningfulData(profile.estateToolsV2?.donations) ||
-        hasMeaningfulData(profile.estateToolsV2?.donationsDetails) ||
-        hasMeaningfulData(profile.estateToolsV2?.lifeInsurance) ||
-        hasMeaningfulData(profile.estateToolsV2?.digitalAssets)
-      );
-    }
-
-    // Stage 6: Tax Planning and Minimization
-    if (stage === "Tax Planning and Minimization") {
-      return (
-        hasMeaningfulData(profile.estateTaxV2?.estateDuty) ||
-        hasMeaningfulData(profile.estateTaxV2?.gainsTax) ||
-        hasMeaningfulData(profile.estateTaxV2?.incomeTax) ||
-        hasMeaningfulData(profile.estateTaxV2?.protectionClaims)
-      );
-    }
-
-    // Stage 7: Business Succession Planning (conditional - only if ownBusiness === "Yes")
-    if (stage === "Business Succession Planning") {
-      if (profile.ownBusiness !== "Yes") return false;
-      return (
-        hasMeaningfulData(profile.businessV2?.businessPlan) ||
-        hasMeaningfulData(profile.businessV2?.keyPerson)
-      );
-    }
-
-    // Stage 8: Living Will and Healthcare Directives
-    if (stage === "Living Will and Healthcare Directives") {
-      return (
-        hasMeaningfulData(profile.livingWillV2?.createLivingWill) ||
-        hasMeaningfulData(profile.livingWillV2?.healthCareDecisions) ||
-        hasMeaningfulData(profile.livingWillV2?.emergencyHealthcareDecisionMakers)
-      );
-    }
-
-    // Stage 9: Review of Foreign Assets
-    if (stage === "Review of Foreign Assets") {
-      return (
-        hasMeaningfulData(profile.reviewForeignAssetsV2?.ownProperty) ||
-        hasMeaningfulData(profile.additionalConsideration?.contactLegalAdviser) ||
-        hasMeaningfulData(profile.additionalConsideration?.legacyHeirlooms)
-      );
-    }
-
-    // Stage 10: Additional Considerations
-    if (stage === "Additional Considerations") {
-      return (
-        hasMeaningfulData(profile.additionalConsideration?.legacyHeirlooms) ||
-        hasMeaningfulData(profile.additionalConsideration?.legacyHeirloomsDetails) ||
-        hasMeaningfulData(profile.additionalConsideration?.beneficiaryDesignations) ||
-        hasMeaningfulData(profile.additionalConsideration?.executorRemuneration) ||
-        hasMeaningfulData(profile.additionalConsideration?.informedNominated) ||
-        hasMeaningfulData(profile.additionalConsideration?.prepaidFuneral) ||
-        hasMeaningfulData(profile.additionalConsideration?.petCarePlanning) ||
-        hasMeaningfulData(profile.additionalConsideration?.setAReminder)
-      );
-    }
-
-    // Stage 11: Final Review and Next Steps - Informational only, no data collected
-    // But we consider it "completed" if all Additional Considerations are filled
-    if (stage === "Final Review and Next Steps") {
-      const additionalConsiderationFields = [
-        profile.additionalConsideration?.contactLegalAdviser,
-        profile.additionalConsideration?.legacyHeirlooms,
-        profile.additionalConsideration?.beneficiaryDesignations,
-        profile.additionalConsideration?.executorRemuneration,
-        profile.additionalConsideration?.informedNominated,
-        profile.additionalConsideration?.prepaidFuneral,
-        profile.additionalConsideration?.petCarePlanning,
-        profile.additionalConsideration?.setAReminder,
-      ];
-      return additionalConsiderationFields.every(field => hasMeaningfulData(field));
-    }
-  
-    return false;
-  }, [hasMeaningfulData]);
-
-  const filterProfiles = useCallback((stage, profiles = profile) => {
-    const filtered = profiles.filter((p) => {
+  // Use useMemo to compute filtered profiles instead of useEffect + state
+  const filteredProfiles = useMemo(() => {
+    const filtered = profile.filter((p) => {
       const search = searchText.toLowerCase();
   
       const fullName = p.firstName && p.sureName 
@@ -177,16 +146,17 @@ export default function UserControl() {
           (p.emailAddress && p.emailAddress.toLowerCase().includes(search))
         : true;
   
-      const matchesStage = hasCompletedStage(p, stage);
+      const matchesStage = hasCompletedStage(p, selectedStage);
   
       return matchesSearch && matchesStage;
     });
   
-    setFilteredProfiles(filtered);
     console.log(
-      `Filtered profiles length for stage "${stage}" with search "${searchText}": ${filtered.length}`
+      `Filtered profiles length for stage "${selectedStage}" with search "${searchText}": ${filtered.length}`
     );
-  }, [searchText, hasCompletedStage, profile]);
+    
+    return filtered;
+  }, [profile, searchText, selectedStage, hasCompletedStage]);
 
   const exportToCSV = () => {
     if (filteredProfiles.length === 0) {
@@ -230,7 +200,6 @@ export default function UserControl() {
 
         if (result && Array.isArray(result.data)) {
           setProfile(result.data);
-          filterProfiles("Show All", result.data); // Default to "Show All"
         } else {
           setProfile([]);
         }
@@ -242,11 +211,7 @@ export default function UserControl() {
     };
 
     fetchProfile();
-  }, [filterProfiles]);
-
-  useEffect(() => {
-    filterProfiles(selectedStage);
-  }, [selectedStage, searchText, profile, filterProfiles]);
+  }, []); // Only run once on mount
   
 
   const handleDelete = async (_id) => {
@@ -264,7 +229,7 @@ export default function UserControl() {
       if (result.success) {
         const updatedProfiles = profile.filter((item) => item._id !== _id);
         setProfile(updatedProfiles);
-        filterProfiles(selectedStage, updatedProfiles); // Reapply filter after deletion
+        // Filter will be automatically recomputed via useMemo
       } else {
         console.error("Failed to delete profile:", result.error);
       }
@@ -274,39 +239,54 @@ export default function UserControl() {
   };
 
   return (
-    <main className="bg-[#111827] min-h-screen text-white ">
+    <main className="bg-[#F4F6F9] min-h-screen">
       <Layout>
         {/* Main Container */}
-        <div className="p-2 min-h-screen container mx-auto pl-16">
+        <div className="min-h-screen w-full">
+          {/* Header with Title and Breadcrumb */}
+          <div className="flex justify-between items-start mb-4">
           <h1
             className="text-3xl mb-4 text-gray-900"
             style={{
-              fontFamily:
-                'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                fontFamily: 'Montserrat, sans-serif',
               fontSize: "27px",
+                fontWeight: 600,
             }}
           >
             User Profile
           </h1>
-          <br />
-          <div className="flex flex-col h-screen">
-            {/* Sticky Header */}
-            <div className="sticky top-0 z-50 -mt-8  py-2 flex justify-between items-center">
+            <Breadcrumb items={[{ label: 'Home', href: '/dashboard' }, { label: 'User Profile', href: '/user-control' }]} />
+          </div>
+
+          {/* White Container with Filters and Table */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            {/* Filter Controls */}
+            <div className="mb-4 flex justify-between items-center">
               <div className="flex space-x-4">
                 {/* Search Input */}
                 <input
                   type="text"
-                  placeholder="Search by name..."
+                  placeholder="Search"
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
-                  className="px-3 py-2 rounded-md bg-white text-black shadow-lg"
+                  className="px-3 py-2 rounded border border-gray-300 bg-white text-black"
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                  }}
                 />
 
                 {/* Filter Dropdown */}
                 <select
                   value={selectedStage}
                   onChange={(e) => setSelectedStage(e.target.value)}
-                  className="px-3 py-2 rounded-md bg-white text-black shadow-lg"
+                  className="px-3 py-2 rounded border border-gray-300 bg-white text-black"
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                  }}
                 >
                   <option value="Show All">Show All</option>
                   <option value="Completed Flow">Completed Flow</option>
@@ -322,20 +302,49 @@ export default function UserControl() {
                   <option value="Additional Considerations">Additional Considerations</option>
                   <option value="Final Review and Next Steps">Final Review and Next Steps</option>
                 </select>
+
+                {/* Filter Button */}
+                <button
+                  onClick={() => {}}
+                  style={{
+                    backgroundColor: '#4FB848',
+                    borderRadius: '5px',
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '16px',
+                    color: 'white',
+                    padding: '8px 16px',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Filter
+                </button>
+
                 {/* Export to CSV Button */}
                 <button
                   onClick={exportToCSV}
-                  className="px-3 py-2 bg-green-600 rounded-md text-white hover:bg-green-500"
+                  style={{
+                    backgroundColor: '#4FB848',
+                    borderRadius: '5px',
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '16px',
+                    color: 'white',
+                    padding: '8px 16px',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
-                  Export to CSV
+                  Export
                 </button>
               </div>
             </div>
 
-            {/* Scrollable Table */}
-            <div className="flex-1 overflow-y-auto">
+            {/* Table Container */}
+            <div className="overflow-x-auto">
               {isLoading ? (
-                <div className="flex justify-center items-center h-full">
+                <div className="flex justify-center items-center h-64">
                   <LoadingSpinner />
                 </div>
               ) : filteredProfiles.length > 0 ? (
@@ -345,7 +354,13 @@ export default function UserControl() {
                   pageSize={100}
                 />
               ) : (
-                <p>No profiles available for the selected criteria.</p>
+                <div className="text-center py-8 text-gray-500" style={{
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                }}>
+                  No profiles available for the selected criteria.
+                </div>
               )}
             </div>
           </div>

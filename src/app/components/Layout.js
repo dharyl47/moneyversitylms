@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import Navbar from "@/app/components/Navbar";
 import Sidebar from "@/app/components/Sidebar";
 
 const Layout = ({ children }) => {
@@ -16,16 +15,12 @@ const Layout = ({ children }) => {
       <Sidebar isCollapsed={isSidebarCollapsed} toggleSidebar={handleSidebarToggle} />
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1 bg-[#F4F6F9] text-white">
-        {/* Navbar */}
-        <Navbar />
-
+      <div 
+        className="flex flex-col flex-1 bg-[#F4F6F9] text-white"
+        style={{ marginLeft: '250px' }}
+      >
         {/* Content Area */}
-        <div
-          className={`flex-1 p-4 transition-all duration-300 mt-16 ${
-            isSidebarCollapsed ? "ml-48" : "ml-48"
-          }`}
-        >
+        <div className="flex-1 p-4 transition-all duration-300">
           {children}
         </div>
       </div>

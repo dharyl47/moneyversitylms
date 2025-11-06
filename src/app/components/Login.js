@@ -41,6 +41,11 @@ const Login = () => {
       if (response.ok) {
         localStorage.setItem("isAuthenticated", "true");
         
+        // Store user data if available
+        if (data.user) {
+          localStorage.setItem('userData', JSON.stringify(data.user));
+        }
+        
         // Save or remove email based on rememberMe checkbox
         if (rememberMe) {
           localStorage.setItem('rememberedEmail', email);

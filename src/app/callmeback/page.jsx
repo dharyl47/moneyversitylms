@@ -1,7 +1,7 @@
 "use client";
 import Layout from "@/app/components/Layout";
 import React, { useState, useEffect } from "react";
-import DataTableCallMeBack from "@/app/components/DataTableCallMeBack"; // ✅ updated import
+import DataTableCallMeBack from "./_components/DataTableCallMeBack";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 
 export default function CallMeBackPage() {

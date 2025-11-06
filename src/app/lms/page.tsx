@@ -1,11 +1,11 @@
 "use client";
 import Layout from "@/app/components/Layout";
 import React, { useState, useEffect } from 'react';
-import TextArea from '../components/TextArea';
-import Table from '../components/Table';
-import Button from '../components/Button';
-import Modal from '../components/Modal';
-import EditModal from '../components/EditModal';
+import TextArea from './_components/TextArea';
+import Table from './_components/Table';
+import Button from './_components/Button';
+import Modal from './_components/Modal';
+import EditModal from './_components/EditModal';
 
 interface LearningMaterial {
   _id: string;

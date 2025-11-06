@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from 'react';
 import Layout from "@/app/components/Layout";
-import ContentUpload from '@/app/components/ContentUpload'; // Import the unified component
-import DataTable from '@/app/components/DataTable'; // Import the DataTable component
+import ContentUpload from './_components/ContentUpload';
+import DataTable from './_components/DataTable';
 
 export default function EngagingContent() {
   const [settings, setSettings] = useState([]);

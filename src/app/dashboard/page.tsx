@@ -824,16 +824,17 @@ const mapSchemaToStage: Record<string, string[]> = {
   };
 
   return (
-    <main className="bg-white text-gray-900 overflow-hidden">
+    <main className="bg-[#F4F6F9] min-h-screen">
       <Layout>
-        <div className="p-2 min-h-screen container mx-auto pl-16">
-          <h1 className="text-3xl mb-4 text-gray-900" 
-          style={{
-            fontFamily:
-              'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
-            fontSize: "27px",
-          }}
-          >Dashboard</h1>
+        <div className="min-h-screen w-full">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h1 className="text-3xl mb-4 text-gray-900" 
+            style={{
+              fontFamily: 'Montserrat, sans-serif',
+              fontSize: "27px",
+              fontWeight: 600,
+            }}
+            >Dashboard</h1>
           
           {/* Year Filter */}
           <div className="mb-4 flex items-center gap-2">
@@ -841,8 +842,9 @@ const mapSchemaToStage: Record<string, string[]> = {
               htmlFor="yearFilter" 
               className="text-sm font-medium text-gray-700"
               style={{
-                fontFamily:
-                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 400,
+                fontSize: '16px',
               }}
             >
               Filter by Year:
@@ -851,12 +853,12 @@ const mapSchemaToStage: Record<string, string[]> = {
               id="yearFilter"
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="px-3 py-2 border-2 border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+              className="px-3 py-2 rounded border border-gray-300 bg-white text-black"
               style={{
-                fontFamily:
-                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 400,
+                fontSize: '16px',
                 minWidth: '150px',
-                fontSize: '14px',
                 zIndex: 10,
               }}
             >
@@ -874,9 +876,10 @@ const mapSchemaToStage: Record<string, string[]> = {
             <div className="bg-white p-4 rounded-lg shadow-lg">
               <h2 className="text-xl font-semibold mb-2 text-gray-900"
               style={{
-                fontFamily:
-                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
-                fontSize: "20px",
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 600,
+                fontSize: "18px",
+                lineHeight: '20px',
               }}
               >Completed Flow (Per Month) {selectedYear !== "all" && `(${selectedYear})`}</h2>
               <Bar data={completedFlowData} options={{ responsive: true }} />
@@ -886,9 +889,10 @@ const mapSchemaToStage: Record<string, string[]> = {
             <div className="bg-white p-4 rounded-lg shadow-lg">
               <h2 className="text-xl font-semibold mb-2 text-gray-900"
               style={{
-                fontFamily:
-                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
-                fontSize: "20px",
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 600,
+                fontSize: "18px",
+                lineHeight: '20px',
               }}
               >Users in Progress {selectedYear !== "all" && `(${selectedYear})`}</h2>
               <Bar data={stagesData} options={{ responsive: true }} />
@@ -898,9 +902,10 @@ const mapSchemaToStage: Record<string, string[]> = {
             <div className="bg-white p-4 rounded-lg shadow-lg">
               <h2 className="text-xl font-semibold mb-2 text-gray-900"
               style={{
-                fontFamily:
-                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
-                fontSize: "20px",
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 600,
+                fontSize: "18px",
+                lineHeight: '20px',
               }}
               >Users who have started the journey {selectedYear !== "all" && `(${selectedYear})`}</h2>
               <Line data={userGrowthData} options={{ responsive: true }} />
@@ -910,15 +915,17 @@ const mapSchemaToStage: Record<string, string[]> = {
             <div className="bg-white p-4 rounded-lg shadow-lg">
               <h2 className="text-xl font-semibold mb-2 text-gray-900"
               style={{
-                fontFamily:
-                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
-                fontSize: "20px",
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 600,
+                fontSize: "18px",
+                lineHeight: '20px',
               }}
               >Downloads (Per Month) {selectedYear !== "all" && `(${selectedYear})`}</h2>
               <div className="mb-4 flex gap-4 text-sm"
               style={{
-                fontFamily:
-                  'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 400,
+                fontSize: '16px',
               }}>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(153, 102, 255, 0.6)' }}></div>
@@ -940,9 +947,10 @@ const mapSchemaToStage: Record<string, string[]> = {
                 <div className="mt-6">
                   <h3 className="text-lg font-semibold mb-3 text-gray-900"
                   style={{
-                    fontFamily:
-                      'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 600,
                     fontSize: "18px",
+                    lineHeight: '20px',
                   }}
                   >Template Download Breakdown</h3>
                   <div className="overflow-x-auto">
@@ -951,20 +959,29 @@ const mapSchemaToStage: Record<string, string[]> = {
                         <tr className="bg-gray-100">
                           <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-900"
                           style={{
-                            fontFamily:
-                              'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontWeight: 600,
+                            fontSize: '18px',
+                            lineHeight: '20px',
+                            color: '#1F2937',
                           }}
                           >Template Name</th>
                           <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-900"
                           style={{
-                            fontFamily:
-                              'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontWeight: 600,
+                            fontSize: '18px',
+                            lineHeight: '20px',
+                            color: '#1F2937',
                           }}
                           >File Name</th>
                           <th className="border border-gray-300 px-4 py-2 text-center text-sm font-semibold text-gray-900"
                           style={{
-                            fontFamily:
-                              'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontWeight: 600,
+                            fontSize: '18px',
+                            lineHeight: '20px',
+                            color: '#1F2937',
                           }}
                           >Downloads</th>
                         </tr>
@@ -974,20 +991,26 @@ const mapSchemaToStage: Record<string, string[]> = {
                           <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                             <td className="border border-gray-300 px-4 py-2 text-sm text-gray-700"
                             style={{
-                              fontFamily:
-                                'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                              fontFamily: 'Montserrat, sans-serif',
+                              fontWeight: 400,
+                              fontSize: '16px',
+                              color: '#1F2937',
                             }}
                             >{template.fileLabel}</td>
                             <td className="border border-gray-300 px-4 py-2 text-sm text-gray-600"
                             style={{
-                              fontFamily:
-                                'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                              fontFamily: 'Montserrat, sans-serif',
+                              fontWeight: 400,
+                              fontSize: '16px',
+                              color: '#1F2937',
                             }}
                             >{template.fileName}</td>
                             <td className="border border-gray-300 px-4 py-2 text-sm text-center font-semibold text-gray-900"
                             style={{
-                              fontFamily:
-                                'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
+                              fontFamily: 'Montserrat, sans-serif',
+                              fontWeight: 400,
+                              fontSize: '16px',
+                              color: '#1F2937',
                             }}
                             >{template.count}</td>
                           </tr>
@@ -998,6 +1021,7 @@ const mapSchemaToStage: Record<string, string[]> = {
                 </div>
               )}
             </div>
+          </div>
           </div>
         </div>
       </Layout>

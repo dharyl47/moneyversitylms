@@ -3,35 +3,49 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
   faUserGear,
   faRightFromBracket,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
   const router = useRouter();
   const pathname = usePathname(); // Correct way to get current path
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    // Get user data from localStorage
+    const storedUserData = localStorage.getItem('userData');
+    if (storedUserData) {
+      try {
+        setUserData(JSON.parse(storedUserData));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userData");
     router.push("/");
   };
 
   const linkClasses = (path) =>
     `flex items-center p-2 rounded w-full transition-colors duration-200 ${
-      pathname === path ? "bg-[#3C8DBC] text-white" : "hover:bg-gray-300 text-gray-900"
-    } font-sans`;
+      pathname === path ? "text-[#50B848]" : "text-gray-900"
+    }`;
 
   return (
 <div
-  className="h-full bg-white fixed shadow-[0_4px_15px_rgba(0,0,0,0.6)] text-gray-900 transition-all duration-300"
+  className="h-full bg-white fixed shadow-[0_2px_8px_rgba(0,0,0,0.1)] text-gray-900 transition-all duration-300 flex flex-col"
   style={{
-    width: "250px", // Set any pixel width you want
-    fontFamily:
-      'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
-    fontSize: "15px",
+    width: "250px",
+    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
   }}
 >
 
@@ -45,14 +59,14 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
        <Image
          src="/images/mvhat.png"
          alt="Graduation cap"
-         width={36.6}
-         height={29.4}
+         width={30.6}
+         height={20.4}
          className="absolute left-1/2"
          style={{ 
            transform: 'translateX(-50%)',
            top: '-14px',
-           width: '30.6px',
-           height: '23.4px',
+           width: '28.6px',
+           height: '20.4px',
            maxWidth: '100px'
          }}
          unoptimized
@@ -75,32 +89,107 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 </div>
 
 
-      <div className="flex flex-col items-center h-full overflow-y-auto">
-        <nav className="flex-1 flex flex-col mt-4 w-full border-none">
+      <div className="flex flex-col flex-1 overflow-y-auto">
+        <nav className="flex flex-col mt-4 w-full border-none">
           <ul className="space-y-1 p-1 w-full border-none">
             <li>
               <Link href="/dashboard" className={linkClasses("/dashboard")}>
                 <FontAwesomeIcon icon={faHome} className="mr-2" />
-                Dashboard
+                <span style={{ 
+                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                  fontWeight: 600,
+                  fontSize: "18px"
+                }}>
+                  Dashboard
+                </span>
               </Link>
             </li>
             <li>
               <Link href="/user-control" className={linkClasses("/user-control")}>
                 <FontAwesomeIcon icon={faUserGear} className="mr-2" />
-                User Profile
+                <span style={{ 
+                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                  fontWeight: 600,
+                  fontSize: "18px"
+                }}>
+                  User Profile
+                </span>
               </Link>
-            </li>
-            <li>
-              <button
-                onClick={handleLogout}
-                className="flex items-center p-3 rounded w-full hover:bg-gray-300 font-sans transition-colors duration-200"
-              >
-                <FontAwesomeIcon icon={faRightFromBracket} className="mr-2" />
-                Logout
-              </button>
             </li>
           </ul>
         </nav>
+      </div>
+
+      {/* User Profile Section */}
+      <div className="mt-auto px-3 mb-3">
+        <div 
+          className="flex items-center p-3 rounded-lg"
+          style={{
+            backgroundColor: '#F1F2F2',
+            borderRadius: '8px'
+          }}
+        >
+          {/* Avatar */}
+          <div 
+            className="flex items-center justify-center rounded-full mr-3"
+            style={{
+              width: '48px',
+              height: '48px',
+              backgroundColor: '#50B848',
+              flexShrink: 0
+            }}
+          >
+            <FontAwesomeIcon 
+              icon={faUser} 
+              className="text-white"
+              style={{ fontSize: '18px' }}
+            />
+          </div>
+          
+          {/* User Info */}
+          <div className="flex flex-col">
+            <span 
+              style={{
+                fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                fontWeight: 700,
+                fontSize: '16px',
+                color: '#1F2937',
+                lineHeight: '1.2'
+              }}
+            >
+              {userData?.username || 'User'}
+            </span>
+            <span 
+              style={{
+                fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                fontWeight: 400,
+                fontSize: '14px',
+                color: '#6B7280',
+                lineHeight: '1.2',
+                marginTop: '2px'
+              }}
+            >
+              {userData?.type ? userData.type.charAt(0).toUpperCase() + userData.type.slice(1) : 'Admin'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Logout at bottom */}
+      <div className="pb-4 px-3">
+        <button
+          onClick={handleLogout}
+          className="flex items-center p-3 rounded w-full hover:bg-gray-300 transition-colors duration-200"
+          style={{
+            fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+            fontWeight: 600,
+            fontSize: "18px",
+            color: "#374151"
+          }}
+        >
+          <FontAwesomeIcon icon={faRightFromBracket} className="mr-2" />
+          Logout
+        </button>
       </div>
     </div>
   );

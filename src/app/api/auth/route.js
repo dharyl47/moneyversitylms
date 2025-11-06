@@ -31,7 +31,15 @@ export async function POST(request) {
     }
 
     console.log('User logged in successfully');
-    return NextResponse.json({ message: 'Login successful' });
+    // Return user data (excluding password)
+    return NextResponse.json({ 
+      message: 'Login successful',
+      user: {
+        username: user.username,
+        type: user.type,
+        status: user.status
+      }
+    });
   } catch (error) {
     console.error('Error during login:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });

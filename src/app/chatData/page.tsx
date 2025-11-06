@@ -1,8 +1,8 @@
 "use client";
 import Layout from "@/app/components/Layout";
 import React, { useState, useEffect } from 'react';
-import TextArea from '../components/TextArea';
-import Button from '../components/Button';
+import TextArea from './_components/TextArea';
+import Button from './_components/Button';
 
 export default function SettingsPage() {
   const [friendlyTone, setFriendlyTone] = useState('');

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import ProfileModal from '@/app/components/ProfileModal';
-import ConfirmationModal from '@/app/components/ConfirmationModal';
+import ProfileModal from './ProfileModal';
+import ConfirmationModal from './ConfirmationModal';
 
 const DataTableV2 = ({ data, onEdit, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -134,7 +134,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
   };
 
   const getCurrentStage = (item) => {
-    // Check if Final Review and Next Steps (all Additional Considerations filled)
+    // Check if Completed Flow (all Additional Considerations filled)
     const finalReviewFields = [
       'additionalConsideration.contactLegalAdviser',
       'additionalConsideration.legacyHeirlooms',
@@ -149,7 +149,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
       hasMeaningfulData(getValueByPath(item, k))
     );
     if (allFinalReviewFieldsFilled) {
-      return 'Final Review and Next Steps';
+      return 'Completed Flow';
     }
 
     // Check Business Succession Planning conditionally
@@ -176,8 +176,8 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
       }
     }
     
-    // If all stages are complete, return the last stage
-    return 'Final Review and Next Steps';
+    // If all stages are complete, return Completed Flow
+    return 'Completed Flow';
   };
 
   // Get display name from firstName + sureName, fallback to name
@@ -263,13 +263,39 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
   const handleNextPageSet = () => endPage < totalPages && setCurrentPage(endPage + 1);
   const handlePrevPageSet = () => startPage > 1 && setCurrentPage(startPage - 1);
 
+  // Calculate pagination display
+  const startItem = indexOfFirstItem + 1;
+  const endItem = Math.min(indexOfLastItem, data.length);
+
   return (
-    <div className="overflow-x-auto border rounded-lg shadow-sm bg-white">
-      <table className="min-w-full text-gray-800 border-collapse">
+    <div>
+      {/* Results Count */}
+      {data.length > 0 && (
+        <div className="mb-4 text-gray-600" style={{
+          fontFamily: 'Montserrat, sans-serif',
+          fontWeight: 400,
+          fontSize: '14px',
+        }}>
+          Showing {startItem} - {endItem} of {data.length} results
+        </div>
+      )}
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-gray-800 border-collapse bg-white">
         <thead>
           <tr className="bg-white border-b">
             {['Name', 'Age', 'Marital Status', 'Current Stage', 'Status', 'Actions'].map((header) => (
-              <th key={header} className="py-3 px-4 text-left text-sm font-semibold border-r last:border-r-0">
+              <th 
+                key={header} 
+                className="py-3 px-4 text-left border-r last:border-r-0"
+                style={{
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontWeight: 600,
+                  fontSize: '18px',
+                  lineHeight: '20px',
+                  color: '#1F2937',
+                }}
+              >
                 {header}
               </th>
             ))}
@@ -303,21 +329,92 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                 key={itemId}
                 className={`border-b hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
               >
-                <td className="py-2 px-4">{displayName}</td>
-                <td className="py-2 px-4">{item.age || 'N/A'}</td>
-                <td className="py-2 px-4">{item.maritalStatus || 'N/A'}</td>
-                <td className="py-2 px-4">{currentStage}</td>
-                <td className={`py-2 px-4 font-semibold ${status === 'Completed' ? 'text-green-600' : 'text-yellow-600'}`}>
+                <td 
+                  className="py-2 px-4"
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    color: '#1F2937',
+                  }}
+                >
+                  {displayName}
+                </td>
+                <td 
+                  className="py-2 px-4"
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    color: '#1F2937',
+                  }}
+                >
+                  {item.age || 'N/A'}
+                </td>
+                <td 
+                  className="py-2 px-4"
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    color: '#1F2937',
+                  }}
+                >
+                  {item.maritalStatus || 'N/A'}
+                </td>
+                <td 
+                  className="py-2 px-4"
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    color: '#1F2937',
+                  }}
+                >
+                  {currentStage}
+                </td>
+                <td 
+                  className={`py-2 px-4 font-semibold ${status === 'Completed' ? 'text-green-600' : 'text-yellow-600'}`}
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                  }}
+                >
                   {status}
                 </td>
                 <td className="py-2 px-4 space-x-2">
-                  <button onClick={() => handleOpenModal(item)} className="text-blue-600 text-sm">
+                  <button 
+                    onClick={() => handleOpenModal(item)} 
+                    className="text-blue-600 text-sm"
+                    style={{
+                      fontFamily: 'Montserrat, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                    }}
+                  >
                     More Info
                   </button>
-                  <button onClick={() => handleDeleteClick(item)} className="text-red-600 text-sm">
+                  <button 
+                    onClick={() => handleDeleteClick(item)} 
+                    className="text-red-600 text-sm"
+                    style={{
+                      fontFamily: 'Montserrat, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                    }}
+                  >
                     Delete
                   </button>
-                  <button onClick={() => handleDownloadPDF(item)} className="text-green-600 text-sm">
+                  <button 
+                    onClick={() => handleDownloadPDF(item)} 
+                    className="text-green-600 text-sm"
+                    style={{
+                      fontFamily: 'Montserrat, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                    }}
+                  >
                     Download Report
                   </button>
                 </td>
@@ -326,6 +423,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
           })}
         </tbody>
       </table>
+      </div>
 
       <div className="flex justify-center mt-4 space-x-1">
         <button
