@@ -7,8 +7,8 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
   /* ---------- helpers ---------- */
 
   const formatLabel = (label) => {
-    // Special case for sureName -> Surename
-    if (label === 'sureName') return 'Surename';
+    // Special case for sureName -> Surname
+    if (label === 'sureName') return 'Surname';
     
     return label
       .replace(/([A-Z])/g, " $1")
