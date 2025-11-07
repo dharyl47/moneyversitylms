@@ -693,7 +693,12 @@ const mapSchemaToStage: Record<string, string[]> = {
 
   // Get available years from profile data
   const availableYears = profileData.length > 0 
-    ? Array.from(new Set(profileData.map(p => new Date(p.dateCreated).getFullYear().toString()))).sort((a, b) => b.localeCompare(a))
+    ? Array.from(new Set(
+        profileData
+          .map((p) => new Date(p.dateCreated).getFullYear())
+          .filter((year) => year >= 2025)
+          .map((year) => year.toString())
+      )).sort((a, b) => b.localeCompare(a))
     : [];
 
   return (

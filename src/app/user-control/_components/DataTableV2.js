@@ -439,7 +439,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
             key={page}
             onClick={() => handlePageChange(page)}
             className={`px-3 py-2 border rounded-md text-sm font-medium ${
-              currentPage === page ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
+              currentPage === page ? 'bg-[#F1F1F2] text-[#808285]' : 'bg-white text-[#808285] hover:bg-gray-100'
             }`}
           >
             {page}
