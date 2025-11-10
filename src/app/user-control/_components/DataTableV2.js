@@ -272,7 +272,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
       {/* Results Count */}
       {data.length > 0 && (
         <div className="mb-4 text-gray-600" style={{
-          fontFamily: 'Montserrat, sans-serif',
+          fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
           fontWeight: 400,
           fontSize: '14px',
         }}>
@@ -281,7 +281,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
       )}
 
       <div className="overflow-x-auto">
-        <table className="min-w-full text-gray-800 border-collapse bg-white">
+        <table className="min-w-full text-gray-800 border border-gray-200 bg-white">
         <thead>
           <tr className="bg-white border-b">
             {['Name', 'Age', 'Marital Status', 'Current Stage', 'Status', 'Actions'].map((header) => (
@@ -289,7 +289,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                 key={header} 
                 className="py-3 px-4 text-left border-r last:border-r-0"
                 style={{
-                  fontFamily: 'Montserrat, sans-serif',
+                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 600,
                   fontSize: '18px',
                   lineHeight: '20px',
@@ -332,7 +332,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                 <td 
                   className="py-2 px-4"
                   style={{
-                    fontFamily: 'Montserrat, sans-serif',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
                     fontSize: '16px',
                     color: '#1F2937',
@@ -343,7 +343,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                 <td 
                   className="py-2 px-4"
                   style={{
-                    fontFamily: 'Montserrat, sans-serif',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
                     fontSize: '16px',
                     color: '#1F2937',
@@ -354,7 +354,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                 <td 
                   className="py-2 px-4"
                   style={{
-                    fontFamily: 'Montserrat, sans-serif',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
                     fontSize: '16px',
                     color: '#1F2937',
@@ -365,7 +365,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                 <td 
                   className="py-2 px-4"
                   style={{
-                    fontFamily: 'Montserrat, sans-serif',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
                     fontSize: '16px',
                     color: '#1F2937',
@@ -376,7 +376,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                 <td 
                   className={`py-2 px-4 font-semibold ${status === 'Completed' ? 'text-green-600' : 'text-yellow-600'}`}
                   style={{
-                    fontFamily: 'Montserrat, sans-serif',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
                     fontSize: '16px',
                   }}
@@ -387,8 +387,8 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                   <button 
                     onClick={() => handleOpenModal(item)} 
                     className="text-blue-600 text-sm"
-                    style={{
-                      fontFamily: 'Montserrat, sans-serif',
+                  style={{
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                       fontWeight: 400,
                       fontSize: '16px',
                     }}
@@ -398,8 +398,8 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                   <button 
                     onClick={() => handleDeleteClick(item)} 
                     className="text-red-600 text-sm"
-                    style={{
-                      fontFamily: 'Montserrat, sans-serif',
+                  style={{
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                       fontWeight: 400,
                       fontSize: '16px',
                     }}
@@ -409,8 +409,8 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                   <button 
                     onClick={() => handleDownloadPDF(item)} 
                     className="text-green-600 text-sm"
-                    style={{
-                      fontFamily: 'Montserrat, sans-serif',
+                  style={{
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                       fontWeight: 400,
                       fontSize: '16px',
                     }}

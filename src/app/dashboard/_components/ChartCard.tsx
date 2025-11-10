@@ -12,10 +12,11 @@ export default function ChartCard({ title, children, selectedYear }: ChartCardPr
       <h2 
         className="text-xl font-semibold mb-2 text-gray-900"
         style={{
-          fontFamily: 'Montserrat, sans-serif',
+          fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
           fontWeight: 600,
-          fontSize: "18px",
-          lineHeight: '20px',
+          fontSize: "24px",
+          lineHeight: '28px',
+          color: '#282828',
         }}
       >
         {title} {selectedYear && selectedYear !== "all" && `(${selectedYear})`}

@@ -16,7 +16,7 @@ const Layout = ({ children }) => {
 
       {/* Main Content */}
       <div 
-        className="flex flex-col flex-1 bg-[#F4F6F9] text-white"
+        className="flex flex-col flex-1 bg-[#F9F9F9] text-[#282828]"
         style={{ marginLeft: '250px' }}
       >
         {/* Content Area */}

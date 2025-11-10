@@ -4,13 +4,12 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHome,
-  faUserGear,
-  faRightFromBracket,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
+  FiGrid,
+  FiUserCheck,
+  FiUser,
+  FiLogOut,
+} from "react-icons/fi";
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
   const router = useRouter();
@@ -36,8 +35,13 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
   };
 
   const linkClasses = (path) =>
-    `flex items-center p-2 rounded w-full transition-colors duration-200 ${
-      pathname === path ? "text-[#50B848]" : "text-gray-900"
+    `flex items-center py-2 px-4 rounded w-full transition-colors duration-200 ${
+      pathname === path ? "text-[#50B848]" : "text-[#1F2937]"
+    }`;
+
+  const iconClasses = (path) =>
+    `mr-4 text-lg ${
+      pathname === path ? "text-[#50B848]" : "text-[#A7A9AC]"
     }`;
 
   return (
@@ -51,7 +55,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 
  {/* Title Section */}
  <div className="pl-3 mt-7 w-full text-left">
- <h1 className="text-lg font-semibold text-[#4FB748] leading-snug">
+ <h1 className="text-lg font-bold text-[#4FB748] leading-snug">
    <span className="relative inline-block">
      Gu
      <span className="relative inline-block">
@@ -94,7 +98,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
           <ul className="space-y-1 p-1 w-full border-none">
             <li>
               <Link href="/dashboard" className={linkClasses("/dashboard")}>
-                <FontAwesomeIcon icon={faHome} className="mr-2" />
+                <FiGrid className={iconClasses("/dashboard")} />
                 <span style={{ 
                   fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 600,
@@ -106,7 +110,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
             </li>
             <li>
               <Link href="/user-control" className={linkClasses("/user-control")}>
-                <FontAwesomeIcon icon={faUserGear} className="mr-2" />
+                <FiUserCheck className={iconClasses("/user-control")} />
                 <span style={{ 
                   fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 600,
@@ -139,11 +143,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
               flexShrink: 0
             }}
           >
-            <FontAwesomeIcon 
-              icon={faUser} 
-              className="text-white"
-              style={{ fontSize: '18px' }}
-            />
+            <FiUser className="text-white" style={{ fontSize: '20px' }} />
           </div>
           
           {/* User Info */}
@@ -179,7 +179,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
       <div className="pb-4 px-3">
         <button
           onClick={handleLogout}
-          className="flex items-center p-3 rounded w-full hover:bg-gray-300 transition-colors duration-200"
+          className="flex items-center py-3 px-4 rounded w-full hover:bg-gray-300 transition-colors duration-200"
           style={{
             fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
             fontWeight: 600,
@@ -187,7 +187,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
             color: "#374151"
           }}
         >
-          <FontAwesomeIcon icon={faRightFromBracket} className="mr-2" />
+          <FiLogOut className="mr-4 text-lg text-[#A7A9AC]" />
           Logout
         </button>
       </div>

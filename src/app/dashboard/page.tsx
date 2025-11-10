@@ -702,15 +702,16 @@ const mapSchemaToStage: Record<string, string[]> = {
     : [];
 
   return (
-    <main className="bg-[#F4F6F9] min-h-screen">
+    <main className="bg-[#F9F9F9] min-h-screen">
       <Layout>
         <div className="min-h-screen w-full">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h1 className="text-3xl mb-4 text-gray-900" 
+          <div className="bg-[#F9F9F9] rounded-lg p-6">
+            <h1 className="text-3xl mb-4 text-[#282828]" 
             style={{
-              fontFamily: 'Montserrat, sans-serif',
-              fontSize: "27px",
+              fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+              fontSize: "32px",
               fontWeight: 600,
+              color: '#282828',
             }}
             >Dashboard</h1>
           
@@ -720,7 +721,7 @@ const mapSchemaToStage: Record<string, string[]> = {
               htmlFor="yearFilter" 
               className="text-sm font-medium text-gray-700"
               style={{
-                fontFamily: 'Montserrat, sans-serif',
+                fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                 fontWeight: 400,
                 fontSize: '16px',
               }}
@@ -733,7 +734,7 @@ const mapSchemaToStage: Record<string, string[]> = {
               onChange={(e) => setSelectedYear(e.target.value)}
               className="px-3 py-2 rounded border border-gray-300 bg-white text-black"
               style={{
-                fontFamily: 'Montserrat, sans-serif',
+                fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                 fontWeight: 400,
                 fontSize: '16px',
                 minWidth: '150px',

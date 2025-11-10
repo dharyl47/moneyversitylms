@@ -52,15 +52,16 @@ export default function CallMeBackPage() {
   };
 
   return (
-    <main className="bg-[#111827] min-h-screen text-white">
+    <main className="bg-[#F9F9F9] min-h-screen text-[#282828]">
       <Layout>
         <div className="p-2 min-h-screen container mx-auto pl-16">
           <h1
-            className="text-3xl mb-4 text-gray-900"
+            className="text-3xl mb-4 text-[#282828]"
             style={{
-              fontFamily:
-                'Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol',
-              fontSize: "27px",
+              fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+              fontWeight: 600,
+              fontSize: "32px",
+              color: '#282828',
             }}
           >
             Call Me Back

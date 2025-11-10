@@ -26,17 +26,24 @@ const Breadcrumb = ({ items }) => {
         {breadcrumbItems.map((item, index) => (
           <li key={index} className="flex items-center">
             {index > 0 && (
-              <span className="mx-2 text-gray-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <span
+                className="mx-2 text-[#282828]"
+                style={{
+                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                }}
+              >
                 /
               </span>
             )}
             {index === breadcrumbItems.length - 1 ? (
               <span
-                className="text-gray-600"
+                className="text-[#282828]"
                 style={{
-                  fontFamily: 'Montserrat, sans-serif',
+                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 400,
-                  fontSize: '14px',
+                  fontSize: '16px',
                 }}
               >
                 {item.label}
@@ -44,11 +51,11 @@ const Breadcrumb = ({ items }) => {
             ) : (
               <Link
                 href={item.href}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-[#282828] hover:text-gray-900"
                 style={{
-                  fontFamily: 'Montserrat, sans-serif',
+                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 400,
-                  fontSize: '14px',
+                  fontSize: '16px',
                 }}
               >
                 {item.label}

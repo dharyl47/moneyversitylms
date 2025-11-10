@@ -4,9 +4,10 @@
 
 /* Light Mode Variables */
 :root {
-  --foreground-rgb: 0, 0, 0;              /* Black text */
-  --background-start-rgb: 255, 255, 255;  /* White background */
-  --background-end-rgb: 245, 245, 245;    /* Light gray gradient */
+  --foreground-rgb: 40, 40, 40;           /* Primary text */
+  --background-start-rgb: 249, 249, 249;  /* Soft gray background */
+  --background-end-rgb: 249, 249, 249;    /* Soft gray background */
+  --page-background-hex: #F9F9F9;
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -44,12 +45,7 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: var(--page-background-hex);
 }
 .image-uploader {
   display: flex;

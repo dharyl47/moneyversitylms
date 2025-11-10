@@ -58,7 +58,7 @@ export default function DownloadsChart({
       <div 
         className="mb-4 flex gap-4 text-sm"
         style={{
-          fontFamily: 'Montserrat, sans-serif',
+          fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
           fontWeight: 400,
           fontSize: '16px',
         }}
@@ -92,7 +92,7 @@ export default function DownloadsChart({
           <h3 
             className="text-lg font-semibold mb-3 text-gray-900"
             style={{
-              fontFamily: 'Montserrat, sans-serif',
+              fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
               fontWeight: 600,
               fontSize: "18px",
               lineHeight: '20px',
@@ -107,7 +107,7 @@ export default function DownloadsChart({
                   <th 
                     className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-900"
                     style={{
-                      fontFamily: 'Montserrat, sans-serif',
+                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                       fontWeight: 600,
                       fontSize: '18px',
                       lineHeight: '20px',
@@ -119,7 +119,7 @@ export default function DownloadsChart({
                   <th 
                     className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-900"
                     style={{
-                      fontFamily: 'Montserrat, sans-serif',
+                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                       fontWeight: 600,
                       fontSize: '18px',
                       lineHeight: '20px',
@@ -131,7 +131,7 @@ export default function DownloadsChart({
                   <th 
                     className="border border-gray-300 px-4 py-2 text-center text-sm font-semibold text-gray-900"
                     style={{
-                      fontFamily: 'Montserrat, sans-serif',
+                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                       fontWeight: 600,
                       fontSize: '18px',
                       lineHeight: '20px',
@@ -151,7 +151,7 @@ export default function DownloadsChart({
                     <td 
                       className="border border-gray-300 px-4 py-2 text-sm text-gray-700"
                       style={{
-                        fontFamily: 'Montserrat, sans-serif',
+                        fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                         fontWeight: 400,
                         fontSize: '16px',
                         color: '#1F2937',
@@ -162,7 +162,7 @@ export default function DownloadsChart({
                     <td 
                       className="border border-gray-300 px-4 py-2 text-sm text-gray-600"
                       style={{
-                        fontFamily: 'Montserrat, sans-serif',
+                        fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                         fontWeight: 400,
                         fontSize: '16px',
                         color: '#1F2937',
@@ -173,7 +173,7 @@ export default function DownloadsChart({
                     <td 
                       className="border border-gray-300 px-4 py-2 text-sm text-center font-semibold text-gray-900"
                       style={{
-                        fontFamily: 'Montserrat, sans-serif',
+                        fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                         fontWeight: 400,
                         fontSize: '16px',
                         color: '#1F2937',

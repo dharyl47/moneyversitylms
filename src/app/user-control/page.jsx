@@ -6,6 +6,60 @@ import LoadingSpinner from "@/app/components/LoadingSpinner";
 import Breadcrumb from "@/app/components/Breadcrumb";
 import Papa from "papaparse";
 
+const formatLabelForCSV = (label) => {
+  if (!label) return "";
+  if (label === "sureName") return "Surname";
+  return label
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase())
+    .replace(/V2$/, "")
+    .replace(/_/g, " ")
+    .trim();
+};
+
+const formatValueForCSV = (value) => {
+  if (value === null || value === undefined || value === "" || value === "N/A") {
+    return "N/A";
+  }
+  if (typeof value === "boolean") {
+    return value ? "Yes" : "No";
+  }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  return Array.isArray(value) ? value.join(", ") : String(value);
+};
+
+const appendSectionToCSV = (section, prefix, accumulator) => {
+  if (!section || typeof section !== "object") return;
+
+  Object.entries(section).forEach(([key, value]) => {
+    const label = prefix
+      ? `${prefix} - ${formatLabelForCSV(key)}`
+      : formatLabelForCSV(key);
+
+    if (Array.isArray(value)) {
+      if (value.length === 0) return;
+
+      if (value.every((item) => item && typeof item === "object" && !Array.isArray(item))) {
+        accumulator[label] = value
+          .map((item) =>
+            Object.entries(item || {})
+              .map(([k, v]) => `${formatLabelForCSV(k)}: ${formatValueForCSV(v)}`)
+              .join("; ")
+          )
+          .join(" | ");
+      } else {
+        accumulator[label] = value.map((item) => formatValueForCSV(item)).join(", ");
+      }
+    } else if (value && typeof value === "object") {
+      appendSectionToCSV(value, label, accumulator);
+    } else {
+      accumulator[label] = formatValueForCSV(value);
+    }
+  });
+};
+
 export default function UserControl() {
   const [profile, setProfile] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -163,19 +217,78 @@ export default function UserControl() {
       alert("No profiles to export.");
       return;
     }
-
     const csvData = filteredProfiles.map((profile) => {
-      const fullName = profile.firstName && profile.sureName 
-        ? `${profile.firstName} ${profile.sureName}` 
-        : profile.firstName || profile.name || 'N/A';
-      
+      const fullName =
+        profile.firstName && profile.sureName
+          ? `${profile.firstName} ${profile.sureName}`
+          : profile.firstName || profile.name || "N/A";
+
+      const baseData = {
+        "Full Name": fullName,
+        "Email Address": formatValueForCSV(profile.emailAddress),
+        "Date Created": formatValueForCSV(profile.dateCreated),
+        "Age": formatValueForCSV(profile.age),
+        "Marital Status": formatValueForCSV(profile.maritalStatus),
+        "Has Dependents": formatValueForCSV(profile.childrenOrDependents?.hasDependents),
+        "Dependents Details": formatValueForCSV(profile.childrenOrDependents?.details),
+        "Has Adult Dependents": formatValueForCSV(profile.adultDependents?.hasAdultDependents),
+        "Adult Dependents Details": formatValueForCSV(profile.adultDependents?.details),
+        "Guardian Named": formatValueForCSV(profile.guardianNamed),
+        "Estate Planning Goals Summary": formatValueForCSV(profile.estatePlanGoals),
+        "Deletion Request": formatValueForCSV(profile.deletionRequest || "No"),
+      };
+
+      const additionalConsiderationFields = [
+        profile.additionalConsideration?.contactLegalAdviser,
+        profile.additionalConsideration?.legacyHeirlooms,
+        profile.additionalConsideration?.beneficiaryDesignations,
+        profile.additionalConsideration?.executorRemuneration,
+        profile.additionalConsideration?.informedNominated,
+        profile.additionalConsideration?.prepaidFuneral,
+        profile.additionalConsideration?.petCarePlanning,
+        profile.additionalConsideration?.setAReminder,
+      ];
+      const hasAnyAdditionalConsiderations = additionalConsiderationFields.some((field) =>
+        hasMeaningfulData(field)
+      );
+
+      const currentStage = getCurrentStage(profile);
+
+      const detailData = {
+        "Progress Status": hasAnyAdditionalConsiderations ? "Completed" : "In Progress",
+        "Current Stage": currentStage,
+      };
+
+      const sectionData = {};
+      appendSectionToCSV(profile.estateProfileV2, "Estate Profile", sectionData);
+      appendSectionToCSV(profile.estateGoalsV2, "Estate Goals", sectionData);
+      appendSectionToCSV(profile.estateToolsV2, "Estate Tools", sectionData);
+      appendSectionToCSV(profile.estateTaxV2, "Estate Tax", sectionData);
+      appendSectionToCSV(profile.businessV2, "Business", sectionData);
+      appendSectionToCSV(profile.livingWillV2, "Living Will", sectionData);
+      appendSectionToCSV(profile.reviewForeignAssetsV2, "Foreign Assets", sectionData);
+
+      const { legacyHeirloomsDetails, ...additionalConsideration } =
+        profile.additionalConsideration || {};
+      appendSectionToCSV(
+        additionalConsideration,
+        "Additional Considerations",
+        sectionData
+      );
+      if (Array.isArray(legacyHeirloomsDetails) && legacyHeirloomsDetails.length > 0) {
+        sectionData["Additional Considerations - Legacy Heirlooms"] = legacyHeirloomsDetails
+          .map((item) =>
+            Object.entries(item || {})
+              .map(([k, v]) => `${formatLabelForCSV(k)}: ${formatValueForCSV(v)}`)
+              .join("; ")
+          )
+          .join(" | ");
+      }
+
       return {
-        Name: fullName,
-        DateCreated: profile.dateCreated,
-        PropertyRegime: profile.propertyRegime,
-        "Completed Stages": Object.keys(profile)
-          .filter((key) => hasMeaningfulData(profile[key]))
-          .join(", "),
+        ...baseData,
+        ...detailData,
+        ...sectionData,
       };
     });
 
@@ -239,31 +352,27 @@ export default function UserControl() {
   };
 
   return (
-    <main className="bg-[#F4F6F9] min-h-screen">
+    <main className="bg-[#F9F9F9] min-h-screen text-[#282828]">
       <Layout>
-        {/* Main Container */}
         <div className="min-h-screen w-full">
-          {/* Header with Title and Breadcrumb */}
-          <div className="flex justify-between items-start mb-4">
-          <h1
-            className="text-3xl mb-4 text-gray-900"
-            style={{
-                fontFamily: 'Montserrat, sans-serif',
-              fontSize: "27px",
-                fontWeight: 600,
-            }}
-          >
-            User Profile
-          </h1>
-            <Breadcrumb items={[{ label: 'Home', href: '/dashboard' }, { label: 'User Profile', href: '/user-control' }]} />
-          </div>
-
-          {/* White Container with Filters and Table */}
           <div className="bg-white rounded-lg shadow-sm p-6">
-            {/* Filter Controls */}
-            <div className="mb-4 flex justify-between items-center">
-              <div className="flex space-x-4">
-                {/* Search Input */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+              <h1
+                className="text-3xl text-[#282828]"
+                style={{
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                  fontSize: "32px",
+                    fontWeight: 600,
+                    color: '#282828',
+                }}
+              >
+                User Profile
+              </h1>
+              <Breadcrumb items={[{ label: 'Home', href: '/dashboard' }, { label: 'User Profile', href: '/user-control' }]} />
+            </div>
+
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 border-b border-gray-200 pb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <input
                   type="text"
                   placeholder="Search"
@@ -271,19 +380,18 @@ export default function UserControl() {
                   onChange={(e) => setSearchText(e.target.value)}
                   className="px-3 py-2 rounded border border-gray-300 bg-white text-black"
                   style={{
-                    fontFamily: 'Montserrat, sans-serif',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
                     fontSize: '16px',
                   }}
                 />
 
-                {/* Filter Dropdown */}
                 <select
                   value={selectedStage}
                   onChange={(e) => setSelectedStage(e.target.value)}
                   className="px-3 py-2 rounded border border-gray-300 bg-white text-black"
                   style={{
-                    fontFamily: 'Montserrat, sans-serif',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
                     fontSize: '16px',
                   }}
@@ -302,14 +410,15 @@ export default function UserControl() {
                   <option value="Additional Considerations">Additional Considerations</option>
                   <option value="Final Review and Next Steps">Final Review and Next Steps</option>
                 </select>
+              </div>
 
-                {/* Filter Button */}
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => {}}
                   style={{
                     backgroundColor: '#4FB848',
                     borderRadius: '5px',
-                    fontFamily: 'Montserrat, sans-serif',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 700,
                     fontSize: '16px',
                     color: 'white',
@@ -320,14 +429,12 @@ export default function UserControl() {
                 >
                   Filter
                 </button>
-
-                {/* Export to CSV Button */}
                 <button
                   onClick={exportToCSV}
                   style={{
                     backgroundColor: '#4FB848',
                     borderRadius: '5px',
-                    fontFamily: 'Montserrat, sans-serif',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 700,
                     fontSize: '16px',
                     color: 'white',
@@ -341,7 +448,6 @@ export default function UserControl() {
               </div>
             </div>
 
-            {/* Table Container */}
             <div className="overflow-x-auto">
               {isLoading ? (
                 <div className="flex justify-center items-center h-64">
@@ -355,7 +461,7 @@ export default function UserControl() {
                 />
               ) : (
                 <div className="text-center py-8 text-gray-500" style={{
-                  fontFamily: 'Montserrat, sans-serif',
+                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 400,
                   fontSize: '16px',
                 }}>
