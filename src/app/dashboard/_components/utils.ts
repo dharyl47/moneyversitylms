@@ -7,70 +7,6 @@ import type { ChartOptions, ChartType } from "chart.js";
 const AXIS_TEXT_COLOR = "#050505";
 const MONTSERRAT = "Montserrat, sans-serif";
 
-const mergeChartOptions = <T extends ChartType>(
-  base: ChartOptions<T>,
-  overrides: ChartOptions<T>
-): ChartOptions<T> => {
-  const merged = {
-    ...base,
-    ...overrides,
-  } as ChartOptions<T> & { [key: string]: any };
-
-  merged.plugins = {
-    ...base.plugins,
-    ...overrides?.plugins,
-    legend: {
-      ...base.plugins?.legend,
-      ...overrides?.plugins?.legend,
-      labels: {
-        ...base.plugins?.legend?.labels,
-        ...overrides?.plugins?.legend?.labels,
-      },
-    },
-    tooltip: {
-      ...base.plugins?.tooltip,
-      ...overrides?.plugins?.tooltip,
-    },
-  };
-
-  merged.scales = {
-    ...base.scales,
-    ...overrides?.scales,
-  } as any;
-
-  if (merged.scales?.x) {
-    merged.scales.x = {
-      ...base.scales?.x,
-      ...overrides?.scales?.x,
-      ticks: {
-        ...base.scales?.x?.ticks,
-        ...overrides?.scales?.x?.ticks,
-      },
-      grid: {
-        ...base.scales?.x?.grid,
-        ...overrides?.scales?.x?.grid,
-      },
-    };
-  }
-
-  if (merged.scales?.y) {
-    merged.scales.y = {
-      ...base.scales?.y,
-      ...overrides?.scales?.y,
-      ticks: {
-        ...base.scales?.y?.ticks,
-        ...overrides?.scales?.y?.ticks,
-      },
-      grid: {
-        ...base.scales?.y?.grid,
-        ...overrides?.scales?.y?.grid,
-      },
-    };
-  }
-
-  return merged;
-};
-
 export const createChartOptions = <T extends ChartType>(
   overrides: ChartOptions<T> = {} as ChartOptions<T>
 ): ChartOptions<T> => {
@@ -134,7 +70,64 @@ export const createChartOptions = <T extends ChartType>(
     },
   } as ChartOptions<T>;
 
-  return mergeChartOptions<T>(base, overrides);
+  const mergedPlugins = {
+    ...(base.plugins || {}),
+    ...(overrides?.plugins || {}),
+    legend: {
+      ...(base.plugins?.legend || {}),
+      ...(overrides?.plugins?.legend || {}),
+      labels: {
+        ...(base.plugins?.legend?.labels || {}),
+        ...(overrides?.plugins?.legend?.labels || {}),
+      },
+    },
+    tooltip: {
+      ...(base.plugins?.tooltip || {}),
+      ...(overrides?.plugins?.tooltip || {}),
+    },
+  };
+
+  const mergedScales = {
+    ...(base.scales || {}),
+    ...(overrides?.scales || {}),
+  } as Record<string, any>;
+
+  if (mergedScales.x) {
+    mergedScales.x = {
+      ...(base.scales?.x || {}),
+      ...(overrides?.scales?.x || {}),
+      ticks: {
+        ...(base.scales?.x?.ticks || {}),
+        ...(overrides?.scales?.x?.ticks || {}),
+      },
+      grid: {
+        ...(base.scales?.x?.grid || {}),
+        ...(overrides?.scales?.x?.grid || {}),
+      },
+    };
+  }
+
+  if (mergedScales.y) {
+    mergedScales.y = {
+      ...(base.scales?.y || {}),
+      ...(overrides?.scales?.y || {}),
+      ticks: {
+        ...(base.scales?.y?.ticks || {}),
+        ...(overrides?.scales?.y?.ticks || {}),
+      },
+      grid: {
+        ...(base.scales?.y?.grid || {}),
+        ...(overrides?.scales?.y?.grid || {}),
+      },
+    };
+  }
+
+  return {
+    ...base,
+    ...overrides,
+    plugins: mergedPlugins as any,
+    scales: mergedScales as any,
+  } as ChartOptions<T>;
 };
 
 /**
