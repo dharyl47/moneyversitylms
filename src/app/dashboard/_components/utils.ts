@@ -10,7 +10,7 @@ const MONTSERRAT = "Montserrat, sans-serif";
 export const createChartOptions = <T extends ChartType>(
   overrides: ChartOptions<T> = {} as ChartOptions<T>
 ): ChartOptions<T> => {
-  const base = {
+  const base: ChartOptions<T> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -70,54 +70,58 @@ export const createChartOptions = <T extends ChartType>(
     },
   } as ChartOptions<T>;
 
+  const basePlugins = base.plugins ?? {};
+  const overridePlugins = overrides?.plugins ?? {};
   const mergedPlugins = {
-    ...(base.plugins || {}),
-    ...(overrides?.plugins || {}),
+    ...basePlugins,
+    ...overridePlugins,
     legend: {
-      ...(base.plugins?.legend || {}),
-      ...(overrides?.plugins?.legend || {}),
+      ...(basePlugins.legend || {}),
+      ...(overridePlugins.legend || {}),
       labels: {
-        ...(base.plugins?.legend?.labels || {}),
-        ...(overrides?.plugins?.legend?.labels || {}),
+        ...(basePlugins.legend?.labels || {}),
+        ...(overridePlugins.legend?.labels || {}),
       },
     },
     tooltip: {
-      ...(base.plugins?.tooltip || {}),
-      ...(overrides?.plugins?.tooltip || {}),
+      ...(basePlugins.tooltip || {}),
+      ...(overridePlugins.tooltip || {}),
     },
   };
 
+  const baseScales = base.scales ?? {};
+  const overrideScales = overrides?.scales ?? {};
   const mergedScales = {
-    ...(base.scales || {}),
-    ...(overrides?.scales || {}),
+    ...baseScales,
+    ...overrideScales,
   } as Record<string, any>;
 
   if (mergedScales.x) {
     mergedScales.x = {
-      ...(base.scales?.x || {}),
-      ...(overrides?.scales?.x || {}),
+      ...(baseScales.x || {}),
+      ...(overrideScales.x || {}),
       ticks: {
-        ...(base.scales?.x?.ticks || {}),
-        ...(overrides?.scales?.x?.ticks || {}),
+        ...(baseScales.x?.ticks || {}),
+        ...(overrideScales.x?.ticks || {}),
       },
       grid: {
-        ...(base.scales?.x?.grid || {}),
-        ...(overrides?.scales?.x?.grid || {}),
+        ...(baseScales.x?.grid || {}),
+        ...(overrideScales.x?.grid || {}),
       },
     };
   }
 
   if (mergedScales.y) {
     mergedScales.y = {
-      ...(base.scales?.y || {}),
-      ...(overrides?.scales?.y || {}),
+      ...(baseScales.y || {}),
+      ...(overrideScales.y || {}),
       ticks: {
-        ...(base.scales?.y?.ticks || {}),
-        ...(overrides?.scales?.y?.ticks || {}),
+        ...(baseScales.y?.ticks || {}),
+        ...(overrideScales.y?.ticks || {}),
       },
       grid: {
-        ...(base.scales?.y?.grid || {}),
-        ...(overrides?.scales?.y?.grid || {}),
+        ...(baseScales.y?.grid || {}),
+        ...(overrideScales.y?.grid || {}),
       },
     };
   }
