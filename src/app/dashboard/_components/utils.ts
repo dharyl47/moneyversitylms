@@ -70,10 +70,8 @@ export const createChartOptions = <T extends ChartType>(
     },
   } as ChartOptions<T>;
 
-  const basePlugins = (base.plugins ?? {}) as NonNullable<ChartOptions<T>["plugins"]>;
-  const overridePlugins = (overrides?.plugins ?? {}) as NonNullable<
-    ChartOptions<T>["plugins"]
-  >;
+  const basePlugins = (base?.plugins ?? {}) as Record<string, any>;
+  const overridePlugins = (overrides?.plugins ?? {}) as Record<string, any>;
   const mergedPlugins = {
     ...basePlugins,
     ...overridePlugins,
@@ -91,10 +89,8 @@ export const createChartOptions = <T extends ChartType>(
     },
   };
 
-  const baseScales = (base.scales ?? {}) as NonNullable<ChartOptions<T>["scales"]>;
-  const overrideScales = (overrides?.scales ?? {}) as NonNullable<
-    ChartOptions<T>["scales"]
-  >;
+  const baseScales = (base?.scales ?? {}) as Record<string, any>;
+  const overrideScales = (overrides?.scales ?? {}) as Record<string, any>;
   const mergedScales = {
     ...baseScales,
     ...overrideScales,
