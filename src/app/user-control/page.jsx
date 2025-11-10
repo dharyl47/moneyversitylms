@@ -235,7 +235,6 @@ export default function UserControl() {
         "Adult Dependents Details": formatValueForCSV(profile.adultDependents?.details),
         "Guardian Named": formatValueForCSV(profile.guardianNamed),
         "Estate Planning Goals Summary": formatValueForCSV(profile.estatePlanGoals),
-        "Deletion Request": formatValueForCSV(profile.deletionRequest || "No"),
       };
 
       const additionalConsiderationFields = [
@@ -258,6 +257,43 @@ export default function UserControl() {
         "Progress Status": hasAnyAdditionalConsiderations ? "Completed" : "In Progress",
         "Current Stage": currentStage,
       };
+
+      const stageColumns = [
+        "Personal Information",
+        "Net Worth Assessment",
+        "Estate Planning Goals",
+        "Choosing Estate Planning Tools",
+        "Tax Planning and Minimization",
+        "Business Succession Planning",
+        "Living Will and Healthcare Directives",
+        "Review of Foreign Assets",
+        "Additional Considerations",
+        "Final Review and Next Steps",
+      ];
+
+      const stageDataForCsv = stageColumns.reduce((acc, stage) => {
+        const isComplete = hasAnyStageData(profile, stage);
+        if (isComplete) {
+          acc[stage] = "Complete";
+        }
+        return acc;
+      }, {});
+
+      const finalReviewFields = [
+        profile.additionalConsideration?.contactLegalAdviser,
+        profile.additionalConsideration?.legacyHeirlooms,
+        profile.additionalConsideration?.beneficiaryDesignations,
+        profile.additionalConsideration?.executorRemuneration,
+        profile.additionalConsideration?.informedNominated,
+        profile.additionalConsideration?.prepaidFuneral,
+        profile.additionalConsideration?.petCarePlanning,
+        profile.additionalConsideration?.setAReminder,
+      ];
+
+      const completedFlow = finalReviewFields.every((field) => hasMeaningfulData(field));
+      if (completedFlow) {
+        stageDataForCsv["Completed Flow"] = "Complete";
+      }
 
       const sectionData = {};
       appendSectionToCSV(profile.estateProfileV2, "Estate Profile", sectionData);
@@ -288,6 +324,7 @@ export default function UserControl() {
       return {
         ...baseData,
         ...detailData,
+        ...stageDataForCsv,
         ...sectionData,
       };
     });
