@@ -392,7 +392,7 @@ export default function UserControl() {
     <main className="bg-[#F9F9F9] min-h-screen text-[#282828]">
       <Layout>
         <div className="min-h-screen w-full">
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="px-6 pt-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
               <h1
                 className="text-3xl text-[#282828]"
@@ -408,103 +408,108 @@ export default function UserControl() {
               <Breadcrumb items={[{ label: 'Home', href: '/dashboard' }, { label: 'User Profile', href: '/user-control' }]} />
             </div>
 
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 border-b border-gray-200 pb-6">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  className="px-3 py-2 rounded border border-gray-300 bg-white text-black"
-                  style={{
-                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                  }}
-                />
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 border-b border-gray-200 pb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    className="px-3 py-2 rounded border border-gray-300 bg-white text-black"
+                    style={{
+                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                    }}
+                  />
 
-                <select
-                  value={selectedStage}
-                  onChange={(e) => setSelectedStage(e.target.value)}
-                  className="px-3 py-2 rounded border border-gray-300 bg-white text-black"
-                  style={{
-                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                  }}
-                >
-                  <option value="Show All">Show All</option>
-                  <option value="Completed Flow">Completed Flow</option>
-                  <option value="Welcome">Welcome</option>
-                  <option value="Personal Information">Personal Information</option>
-                  <option value="Net Worth Assessment">Net Worth Assessment</option>
-                  <option value="Estate Planning Goals">Estate Planning Goals</option>
-                  <option value="Choosing Estate Planning Tools">Choosing Estate Planning Tools</option>
-                  <option value="Tax Planning and Minimization">Tax Planning and Minimization</option>
-                  <option value="Business Succession Planning">Business Succession Planning</option>
-                  <option value="Living Will and Healthcare Directives">Living Will and Healthcare Directives</option>
-                  <option value="Review of Foreign Assets">Review of Foreign Assets</option>
-                  <option value="Additional Considerations">Additional Considerations</option>
-                  <option value="Final Review and Next Steps">Final Review and Next Steps</option>
-                </select>
+                  <select
+                    value={selectedStage}
+                    onChange={(e) => setSelectedStage(e.target.value)}
+                    className="px-3 py-2 rounded border border-gray-300 bg-white text-black"
+                    style={{
+                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                    }}
+                  >
+                    <option value="Show All">Show All</option>
+                    <option value="Completed Flow">Completed Flow</option>
+                    <option value="Welcome">Welcome</option>
+                    <option value="Personal Information">Personal Information</option>
+                    <option value="Net Worth Assessment">Net Worth Assessment</option>
+                    <option value="Estate Planning Goals">Estate Planning Goals</option>
+                    <option value="Choosing Estate Planning Tools">Choosing Estate Planning Tools</option>
+                    <option value="Tax Planning and Minimization">Tax Planning and Minimization</option>
+                    <option value="Business Succession Planning">Business Succession Planning</option>
+                    <option value="Living Will and Healthcare Directives">Living Will and Healthcare Directives</option>
+                    <option value="Review of Foreign Assets">Review of Foreign Assets</option>
+                    <option value="Additional Considerations">Additional Considerations</option>
+                    <option value="Final Review and Next Steps">Final Review and Next Steps</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => {}}
+                    style={{
+                      backgroundColor: '#4FB848',
+                      borderRadius: '5px',
+                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                      fontWeight: 700,
+                      fontSize: '16px',
+                      color: 'white',
+                      padding: '8px 16px',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Filter
+                  </button>
+                  <button
+                    onClick={exportToCSV}
+                    style={{
+                      backgroundColor: '#4FB848',
+                      borderRadius: '5px',
+                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                      fontWeight: 700,
+                      fontSize: '16px',
+                      color: 'white',
+                      padding: '8px 16px',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Export
+                  </button>
+                </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => {}}
-                  style={{
-                    backgroundColor: '#4FB848',
-                    borderRadius: '5px',
-                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                    fontWeight: 700,
-                    fontSize: '16px',
-                    color: 'white',
-                    padding: '8px 16px',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Filter
-                </button>
-                <button
-                  onClick={exportToCSV}
-                  style={{
-                    backgroundColor: '#4FB848',
-                    borderRadius: '5px',
-                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                    fontWeight: 700,
-                    fontSize: '16px',
-                    color: 'white',
-                    padding: '8px 16px',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Export
-                </button>
+              <div className="overflow-x-auto">
+                {isLoading ? (
+                  <div className="flex justify-center items-center h-64">
+                    <LoadingSpinner />
+                  </div>
+                ) : filteredProfiles.length > 0 ? (
+                  <DataTableV2
+                    data={filteredProfiles}
+                    onDelete={handleDelete}
+                    pageSize={100}
+                  />
+                ) : (
+                  <div
+                    className="text-center py-8 text-gray-500"
+                    style={{
+                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                    }}
+                  >
+                    No profiles available for the selected criteria.
+                  </div>
+                )}
               </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              {isLoading ? (
-                <div className="flex justify-center items-center h-64">
-                  <LoadingSpinner />
-                </div>
-              ) : filteredProfiles.length > 0 ? (
-                <DataTableV2
-                  data={filteredProfiles}
-                  onDelete={handleDelete}
-                  pageSize={100}
-                />
-              ) : (
-                <div className="text-center py-8 text-gray-500" style={{
-                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                  fontWeight: 400,
-                  fontSize: '16px',
-                }}>
-                  No profiles available for the selected criteria.
-                </div>
-              )}
             </div>
           </div>
         </div>
