@@ -154,7 +154,7 @@ const Login = () => {
                   unoptimized
                 />
               </span>dance
-            </span> for Inheritance and assets (GIA) test
+            </span> for Inheritance and assets (GIA)
           </h1>
         </div>
 
