@@ -56,11 +56,11 @@ export default function CallMeBackPage() {
       <Layout>
         <div className="p-2 min-h-screen container mx-auto pl-16">
           <h1
-            className="text-3xl mb-4 text-[#282828]"
+            className="text-2xl mb-4 text-[#282828]"
             style={{
               fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
               fontWeight: 600,
-              fontSize: "32px",
+              fontSize: "26px",
               color: '#282828',
             }}
           >

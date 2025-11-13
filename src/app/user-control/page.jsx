@@ -395,10 +395,10 @@ export default function UserControl() {
           <div className="px-6 pt-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
               <h1
-                className="text-3xl text-[#282828]"
+                className="text-2xl text-[#282828]"
                 style={{
                     fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                  fontSize: "32px",
+                  fontSize: "26px",
                     fontWeight: 600,
                     color: '#282828',
                 }}

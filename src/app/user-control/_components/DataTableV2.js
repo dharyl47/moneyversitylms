@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ProfileModal from './ProfileModal';
 import ConfirmationModal from './ConfirmationModal';
+import { FiEye, FiTrash2, FiDownload } from 'react-icons/fi';
 
 const DataTableV2 = ({ data, onEdit, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,6 +10,13 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [tooltip, setTooltip] = useState({
+    visible: false,
+    label: '',
+    top: 0,
+    left: 0,
+  });
+  const tooltipTimeoutRef = useRef(null);
 
   // ---------- helpers ----------
   const hasMeaningfulData = (val) => {
@@ -248,6 +256,40 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
     setItemToDelete(null);
   };
 
+  const showTooltipWithDelay = (event, label) => {
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+    }
+    const target = event.currentTarget;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    tooltipTimeoutRef.current = setTimeout(() => {
+      if (!rect) return;
+      setTooltip({
+        visible: true,
+        label,
+        top: rect.top,
+        left: rect.left + rect.width / 2,
+      });
+    }, 600);
+  };
+
+  const hideTooltip = () => {
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+      tooltipTimeoutRef.current = null;
+    }
+    setTooltip((prev) => ({ ...prev, visible: false }));
+  };
+
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // ---------- pagination ----------
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -291,7 +333,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                 style={{
                   fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 600,
-                  fontSize: '18px',
+                  fontSize: '16px',
                   lineHeight: '20px',
                   color: '#1F2937',
                 }}
@@ -334,7 +376,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                   style={{
                     fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
-                    fontSize: '16px',
+                    fontSize: '14px',
                     color: '#1F2937',
                   }}
                 >
@@ -345,7 +387,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                   style={{
                     fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
-                    fontSize: '16px',
+                    fontSize: '14px',
                     color: '#1F2937',
                   }}
                 >
@@ -356,7 +398,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                   style={{
                     fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
-                    fontSize: '16px',
+                    fontSize: '14px',
                     color: '#1F2937',
                   }}
                 >
@@ -367,7 +409,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                   style={{
                     fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
-                    fontSize: '16px',
+                    fontSize: '14px',
                     color: '#1F2937',
                   }}
                 >
@@ -378,45 +420,44 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                   style={{
                     fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     fontWeight: 400,
-                    fontSize: '16px',
+                    fontSize: '14px',
                   }}
                 >
                   {status}
                 </td>
-                <td className="py-2 px-4 space-x-2">
-                  <button 
-                    onClick={() => handleOpenModal(item)} 
-                    className="text-blue-600 text-sm"
-                  style={{
-                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                    }}
-                  >
-                    More Info
-                  </button>
-                  <button 
-                    onClick={() => handleDeleteClick(item)} 
-                    className="text-red-600 text-sm"
-                  style={{
-                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                    }}
-                  >
-                    Delete
-                  </button>
-                  <button 
-                    onClick={() => handleDownloadPDF(item)} 
-                    className="text-green-600 text-sm"
-                  style={{
-                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                    }}
-                  >
-                    Download Report
-                  </button>
+                <td className="py-2 px-4">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenModal(item)}
+                      onMouseEnter={(event) => showTooltipWithDelay(event, 'View Details')}
+                      onMouseLeave={hideTooltip}
+                      aria-label="View Details"
+                      className="p-2 rounded-full text-[#6B7280] hover:text-[#4FB848] hover:bg-[#E8F5E9] transition-colors duration-150"
+                    >
+                      <FiEye className="text-xl" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteClick(item)}
+                      onMouseEnter={(event) => showTooltipWithDelay(event, 'Delete Profile')}
+                      onMouseLeave={hideTooltip}
+                      aria-label="Delete Profile"
+                      className="p-2 rounded-full text-[#6B7280] hover:text-[#DC2626] hover:bg-red-100 transition-colors duration-150"
+                    >
+                      <FiTrash2 className="text-xl" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadPDF(item)}
+                      onMouseEnter={(event) => showTooltipWithDelay(event, 'Download Report')}
+                      onMouseLeave={hideTooltip}
+                      aria-label="Download Report"
+                      className="p-2 rounded-full text-[#6B7280] hover:text-[#16A34A] hover:bg-green-100 transition-colors duration-150"
+                    >
+                      <FiDownload className="text-xl" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             );
@@ -464,6 +505,20 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
         onConfirm={() => handleConfirmDelete((itemToDelete && (itemToDelete._id || itemToDelete.id)) || null)}
         itemName={itemToDelete?.name}
       />
+      {tooltip.visible && (
+        <div
+          className="pointer-events-none fixed z-50 px-3 py-1 rounded-md text-white text-sm font-medium whitespace-nowrap shadow-lg transition-opacity duration-100"
+          style={{
+            fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+            top: `${tooltip.top}px`,
+            left: `${tooltip.left}px`,
+            transform: 'translate(-50%, calc(-100% - 12px))',
+            backgroundColor: '#4FB848',
+          }}
+        >
+          {tooltip.label}
+        </div>
+      )}
     </div>
   );
 };

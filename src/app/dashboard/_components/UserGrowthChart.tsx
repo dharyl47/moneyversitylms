@@ -29,7 +29,7 @@ export default function UserGrowthChart({
 
   return (
     <ChartCard 
-      title="Users Growth Over Time" 
+      title="User Growth Over Time" 
       selectedYear={selectedYear}
     >
       <Line data={chartData} options={{ responsive: true }} />

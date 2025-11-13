@@ -4,17 +4,28 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { clearSession } from "../lib/authSession";
 import {
   FiGrid,
   FiUserCheck,
   FiUser,
   FiLogOut,
+  FiChevronLeft,
+  FiChevronRight,
+  FiChevronsLeft,
+  FiChevronsRight,
 } from "react-icons/fi";
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
   const router = useRouter();
   const pathname = usePathname(); // Correct way to get current path
   const [userData, setUserData] = useState(null);
+  const [tooltip, setTooltip] = useState({
+    visible: false,
+    label: "",
+    top: 0,
+    left: 0,
+  });
 
   useEffect(() => {
     // Get user data from localStorage
@@ -28,96 +39,182 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
     }
   }, []);
 
+  const expandedWidth = 280;
+  const collapsedWidth = 80;
+  const sidebarWidth = isCollapsed ? collapsedWidth : expandedWidth;
+  const horizontalPadding = isCollapsed ? "0" : "0 10px";
+
   const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userData");
+    clearSession();
     router.push("/");
   };
 
-  const linkClasses = (path) =>
-    `flex items-center py-2 px-4 rounded w-full transition-colors duration-200 ${
+  const linkClasses = (path) => {
+    const baseClasses = `flex items-center py-2 rounded w-full transition-colors duration-100 ease-out ${
       pathname === path ? "text-[#50B848]" : "text-[#1F2937]"
     }`;
+    return isCollapsed ? `${baseClasses} justify-center` : `${baseClasses} px-4`;
+  };
 
   const iconClasses = (path) =>
-    `mr-4 text-lg ${
-      pathname === path ? "text-[#50B848]" : "text-[#A7A9AC]"
+    `${pathname === path ? "text-[#50B848]" : "text-[#A7A9AC]"} ${
+      isCollapsed ? "text-2xl" : "text-lg mr-4"
     }`;
+
+  const showTooltip = (event, label) => {
+    if (!isCollapsed) return;
+    const containerRect = event.currentTarget.getBoundingClientRect();
+    const iconElement = event.currentTarget.querySelector("svg");
+    const iconRect = iconElement?.getBoundingClientRect();
+    setTooltip({
+      visible: true,
+      label,
+      top: iconRect
+        ? iconRect.top + iconRect.height / 2
+        : containerRect.top + containerRect.height / 2,
+      left: iconRect ? iconRect.right + 4 : containerRect.right + 4,
+    });
+  };
+
+  const hideTooltip = () => {
+    setTooltip((prev) => ({
+      ...prev,
+      visible: false,
+    }));
+  };
 
   return (
 <div
-  className="h-full bg-white fixed shadow-[0_2px_8px_rgba(0,0,0,0.1)] text-gray-900 transition-all duration-300 flex flex-col"
+  className="h-full bg-white fixed shadow-[0_2px_8px_rgba(0,0,0,0.1)] text-gray-900 transition-all duration-150 ease-out flex flex-col overflow-visible"
   style={{
-    width: "250px",
+    width: `${sidebarWidth}px`,
     fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+    padding: horizontalPadding,
   }}
 >
 
- {/* Title Section */}
- <div className="pl-3 mt-7 w-full text-left">
- <h1 className="text-lg font-bold text-[#4FB748] leading-snug">
-   <span className="relative inline-block">
-     Gu
-     <span className="relative inline-block">
-       i
-       <Image
-         src="/images/mvhat.png"
-         alt="Graduation cap"
-         width={30.6}
-         height={20.4}
-         className="absolute left-1/2"
-         style={{ 
-           transform: 'translateX(-50%)',
-           top: '-14px',
-           width: '28.6px',
-           height: '20.4px',
-           maxWidth: '100px'
-         }}
-         unoptimized
-       />
-     </span>dance
-   </span> for Inheritance <br />and assets (GIA)
- </h1>
- 
- {/* Horizontal separator line */}
- <div 
-   className="mt-4"
-   style={{
-     height: '1px',
-     backgroundColor: '#E5E5E5',
-     marginLeft: '-12px',
-     marginRight: '0',
-     width: 'calc(100% + 12px)'
-   }}
- />
-</div>
+      {/* Title Section */}
+      <div className={`${isCollapsed ? "mt-12" : "mt-10"} w-full`}>
+        <div className="relative">
+          <button
+            onClick={toggleSidebar}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="flex items-center justify-center text-[#6B7280] hover:text-[#50B848] transition-colors duration-100 ease-out"
+            style={{
+              position: "absolute",
+              right: isCollapsed ? "-36px" : "-40px",
+              top: isCollapsed ? "-40px" : "-36px",
+              backgroundColor: "transparent",
+              boxShadow: "none",
+            }}
+          >
+            {isCollapsed ? (
+              <FiChevronsRight style={{ fontSize: "30px" }} />
+            ) : (
+              <FiChevronsLeft style={{ fontSize: "30px" }} />
+            )}
+          </button>
+          <div
+            className={`${isCollapsed ? "w-full flex justify-center" : "w-full text-left"}`}
+            style={{
+              paddingLeft: isCollapsed ? 0 : "4px",
+              paddingRight: isCollapsed ? 0 : "28px",
+            }}
+          >
+            {isCollapsed ? (
+              <Image
+                src="/images/mvhat.png"
+                alt="Graduation cap"
+                width={48}
+                height={36}
+                unoptimized
+              />
+            ) : (
+              <h1 className="text-lg font-bold text-[#4FB748] leading-snug">
+                <span style={{ whiteSpace: "nowrap" }}>
+                  <span className="relative inline-block">
+                    Gu
+                    <span className="relative inline-block">
+                      i
+                      <Image
+                        src="/images/mvhat.png"
+                        alt="Graduation cap"
+                        width={30.6}
+                        height={20.4}
+                        className="absolute left-1/2"
+                        style={{
+                          transform: "translateX(-50%)",
+                          top: "-14px",
+                          width: "28.6px",
+                          height: "20.4px",
+                          maxWidth: "100px",
+                        }}
+                        unoptimized
+                      />
+                    </span>
+                    dance
+                  </span>{" "}
+                  for inheritance
+                </span>
+                <br />
+                <span>and assets (GIA)</span>
+              </h1>
+            )}
+          </div>
+        </div>
+        <div
+          className={`${isCollapsed ? "mt-6" : "mt-4"}`}
+          style={{
+            height: "1px",
+            backgroundColor: "#E5E5E5",
+            marginLeft: isCollapsed ? "0" : "-4px",
+            width: isCollapsed ? "100%" : "calc(100% + 4px)",
+            opacity: isCollapsed ? 0 : 1,
+            transition: "opacity 0.2s ease",
+          }}
+        />
+      </div>
 
 
       <div className="flex flex-col flex-1 overflow-y-auto">
-        <nav className="flex flex-col mt-4 w-full border-none">
-          <ul className="space-y-1 p-1 w-full border-none">
-            <li>
+        <nav className={`flex flex-col w-full border-none ${isCollapsed ? "mt-8" : "mt-4"}`}>
+          <ul className={`space-y-1 w-full border-none ${isCollapsed ? "px-0" : "p-1"}`}>
+            <li
+              onMouseEnter={(event) => showTooltip(event, "Dashboard")}
+              onMouseLeave={hideTooltip}
+            >
               <Link href="/dashboard" className={linkClasses("/dashboard")}>
                 <FiGrid className={iconClasses("/dashboard")} />
-                <span style={{ 
-                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                  fontWeight: 600,
-                  fontSize: "18px"
-                }}>
-                  Dashboard
-                </span>
+                {!isCollapsed && (
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                      fontWeight: 600,
+                      fontSize: "16px",
+                    }}
+                  >
+                    Dashboard
+                  </span>
+                )}
               </Link>
             </li>
-            <li>
+            <li
+              onMouseEnter={(event) => showTooltip(event, "User Profile")}
+              onMouseLeave={hideTooltip}
+            >
               <Link href="/user-control" className={linkClasses("/user-control")}>
                 <FiUserCheck className={iconClasses("/user-control")} />
-                <span style={{ 
-                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                  fontWeight: 600,
-                  fontSize: "18px"
-                }}>
-                  User Profile
-                </span>
+                {!isCollapsed && (
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                      fontWeight: 600,
+                      fontSize: "16px",
+                    }}
+                  >
+                    User Profile
+                  </span>
+                )}
               </Link>
             </li>
           </ul>
@@ -125,9 +222,9 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
       </div>
 
       {/* User Profile Section */}
-      <div className="mt-auto px-3 mb-3">
+      <div className={`mt-auto mb-3 ${isCollapsed ? "px-0" : "px-3"}`}>
         <div 
-          className="flex items-center p-3 rounded-lg"
+          className={`flex items-center rounded-lg ${isCollapsed ? "justify-center p-2" : "p-3"}`}
           style={{
             backgroundColor: '#F1F2F2',
             borderRadius: '8px'
@@ -135,62 +232,82 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
         >
           {/* Avatar */}
           <div 
-            className="flex items-center justify-center rounded-full mr-3"
+            className={`flex items-center justify-center rounded-full ${isCollapsed ? "" : "mr-3"}`}
             style={{
-              width: '48px',
-              height: '48px',
+              width: isCollapsed ? '40px' : '48px',
+              height: isCollapsed ? '40px' : '48px',
               backgroundColor: '#50B848',
               flexShrink: 0
             }}
           >
-            <FiUser className="text-white" style={{ fontSize: '20px' }} />
+            <FiUser className="text-white" style={{ fontSize: isCollapsed ? '18px' : '20px' }} />
           </div>
           
           {/* User Info */}
-          <div className="flex flex-col">
-            <span 
-              style={{
-                fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                fontWeight: 700,
-                fontSize: '16px',
-                color: '#1F2937',
-                lineHeight: '1.2'
-              }}
-            >
-              {userData?.username || 'User'}
-            </span>
-            <span 
-              style={{
-                fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                fontWeight: 400,
-                fontSize: '14px',
-                color: '#6B7280',
-                lineHeight: '1.2',
-                marginTop: '2px'
-              }}
-            >
-              {userData?.type ? userData.type.charAt(0).toUpperCase() + userData.type.slice(1) : 'Admin'}
-            </span>
-          </div>
+          {!isCollapsed && (
+            <div className="flex flex-col">
+              <span
+                style={{
+                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  color: '#1F2937',
+                  lineHeight: '1.2',
+                }}
+              >
+                {userData?.username || 'User'}
+              </span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '12px',
+                  color: '#6B7280',
+                  lineHeight: '1.2',
+                  marginTop: '2px',
+                }}
+              >
+                {userData?.type ? userData.type.charAt(0).toUpperCase() + userData.type.slice(1) : 'Admin'}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Logout at bottom */}
-      <div className="pb-4 px-3">
+      <div
+        className={`pb-4 ${isCollapsed ? "px-0" : "px-3"}`}
+        onMouseEnter={(event) => showTooltip(event, "Logout")}
+        onMouseLeave={hideTooltip}
+      >
         <button
           onClick={handleLogout}
-          className="flex items-center py-3 px-4 rounded w-full hover:bg-gray-300 transition-colors duration-200"
+          className={`flex items-center py-3 rounded w-full hover:bg-gray-300 transition-colors duration-100 ease-out ${isCollapsed ? "justify-center" : "px-4"}`}
           style={{
             fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
             fontWeight: 600,
-            fontSize: "18px",
+            fontSize: "14px",
             color: "#374151"
           }}
         >
-          <FiLogOut className="mr-4 text-lg text-[#A7A9AC]" />
-          Logout
+          <FiLogOut className={`${isCollapsed ? "" : "mr-4"} text-lg text-[#A7A9AC]`} />
+          {!isCollapsed && "Logout"}
         </button>
       </div>
+      {tooltip.visible && (
+        <div
+          className="pointer-events-none fixed z-50 px-3 py-1 rounded-md text-white text-sm font-medium whitespace-nowrap shadow-lg transition-opacity duration-100"
+          style={{
+            fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+            top: `${tooltip.top}px`,
+            left: `${tooltip.left}px`,
+            transform: "translateY(-50%)",
+            backgroundColor: '#4FB848',
+          }}
+        >
+          {tooltip.label}
+        </div>
+      )}
     </div>
   );
 };

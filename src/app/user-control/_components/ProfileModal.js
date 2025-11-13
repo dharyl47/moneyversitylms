@@ -92,7 +92,7 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
           <AiOutlineClose size={24} />
         </button>
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+        <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">
           User Profile Details
         </h2>
 

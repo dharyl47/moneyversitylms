@@ -10,12 +10,12 @@ export default function ChartCard({ title, children, selectedYear }: ChartCardPr
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg">
       <h2 
-        className="text-xl font-semibold mb-2 text-gray-900"
+        className="text-lg font-semibold mb-2 text-gray-900"
         style={{
           fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
           fontWeight: 600,
-          fontSize: "24px",
-          lineHeight: '28px',
+          fontSize: "20px",
+          lineHeight: '26px',
           color: '#282828',
         }}
       >

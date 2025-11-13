@@ -570,17 +570,13 @@ const mapSchemaToStage: Record<string, string[]> = {
     
     console.log(`\n=== END OF ANALYSIS ===\n`);
 
-    setStatistics({ 
+    setStatistics(prev => ({ 
+      ...prev,
       completedFlowByMonth, 
       usersByStage, 
       propertyRegimeCount, 
       userGrowth, 
-      reportDownloadsByMonth: {},
-      templateDownloadsByMonth: {},
-      totalReportDownloads: 0,
-      totalTemplateDownloads: 0,
-      templateBreakdown: []
-    });
+    }));
   }, []);
 
   useEffect(() => {
@@ -706,10 +702,10 @@ const mapSchemaToStage: Record<string, string[]> = {
       <Layout>
         <div className="min-h-screen w-full">
           <div className="bg-[#F9F9F9] rounded-lg p-6">
-            <h1 className="text-3xl mb-4 text-[#282828]" 
+            <h1 className="text-2xl mb-4 text-[#282828]" 
             style={{
               fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-              fontSize: "32px",
+              fontSize: "26px",
               fontWeight: 600,
               color: '#282828',
             }}

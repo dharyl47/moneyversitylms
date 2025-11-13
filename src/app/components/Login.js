@@ -3,6 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import {
+  initializeSession,
+  isSessionActive,
+  clearSession,
+  touchSession,
+} from "../lib/authSession";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -22,6 +28,15 @@ const Login = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (isSessionActive()) {
+      touchSession();
+      router.replace("/dashboard");
+    } else {
+      clearSession();
+    }
+  }, [router]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(''); // Clear previous errors
@@ -39,7 +54,7 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("isAuthenticated", "true");
+        initializeSession();
         
         // Store user data if available
         if (data.user) {
