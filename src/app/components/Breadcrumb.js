@@ -31,7 +31,7 @@ const Breadcrumb = ({ items }) => {
                 style={{
                   fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 400,
-                  fontSize: '16px',
+                  fontSize: '14px',
                 }}
               >
                 /
@@ -43,7 +43,7 @@ const Breadcrumb = ({ items }) => {
                 style={{
                   fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 400,
-                  fontSize: '16px',
+                  fontSize: '14px',
                 }}
               >
                 {item.label}
@@ -55,7 +55,7 @@ const Breadcrumb = ({ items }) => {
                 style={{
                   fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 400,
-                  fontSize: '16px',
+                  fontSize: '14px',
                 }}
               >
                 {item.label}

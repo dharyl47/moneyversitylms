@@ -333,7 +333,7 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
                 style={{
                   fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   fontWeight: 600,
-                  fontSize: '16px',
+                  fontSize: '15px',
                   lineHeight: '20px',
                   color: '#1F2937',
                 }}

@@ -161,7 +161,15 @@ const ProfileModal = ({ isOpen, onClose, selectedItem }) => {
 
         <div className="text-right mt-6">
           <button
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+            className="text-white px-4 py-2 rounded-md transition"
+            style={{
+              backgroundColor: '#4FB848',
+              fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+              fontWeight: 400,
+              fontSize: '14px',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#45a03f'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4FB848'}
             onClick={onClose}
           >
             Close

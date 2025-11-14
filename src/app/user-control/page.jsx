@@ -420,7 +420,7 @@ export default function UserControl() {
                     style={{
                       fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                       fontWeight: 400,
-                      fontSize: '16px',
+                      fontSize: '14px',
                     }}
                   />
 
@@ -431,7 +431,7 @@ export default function UserControl() {
                     style={{
                       fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                       fontWeight: 400,
-                      fontSize: '16px',
+                      fontSize: '14px',
                     }}
                   >
                     <option value="Show All">Show All</option>
@@ -458,7 +458,7 @@ export default function UserControl() {
                       borderRadius: '5px',
                       fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                       fontWeight: 700,
-                      fontSize: '16px',
+                      fontSize: '14px',
                       color: 'white',
                       padding: '8px 16px',
                       border: 'none',
@@ -474,7 +474,7 @@ export default function UserControl() {
                       borderRadius: '5px',
                       fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                       fontWeight: 700,
-                      fontSize: '16px',
+                      fontSize: '14px',
                       color: 'white',
                       padding: '8px 16px',
                       border: 'none',

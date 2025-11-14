@@ -56,7 +56,7 @@ export default function DownloadsChart({
     responsive: true,
     plugins: {
       legend: {
-        display: false,
+        display: true,
       },
     },
   };
@@ -85,35 +85,6 @@ export default function DownloadsChart({
       title="Downloads (Per Month)" 
       selectedYear={selectedYear}
     >
-      {/* Legend */}
-      <div 
-        className="mb-4 flex gap-4 text-sm"
-        style={{
-          fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-          fontWeight: 400,
-          fontSize: '16px',
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-4 h-4 rounded" 
-            style={{ backgroundColor: 'rgba(153, 102, 255, 0.6)' }}
-          ></div>
-          <span className="text-gray-700">
-            <strong>User Reports:</strong> {totalReportDownloads}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-4 h-4 rounded" 
-            style={{ backgroundColor: 'rgba(255, 159, 64, 0.6)' }}
-          ></div>
-          <span className="text-gray-700">
-            <strong>Resource Templates:</strong> {totalTemplateDownloads}
-          </span>
-        </div>
-      </div>
-
       {/* Chart */}
       <Bar data={chartData} options={chartOptions} />
       
@@ -150,7 +121,12 @@ export default function DownloadsChart({
                 >
                   Previous
                 </button>
-                <span className="text-gray-500">
+                <span 
+                  className="text-gray-500 whitespace-nowrap"
+                  style={{
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
