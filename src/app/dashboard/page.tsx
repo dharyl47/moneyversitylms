@@ -757,10 +757,12 @@ const mapSchemaToStage: Record<string, string[]> = {
               selectedYear={selectedYear}
             />
 
-            <UserGrowthChart 
-              userGrowth={statistics.userGrowth}
-              selectedYear={selectedYear}
-            />
+            <div className="self-start">
+              <UserGrowthChart 
+                userGrowth={statistics.userGrowth}
+                selectedYear={selectedYear}
+              />
+            </div>
 
             <DownloadsChart
               reportDownloadsByMonth={statistics.reportDownloadsByMonth}
