@@ -161,7 +161,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
                     </span>
                     dance
                   </span>{" "}
-                  for inheritance
+                  for Inheritance
                 </span>
                 <br />
                 <span>and Assets (GIA)</span>
