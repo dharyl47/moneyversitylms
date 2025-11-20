@@ -392,7 +392,7 @@ export default function UserControl() {
     <main className="bg-[#F9F9F9] min-h-screen text-[#282828]">
       <Layout>
         <div className="min-h-screen w-full">
-          <div className="px-6 pt-6">
+          <div className="px-6 pt-12">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
               <h1
                 className="text-2xl text-[#282828]"

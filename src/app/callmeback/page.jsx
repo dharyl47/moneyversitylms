@@ -54,7 +54,7 @@ export default function CallMeBackPage() {
   return (
     <main className="bg-[#F9F9F9] min-h-screen text-[#282828]">
       <Layout>
-        <div className="p-2 min-h-screen container mx-auto pl-16">
+        <div className="px-2 pt-12 pb-2 min-h-screen container mx-auto pl-16">
           <h1
             className="text-2xl mb-4 text-[#282828]"
             style={{

@@ -90,7 +90,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 >
 
       {/* Title Section */}
-      <div className={`${isCollapsed ? "mt-12" : "mt-10"} w-full`}>
+      <div className={`${isCollapsed ? "mt-[68px]" : "mt-[60px]"} w-full`}>
         <div className="relative">
           <button
             onClick={toggleSidebar}
@@ -99,7 +99,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
             style={{
               position: "absolute",
               right: isCollapsed ? "-42px" : "-46px",
-              top: isCollapsed ? "-40px" : "-36px",
+              top: isCollapsed ? "-60px" : "-56px",
               backgroundColor: "transparent",
               boxShadow: "none",
             }}
@@ -164,7 +164,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
                   for inheritance
                 </span>
                 <br />
-                <span>and assets (GIA)</span>
+                <span>and Assets (GIA)</span>
               </h1>
             )}
           </div>

@@ -701,7 +701,7 @@ const mapSchemaToStage: Record<string, string[]> = {
     <main className="bg-[#F9F9F9] min-h-screen">
       <Layout>
         <div className="min-h-screen w-full">
-          <div className="bg-[#F9F9F9] rounded-lg p-6">
+          <div className="bg-[#F9F9F9] rounded-lg px-6 pt-12 pb-6">
             <h1 className="text-2xl mb-4 text-[#282828]" 
             style={{
               fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
