@@ -7,6 +7,9 @@ if (!JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is required');
 }
 
+// Type assertion: JWT_SECRET is guaranteed to be a string after the check above
+const SECRET: string = JWT_SECRET;
+
 interface TokenPayload {
   username: string;
   type: string;
@@ -25,7 +28,7 @@ export function generateToken(payload: TokenPayload): string {
       type: payload.type,
       status: payload.status,
     },
-    JWT_SECRET,
+    SECRET,
     {
       expiresIn: '24h', // Token expires in 24 hours
     }
@@ -39,7 +42,7 @@ export function generateToken(payload: TokenPayload): string {
  */
 export function verifyToken(token: string): TokenPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as TokenPayload;
+    return jwt.verify(token, SECRET) as TokenPayload;
   } catch (error) {
     return null;
   }
