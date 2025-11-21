@@ -20,7 +20,11 @@ export async function POST(request) {
     }
 
     // Decrypt the stored encrypted password
-    const secretKey = 'MLKN87y8VSH&Y*SF'; // Your secret key
+    const secretKey = process.env.ENCRYPTION_SECRET_KEY;
+    if (!secretKey) {
+      console.error('ENCRYPTION_SECRET_KEY is not defined');
+      return NextResponse.json({ message: 'Server configuration error' }, { status: 500 });
+    }
     const bytes = CryptoJS.AES.decrypt(user.password, secretKey);
     const decryptedPassword = bytes.toString(CryptoJS.enc.Utf8);
 

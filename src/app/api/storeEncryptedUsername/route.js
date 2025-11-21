@@ -8,7 +8,11 @@ export async function POST(request) {
     await connectMongoDB(); // Ensure MongoDB is connected
 
     const usePassword = 'test'; // Your plaintext password
-    const secretKey = 'MLKN87y8VSH&Y*SF'; // Your secret key
+    const secretKey = process.env.ENCRYPTION_SECRET_KEY;
+    if (!secretKey) {
+      console.error('ENCRYPTION_SECRET_KEY is not defined');
+      return NextResponse.json({ message: 'Server configuration error' }, { status: 500 });
+    }
     const encryptedPassword = CryptoJS.AES.encrypt(usePassword, secretKey).toString();
 
     // Log the plaintext and encrypted password for debugging

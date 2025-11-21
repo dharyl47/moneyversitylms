@@ -3,7 +3,11 @@ import mongoose from "mongoose";
 let client = null;
 let bucket = null;
 
-const MONGODB_URI = "mongodb+srv://blacandbloo:jnijdnsfnjMLKNDVJKSfdfs3434@moneyversityai.ut7dw3f.mongodb.net/Moneyversity?retryWrites=true&w=majority&appName=MoneyversityAI";
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+    throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
+}
 
 async function connectMongoDB() {
     if (client) {
