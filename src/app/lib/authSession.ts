@@ -7,26 +7,35 @@ const SESSION_EXPIRY_KEY = "sessionExpiry";
 export const SESSION_TIMEOUT_MS = 24 * 60 * 60 * 1000; // 24 hours (JWT expiry)
 const SESSION_CHECK_BUFFER_MS = 500; // buffer to avoid premature expiry due to timing differences
 
-const getStorage = () => {
+const getStorage = (): Storage | null => {
   if (typeof window === "undefined") {
     return null;
   }
   return window.localStorage;
 };
 
+interface UserData {
+  username?: string;
+  type?: string;
+  status?: string;
+  [key: string]: any;
+}
+
 /**
  * Initialize session with JWT token
- * @param {string} token - JWT token
- * @param {Object} userData - User data
+ * @param token - JWT token
+ * @param userData - User data
  */
-export const initializeSession = (token, userData) => {
+export const initializeSession = (token: string | null, userData?: UserData | null): void => {
   const storage = getStorage();
   if (!storage) {
     return;
   }
 
   storage.setItem(AUTH_STORAGE_KEY, "true");
-  storage.setItem(JWT_TOKEN_KEY, token);
+  if (token) {
+    storage.setItem(JWT_TOKEN_KEY, token);
+  }
   
   if (userData) {
     storage.setItem(USER_DATA_KEY, JSON.stringify(userData));
@@ -37,9 +46,9 @@ export const initializeSession = (token, userData) => {
 
 /**
  * Get JWT token from storage
- * @returns {string|null} JWT token or null
+ * @returns JWT token or null
  */
-export const getToken = () => {
+export const getToken = (): string | null => {
   const storage = getStorage();
   if (!storage) {
     return null;
@@ -49,14 +58,14 @@ export const getToken = () => {
 
 /**
  * Get authorization header value
- * @returns {string|null} Authorization header value or null
+ * @returns Authorization header value or null
  */
-export const getAuthHeader = () => {
+export const getAuthHeader = (): string | null => {
   const token = getToken();
   return token ? `Bearer ${token}` : null;
 };
 
-export const touchSession = () => {
+export const touchSession = (): void => {
   const storage = getStorage();
   if (!storage) {
     return;
@@ -71,7 +80,7 @@ export const touchSession = () => {
   storage.setItem(SESSION_EXPIRY_KEY, (now + SESSION_TIMEOUT_MS).toString());
 };
 
-export const isSessionActive = () => {
+export const isSessionActive = (): boolean => {
   const storage = getStorage();
   if (!storage) {
     return false;
@@ -99,7 +108,7 @@ export const isSessionActive = () => {
   return Date.now() + SESSION_CHECK_BUFFER_MS <= expiry;
 };
 
-export const clearSession = () => {
+export const clearSession = (): void => {
   const storage = getStorage();
   if (!storage) {
     return;
