@@ -1,51 +1,100 @@
-// pages/api/login.js
-
 import { NextResponse } from 'next/server';
-import CryptoJS from 'crypto-js';
+import bcrypt from 'bcrypt';
 import connectMongoDB from '../../lib/mongo';
-import User from '../../models/User'; // Import the Mongoose model
+import User from '../../models/User';
+import { generateToken } from '../../lib/jwt';
+import { validateUsername, validatePassword } from '../../lib/validation';
+import { createRateLimiter } from '../../lib/rateLimiter';
+
+// Rate limiter: 5 attempts per 15 minutes
+const loginRateLimiter = createRateLimiter({ maxRequests: 5, windowMs: 15 * 60 * 1000 });
 
 export async function POST(request) {
   try {
-    await connectMongoDB(); // Ensure MongoDB is connected
+    // Apply rate limiting
+    const rateLimitError = await loginRateLimiter(request);
+    if (rateLimitError) {
+      return NextResponse.json(
+        { message: rateLimitError.message },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': rateLimitError.retryAfter.toString(),
+          },
+        }
+      );
+    }
 
-    const { username, password } = await request.json(); // Get the username and password from the request body
+    await connectMongoDB();
+
+    const body = await request.json();
+    const { username, password } = body;
+
+    // Validate input
+    const validatedUsername = validateUsername(username);
+    if (!validatedUsername) {
+      return NextResponse.json(
+        { message: 'Invalid username format' },
+        { status: 400 }
+      );
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      return NextResponse.json(
+        { message: passwordValidation.message },
+        { status: 400 }
+      );
+    }
 
     // Find the user by username, status, and type
-    const user = await User.findOne({ username, status: 'active', type: 'admin' });
+    const user = await User.findOne({
+      username: validatedUsername,
+      status: 'active',
+      type: 'admin',
+    });
 
-    if (!user) {
-      console.log('No active admin user found with the given username');
-      return NextResponse.json({ message: 'Invalid username or password' }, { status: 401 });
+    // Use generic error message to prevent user enumeration
+    if (!user || !user.password) {
+      return NextResponse.json(
+        { message: 'Invalid username or password' },
+        { status: 401 }
+      );
     }
 
-    // Decrypt the stored encrypted password
-    const secretKey = process.env.ENCRYPTION_SECRET_KEY;
-    if (!secretKey) {
-      console.error('ENCRYPTION_SECRET_KEY is not defined');
-      return NextResponse.json({ message: 'Server configuration error' }, { status: 500 });
-    }
-    const bytes = CryptoJS.AES.decrypt(user.password, secretKey);
-    const decryptedPassword = bytes.toString(CryptoJS.enc.Utf8);
+    // Verify password using bcrypt
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    // Compare the decrypted password with the input plaintext password
-    if (decryptedPassword !== password) {
-      console.log('Password mismatch');
-      return NextResponse.json({ message: 'Invalid username or password' }, { status: 401 });
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { message: 'Invalid username or password' },
+        { status: 401 }
+      );
     }
 
-    console.log('User logged in successfully');
-    // Return user data (excluding password)
-    return NextResponse.json({ 
+    // Generate JWT token
+    const token = generateToken({
+      username: user.username,
+      type: user.type,
+      status: user.status,
+    });
+
+    // Return token and user data (excluding password)
+    return NextResponse.json({
       message: 'Login successful',
+      token,
       user: {
         username: user.username,
         type: user.type,
-        status: user.status
-      }
+        status: user.status,
+      },
     });
   } catch (error) {
-    console.error('Error during login:', error);
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    // Log error server-side without exposing details
+    console.error('Authentication error:', error.message);
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }

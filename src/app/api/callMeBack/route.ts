@@ -3,24 +3,34 @@
 import { NextResponse } from 'next/server';
 import connectMongoDB from '@/app/lib/mongo';
 import CallMeBackRequest from '../../models/CallMeBack';
+import { withAdminAuth } from '../../lib/authMiddleware';
+import { validateEmail, validateString } from '../../lib/validation';
 
-// Create or update callback request by email
+// Create or update callback request by email (public endpoint)
 export async function POST(req: Request) {
   try {
     await connectMongoDB();
-    const { firstName, lastName, email, phone } = await req.json();
+    const body = await req.json();
+    const { firstName, lastName, email, phone } = body;
 
-    if (!email || !phone) {
-      return NextResponse.json({ error: 'Missing email or phone number' }, { status: 400 });
+    // Validate input
+    const validatedEmail = validateEmail(email);
+    const validatedPhone = validateString(phone, { minLength: 10, maxLength: 20 });
+
+    if (!validatedEmail || !validatedPhone) {
+      return NextResponse.json({ error: 'Invalid email or phone number' }, { status: 400 });
     }
 
+    const validatedFirstName = validateString(firstName || '', { maxLength: 100, allowEmpty: true });
+    const validatedLastName = validateString(lastName || '', { maxLength: 100, allowEmpty: true });
+
     const callRequest = await CallMeBackRequest.findOneAndUpdate(
-      { email },
+      { email: validatedEmail },
       {
         $set: {
-          firstName,
-          lastName,
-          phone,
+          firstName: validatedFirstName || '',
+          lastName: validatedLastName || '',
+          phone: validatedPhone,
           status: 'pending',
           dateCreated: new Date(),
         },
@@ -30,13 +40,16 @@ export async function POST(req: Request) {
 
     return NextResponse.json(callRequest);
   } catch (err) {
-    console.error('Error in POST /call-me-back:', err);
+    console.error('Error in POST /call-me-back:', err instanceof Error ? err.message : 'Unknown error');
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
+import { withAdminAuth } from '../../lib/authMiddleware';
+import { validateEmail, validateString } from '../../lib/validation';
+
 // Get all Call Me Back requests
-export async function GET() {
+async function handleGET() {
   try {
     await connectMongoDB();
     const requests = await CallMeBackRequest.find({});
@@ -44,7 +57,9 @@ export async function GET() {
     response.headers.set('Cache-Control', 'public, max-age=180, stale-while-revalidate=300');
     return response;
   } catch (error) {
-    console.error('Error fetching call me back data:', error);
+    console.error('Error fetching call me back data:', error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export const GET = withAdminAuth(handleGET);

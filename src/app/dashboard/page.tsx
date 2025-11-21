@@ -7,6 +7,7 @@ import UsersByStageChart from "./_components/UsersByStageChart";
 import UserGrowthChart from "./_components/UserGrowthChart";
 import DownloadsChart from "./_components/DownloadsChart";
 import { Profile, Statistics } from "./_components/types";
+import { authenticatedFetch } from "@/app/lib/apiClient";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, ArcElement, PointElement, Tooltip, Legend);
 
@@ -582,7 +583,7 @@ const mapSchemaToStage: Record<string, string[]> = {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await fetch("/api/userprofiles");
+        const response = await authenticatedFetch("/api/userprofiles");
         const result = await response.json();
         
         if (result && result.success) {
@@ -602,17 +603,8 @@ const mapSchemaToStage: Record<string, string[]> = {
     const fetchDownloadLogs = async () => {
       try {
         const url = `/api/downloadlogs${selectedYear !== 'all' ? `?year=${selectedYear}` : ''}`;
-        console.log('📊 Fetching download logs from:', url);
-        const response = await fetch(url);
+        const response = await authenticatedFetch(url);
         const result = await response.json();
-        
-        console.log('📊 Download logs response:', {
-          success: result.success,
-          count: result.count,
-          totalCount: result.totalCount,
-          stats: result.stats,
-          dataLength: result.data?.length
-        });
         
         if (result && result.success) {
           setDownloadLogs(result.data || []);

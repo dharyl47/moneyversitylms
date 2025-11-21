@@ -278,13 +278,16 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import connectMongoDB from '../../lib/mongo';
 import UserProfile from '../../models/UserProfile';
 
-export async function POST(req) {
+import { withAuth } from '../../lib/authMiddleware';
+
+async function handlePOST(req) {
   try {
-    /* 1️⃣  Parse client payload (we just use it for auth) */
+    /* 1️⃣  Parse client payload */
     const body = await req.json();
-    const { auth } = body || {};
-    if (!auth) {
-      return new Response(JSON.stringify({ error: 'Missing auth token' }), {
+    const { userId } = body || {};
+    
+    if (!userId) {
+      return new Response(JSON.stringify({ error: 'Missing user ID' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -292,7 +295,7 @@ export async function POST(req) {
 
     /* 2️⃣  Fetch user from DB */
     await connectMongoDB();
-    const user = await UserProfile.findOne({ auth }).lean();
+    const user = await UserProfile.findById(userId).lean();
     if (!user) {
       return new Response(JSON.stringify({ error: 'User not found' }), {
         status: 404,
@@ -625,10 +628,12 @@ export async function POST(req) {
       },
     });
   } catch (err) {
-    console.error('PDF generation error:', err);
+    console.error('PDF generation error:', err.message);
     return new Response(
       JSON.stringify({ error: 'Failed to generate PDF' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }
+
+export const POST = withAuth(handlePOST);

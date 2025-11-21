@@ -5,6 +5,7 @@ import DataTableV2 from "./_components/DataTableV2";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import Breadcrumb from "@/app/components/Breadcrumb";
 import Papa from "papaparse";
+import { authenticatedFetch } from "@/app/lib/apiClient";
 
 const formatLabelForCSV = (label) => {
   if (!label) return "";
@@ -345,7 +346,7 @@ export default function UserControl() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch("/api/userprofiles");
+        const response = await authenticatedFetch("/api/userprofiles");
         const result = await response.json();
 
         if (result && Array.isArray(result.data)) {
@@ -366,11 +367,8 @@ export default function UserControl() {
 
   const handleDelete = async (_id) => {
     try {
-      const response = await fetch("/api/userprofiles", {
+      const response = await authenticatedFetch("/api/userprofiles", {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ id: _id }),
       });
 

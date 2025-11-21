@@ -1,43 +1,72 @@
 import { NextResponse } from 'next/server';
-import CryptoJS from 'crypto-js';
 import connectMongoDB from '../../lib/mongo';
-import User from '../../models/User'; // Import the Mongoose model
+import User from '../../models/User';
+import { hashPassword } from '../../lib/passwordUtils';
+import { withAdminAuth } from '../../lib/authMiddleware';
+import { validateUsername, validatePassword } from '../../lib/validation';
 
-export async function POST(request) {
+/**
+ * Admin-only route to update user passwords with bcrypt hashing
+ * This replaces the old encryption-based password storage
+ */
+async function handlePOST(request) {
   try {
-    await connectMongoDB(); // Ensure MongoDB is connected
+    await connectMongoDB();
 
-    const usePassword = 'test'; // Your plaintext password
-    const secretKey = process.env.ENCRYPTION_SECRET_KEY;
-    if (!secretKey) {
-      console.error('ENCRYPTION_SECRET_KEY is not defined');
-      return NextResponse.json({ message: 'Server configuration error' }, { status: 500 });
+    const body = await request.json();
+    const { username, password } = body;
+
+    // Validate input
+    if (!username || !password) {
+      return NextResponse.json(
+        { message: 'Username and password are required' },
+        { status: 400 }
+      );
     }
-    const encryptedPassword = CryptoJS.AES.encrypt(usePassword, secretKey).toString();
 
-    // Log the plaintext and encrypted password for debugging
-    console.log('Plaintext password:', usePassword);
-    console.log('Encrypted password:', encryptedPassword);
+    const validatedUsername = validateUsername(username);
+    if (!validatedUsername) {
+      return NextResponse.json(
+        { message: 'Invalid username format' },
+        { status: 400 }
+      );
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      return NextResponse.json(
+        { message: passwordValidation.message },
+        { status: 400 }
+      );
+    }
+
+    // Hash the password using bcrypt
+    const hashedPassword = await hashPassword(password);
 
     // Find the user by username and update their password
     const result = await User.updateOne(
-      { username: 'test@test.com' }, // Use the username to find the user
-      { $set: { password: encryptedPassword } }
+      { username: validatedUsername },
+      { $set: { password: hashedPassword } }
     );
 
-    // Log the query result
-    console.log('Update result:', result);
-
-    if (result.modifiedCount === 0) {
-      console.log('No user found with the given username');
-      return NextResponse.json({ message: 'No user found with the given username' }, { status: 404 });
+    if (result.matchedCount === 0) {
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      );
     }
 
-    console.log('Encrypted password stored in the database:', encryptedPassword);
-
-    return NextResponse.json({ message: 'Encrypted password stored successfully.' });
+    return NextResponse.json({
+      message: 'Password updated successfully',
+      username: validatedUsername,
+    });
   } catch (error) {
-    console.error('Error storing encrypted password:', error);
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    console.error('Error updating password:', error.message);
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }
+
+export const POST = withAdminAuth(handlePOST);

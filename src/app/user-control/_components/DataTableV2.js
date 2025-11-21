@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ProfileModal from './ProfileModal';
 import ConfirmationModal from './ConfirmationModal';
 import { FiEye, FiTrash2, FiDownload } from 'react-icons/fi';
+import { authenticatedFetch } from '@/app/lib/apiClient';
 
 const DataTableV2 = ({ data, onEdit, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -199,10 +200,9 @@ const DataTableV2 = ({ data, onEdit, onDelete }) => {
   // ---------- handlers ----------
   const handleDownloadPDF = async (item) => {
     try {
-      const response = await fetch('/api/generatePdf', {
+      const response = await authenticatedFetch('/api/generatePdf', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item),
+        body: JSON.stringify({ userId: item._id }),
       });
       if (!response.ok) throw new Error('Failed to generate PDF');
       const pdfBlob = await response.blob();

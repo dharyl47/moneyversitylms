@@ -54,11 +54,12 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        initializeSession();
-        
-        // Store user data if available
-        if (data.user) {
-          localStorage.setItem('userData', JSON.stringify(data.user));
+        // Initialize session with JWT token
+        if (data.token) {
+          initializeSession(data.token, data.user);
+        } else {
+          // Fallback for backward compatibility
+          initializeSession(null, data.user);
         }
         
         // Save or remove email based on rememberMe checkbox
@@ -70,7 +71,11 @@ const Login = () => {
         
         router.push('/dashboard');
       } else {
-        setError(data.message || 'Invalid username or password');
+        if (response.status === 429) {
+          setError(data.message || 'Too many login attempts. Please try again later.');
+        } else {
+          setError(data.message || 'Invalid username or password');
+        }
         setIsLoading(false);
       }
     } catch (err) {

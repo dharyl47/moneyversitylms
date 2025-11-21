@@ -3,6 +3,7 @@ import Layout from "@/app/components/Layout";
 import React, { useState, useEffect } from "react";
 import DataTableCallMeBack from "./_components/DataTableCallMeBack";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import { authenticatedFetch } from "@/app/lib/apiClient";
 
 export default function CallMeBackPage() {
   const [requests, setRequests] = useState([]);
@@ -12,7 +13,7 @@ export default function CallMeBackPage() {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch("/api/callMeBack"); // ✅ ensure this matches your route
+      const res = await authenticatedFetch("/api/callMeBack");
       const result = await res.json();
 
       if (result.success && Array.isArray(result.data)) {
