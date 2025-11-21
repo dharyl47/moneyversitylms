@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 }
 
 // Get all Call Me Back requests
-async function handleGET() {
+async function handleGET(request: Request) {
   try {
     await connectMongoDB();
     const requests = await CallMeBackRequest.find({});
