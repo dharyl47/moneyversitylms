@@ -45,9 +45,6 @@ export async function POST(req: Request) {
   }
 }
 
-import { withAdminAuth } from '../../lib/authMiddleware';
-import { validateEmail, validateString } from '../../lib/validation';
-
 // Get all Call Me Back requests
 async function handleGET() {
   try {
